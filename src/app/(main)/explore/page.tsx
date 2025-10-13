@@ -6,7 +6,7 @@ import Image from 'next/image'
 import { Card, CardBody } from '@/components/ui/Card'
 import Button from '@/components/ui/Button'
 import { Search, Filter, X, Heart } from 'lucide-react'
-import { formatRelativeDate, extractExcerpt, getAvatarUrl } from '@/lib/utils'
+import { formatRelativeDate, extractExcerpt, getGravatarUrl } from '@/lib/utils'
 
 interface Category {
   id: string
@@ -243,7 +243,7 @@ export default function ExplorePage() {
         {!isLoading && searchType === 'users' && users.length > 0 && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {users.map((user) => {
-              const avatarUrl = getAvatarUrl(user.email, user.avatarUrl)
+              const avatarUrl = getGravatarUrl(user.email)
               return (
                 <Card key={user.id} variant="hover" className="group animate-in fade-in slide-in-from-bottom duration-500" style={{animationDelay: `${users.indexOf(user) * 100}ms`}}>
                   <CardBody className="p-6 text-center">
@@ -276,7 +276,7 @@ export default function ExplorePage() {
           <>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
               {posts.map((post) => {
-                const authorAvatarUrl = getAvatarUrl(post.author.email, post.author.avatarUrl)
+                const authorAvatarUrl = getGravatarUrl(post.author.email)
                 const excerpt = extractExcerpt(post.content, 120)
 
                 return (
