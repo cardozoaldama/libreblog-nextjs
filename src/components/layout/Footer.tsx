@@ -24,7 +24,7 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
           {/* Logo & Description */}
           <div className="md:col-span-2">
-            <div 
+            <div
               className="flex items-center space-x-3 mb-4 cursor-pointer group"
               onClick={handleLogoClick}
               title={`Haz click ${5 - clickCount} veces más para una sorpresa...`}
@@ -44,7 +44,7 @@ export default function Footer() {
               )}
             </div>
             <p className="text-gray-300 text-sm leading-relaxed">
-              Una plataforma moderna para compartir ideas, historias y conocimiento. 
+              Una plataforma moderna para compartir ideas, historias y conocimiento.
               Construida con amor y las mejores tecnologías web.
             </p>
           </div>
@@ -56,6 +56,7 @@ export default function Footer() {
               <li><Link href="/explore" className="text-gray-300 hover:text-white transition-colors">Explorar</Link></li>
               <li><Link href="/dashboard" className="text-gray-300 hover:text-white transition-colors">Dashboard</Link></li>
               <li><Link href="/post/create" className="text-gray-300 hover:text-white transition-colors">Crear Post</Link></li>
+              <li><Link href="https://github.com/IsmaNov12/libreblog-nextjs" className="text-gray-300 hover:text-white transition-colors">Repositorio</Link></li>
             </ul>
           </div>
 
@@ -76,12 +77,12 @@ export default function Footer() {
         {/* Bottom Bar */}
         <div className="border-t border-gray-700 pt-8 flex flex-col md:flex-row justify-between items-center">
           <div className="flex items-center space-x-2 text-gray-400 text-sm">
-            <span>© 2024 LibreBlog. Hecho con</span>
+            <span>© 2025 LibreBlog. Hecho con</span>
             <Heart className="w-4 h-4 text-red-500 animate-pulse" />
             <span>y mucho</span>
             <Coffee className="w-4 h-4 text-yellow-600" />
           </div>
-          
+
           <div className="flex items-center space-x-4 mt-4 md:mt-0">
             <span className="text-xs text-gray-500">
               {clickCount > 0 && `Clicks restantes: ${5 - clickCount}`}
