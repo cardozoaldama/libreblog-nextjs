@@ -13,30 +13,32 @@ export async function GET(
       return NextResponse.json({ error: 'Invalid user ID' }, { status: 400 })
     }
 
-    const user = await prisma.user.findUnique({
-      where: { id },
-      select: {
-        id: true,
-        email: true,
-        displayName: true,
-        bio: true,
-        avatarUrl: true,
-        websiteUrl: true,
-        githubUrl: true,
-        facebookUrl: true,
-        instagramUrl: true,
-        xUrl: true,
-        tiktokUrl: true,
-        linkedinUrl: true,
-        createdAt: true,
-      },
-    })
+    const supabase = await createClient()
+    const { data: user, error } = await supabase
+      .from('users')
+      .select('id, email, display_name, bio, avatar_url, website_url, github_url, facebook_url, instagram_url, x_url, tiktok_url, linkedin_url, created_at')
+      .eq('id', id)
+      .single()
 
-    if (!user) {
+    if (error || !user) {
       return NextResponse.json({ error: 'User not found' }, { status: 404 })
     }
 
-    return NextResponse.json(user)
+    return NextResponse.json({
+      id: user.id,
+      email: user.email,
+      displayName: user.display_name,
+      bio: user.bio,
+      avatarUrl: user.avatar_url,
+      websiteUrl: user.website_url,
+      githubUrl: user.github_url,
+      facebookUrl: user.facebook_url,
+      instagramUrl: user.instagram_url,
+      xUrl: user.x_url,
+      tiktokUrl: user.tiktok_url,
+      linkedinUrl: user.linkedin_url,
+      createdAt: user.created_at,
+    })
   } catch (error) {
     console.error('Error fetching user:', error)
     return NextResponse.json(
@@ -72,21 +74,27 @@ export async function PUT(
 
     const { displayName, bio, avatarUrl, websiteUrl, githubUrl, facebookUrl, instagramUrl, xUrl, tiktokUrl, linkedinUrl } = await request.json()
 
-    const user = await prisma.user.update({
-      where: { id },
-      data: {
-        displayName: displayName || null,
+    const { data: user, error } = await supabase
+      .from('users')
+      .update({
+        display_name: displayName || null,
         bio: bio || null,
-        avatarUrl: avatarUrl || null,
-        websiteUrl: websiteUrl || null,
-        githubUrl: githubUrl || null,
-        facebookUrl: facebookUrl || null,
-        instagramUrl: instagramUrl || null,
-        xUrl: xUrl || null,
-        tiktokUrl: tiktokUrl || null,
-        linkedinUrl: linkedinUrl || null,
-      },
-    })
+        avatar_url: avatarUrl || null,
+        website_url: websiteUrl || null,
+        github_url: githubUrl || null,
+        facebook_url: facebookUrl || null,
+        instagram_url: instagramUrl || null,
+        x_url: xUrl || null,
+        tiktok_url: tiktokUrl || null,
+        linkedin_url: linkedinUrl || null,
+      })
+      .eq('id', id)
+      .select()
+      .single()
+
+    if (error) {
+      throw error
+    }
 
     return NextResponse.json({ user })
   } catch (error) {

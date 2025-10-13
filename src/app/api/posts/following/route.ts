@@ -20,6 +20,7 @@ export async function GET(request: Request) {
     // Obtener IDs de usuarios seguidos
     let followingIds = []
     try {
+      // @ts-expect-error - Prisma client regeneration needed
       const follows = await prisma.follow.findMany({
         where: { followerId: user.id },
         select: { followingId: true },
