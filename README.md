@@ -2,20 +2,20 @@
 
 Una plataforma moderna de blogging construida con Next.js 15, donde los usuarios pueden crear, compartir y descubrir contenido de forma libre y creativa.
 
-## ✨ Características
+##  Características
 
-- 🖊️ **Editor Markdown** - Escribe con formato profesional
-- 🔍 **Exploración** - Descubre contenido por categorías
-- 👥 **Sistema de Seguimiento** - Conecta con otros escritores
-- 📊 **Dashboard Personal** - Gestiona tus publicaciones
-- 🎨 **Interfaz Moderna** - Diseño responsive con animaciones
-- 🔒 **Control de Privacidad** - Posts públicos y privados
-- 🖼️ **Soporte Multimedia** - Imágenes y videos embebidos
-- 🛡️ **Seguridad Avanzada** - Verificación de contraseñas comprometidas
-- 🔑 **Recuperación de Cuenta** - Sistema completo de reset de contraseña
-- 🎨 **Logo Personalizado** - Identidad visual única con SVG animado
+-  **Editor Markdown** - Escribe con formato profesional
+-  **Exploración** - Descubre contenido por categorías
+-  **Sistema de Seguimiento** - Conecta con otros escritores
+-  **Dashboard Personal** - Gestiona tus publicaciones
+-  **Interfaz Moderna** - Diseño responsive con animaciones
+-  **Control de Privacidad** - Posts públicos y privados
+-  **Soporte Multimedia** - Imágenes y videos embebidos
+-  **Seguridad Avanzada** - Verificación de contraseñas comprometidas
+-  **Recuperación de Cuenta** - Sistema completo de reset de contraseña
+-  **Logo Personalizado** - Identidad visual única con SVG animado
 
-## 🚀 Tecnologías
+## Tecnologías
 
 - **Frontend**: Next.js 15, React 18, TypeScript, Tailwind CSS
 - **Backend**: Next.js API Routes, Prisma ORM
@@ -23,7 +23,7 @@ Una plataforma moderna de blogging construida con Next.js 15, donde los usuarios
 - **Autenticación**: Supabase Auth
 - **Deployment**: Vercel
 
-## 🛠️ Instalación
+## Instalación
 
 1. **Clonar el repositorio**
 ```bash
@@ -62,7 +62,7 @@ npx prisma db push
 npm run dev
 ```
 
-## 📁 Estructura del Proyecto
+##  Estructura del Proyecto
 
 ```
 src/
@@ -82,12 +82,12 @@ src/
 └── types/                # Definiciones de tipos TypeScript
 ```
 
-## 🔐 Funcionalidades de Seguridad
+##  Funcionalidades de Seguridad
 
 ### Verificación de Contraseñas
 - **HaveIBeenPwned Integration** - Verifica contraseñas filtradas en brechas de datos
 - **Hash SHA-1 Privacy-First** - Solo envía primeros 5 caracteres del hash
-- **Indicadores Visuales** - 🛡️ Segura / ⚠️ Comprometida
+- **Indicadores Visuales** - Segura / Comprometida
 - **Prevención Automática** - Bloquea contraseñas inseguras
 
 ### Recuperación de Cuenta
@@ -101,7 +101,7 @@ src/
 - `/reset-password` - Restablecer contraseña con validaciones
 - `/api/security/check-password` - API de verificación de compromiso
 
-## 🎯 Funcionalidades Principales
+##  Funcionalidades Principales
 
 ### Autenticación y Seguridad
 - Registro e inicio de sesión con Supabase
@@ -129,7 +129,7 @@ src/
 - Gestión de configuración
 - Control de privacidad
 
-## 🚀 Deployment
+##  Deployment
 
 ### Vercel (Recomendado)
 
@@ -169,14 +169,14 @@ Este proyecto está bajo la Licencia MIT. Ver `LICENSE` para más detalles.
 
 ## 👥 Equipo
 
-- **Guillermo Martinez** - Full Stack Developer 🚀
-- **Alejandro Alonso** - Full Stack Developer ⭐
+- **Guillermo Martinez** - Developer 
+- **Alejandro Alonso** - Developer 
 
 ### Apoyo Emocional
 - **Miguel** - Gato Supervisor 🐱
 - **Terry** - Perro Motivacional 🐶
 
-## 🎨 Diseño y Branding
+##  Diseño y Branding
 
 ### Logo Personalizado
 - **SVG Animado** - Logo único con gradientes y efectos
@@ -190,11 +190,3 @@ Este proyecto está bajo la Licencia MIT. Ver `LICENSE` para más detalles.
 - **Animaciones Fluidas** - Transiciones suaves en toda la UI
 - **Favicon Personalizado** - SVG optimizado para navegadores
 
-## 🎊 Easter Egg
-
-¿Puedes encontrar nuestro easter egg secreto? 👀
-Pista: Busca en el footer... 🦶✨
-
----
-
-Hecho con ❤️ por el equipo de LibreBlog
