@@ -7,7 +7,7 @@ import Button from '@/components/ui/Button'
 import PinButton from '@/components/post/PinButton'
 import DeletePostButton from '@/components/posts/DeletePostButton'
 import { Eye, Edit, Pin, Search, Heart } from 'lucide-react'
-import { formatRelativeDate } from '@/lib/utils'
+import { formatRelativeDate, getAvatarUrl } from '@/lib/utils'
 
 interface Post {
   id: string
@@ -54,7 +54,7 @@ export default function PostsList({ posts, currentUser }: PostsListProps) {
     const author = post.author || currentUser
     return {
       name: author?.displayName || author?.email?.split('@')[0] || 'Autor desconocido',
-      avatar: author?.avatarUrl
+      avatar: getAvatarUrl(author?.email || '', author?.avatarUrl, 32)
     }
   }
 
@@ -110,18 +110,12 @@ export default function PostsList({ posts, currentUser }: PostsListProps) {
                 {/* Author Info */}
                 <div className="flex items-center gap-2 mb-3">
                   <div className="relative w-8 h-8 rounded-full overflow-hidden bg-gradient-to-br from-blue-500 to-purple-500">
-                    {authorInfo.avatar ? (
-                      <Image
-                        src={authorInfo.avatar}
-                        alt={authorInfo.name}
-                        fill
-                        className="object-cover"
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center text-white text-sm font-bold">
-                        {authorInfo.name.charAt(0).toUpperCase()}
-                      </div>
-                    )}
+                    <Image
+                      src={authorInfo.avatar}
+                      alt={authorInfo.name}
+                      fill
+                      className="object-cover"
+                    />
                   </div>
                   <span className="text-sm font-medium text-gray-700">{authorInfo.name}</span>
                 </div>

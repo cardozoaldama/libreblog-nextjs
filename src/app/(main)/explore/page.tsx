@@ -6,7 +6,7 @@ import Image from 'next/image'
 import { Card, CardBody } from '@/components/ui/Card'
 import Button from '@/components/ui/Button'
 import { Search, Filter, X, Heart } from 'lucide-react'
-import { formatRelativeDate, extractExcerpt, getGravatarUrl } from '@/lib/utils'
+import { formatRelativeDate, extractExcerpt, getGravatarUrl, getAvatarUrl } from '@/lib/utils'
 
 interface Category {
   id: string
@@ -243,7 +243,7 @@ export default function ExplorePage() {
         {!isLoading && searchType === 'users' && users.length > 0 && (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {users.map((user) => {
-              const avatarUrl = getGravatarUrl(user.email)
+              const avatarUrl = getAvatarUrl(user.email, user.avatarUrl, 80)
               return (
                 <Card key={user.id} variant="hover" className="group animate-in fade-in slide-in-from-bottom duration-500" style={{animationDelay: `${users.indexOf(user) * 100}ms`}}>
                   <CardBody className="p-6 text-center">
@@ -253,7 +253,6 @@ export default function ExplorePage() {
                       width={80}
                       height={80}
                       className="rounded-full mx-auto mb-4"
-                      unoptimized
                     />
                     <h3 className="text-xl font-bold text-gray-900 mb-1">
                       {user.displayName || user.email.split('@')[0]}
@@ -276,7 +275,7 @@ export default function ExplorePage() {
           <>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
               {posts.map((post) => {
-                const authorAvatarUrl = getGravatarUrl(post.author.email)
+                const authorAvatarUrl = getAvatarUrl(post.author.email, post.author.avatarUrl, 32)
                 const excerpt = extractExcerpt(post.content, 120)
 
                 return (
@@ -328,7 +327,6 @@ export default function ExplorePage() {
                             width={32}
                             height={32}
                             className="rounded-full"
-                            unoptimized
                           />
                           <div className="flex-1 min-w-0">
                             <p className="text-sm font-medium text-gray-900 truncate">

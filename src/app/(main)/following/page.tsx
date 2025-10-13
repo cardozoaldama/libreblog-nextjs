@@ -6,7 +6,7 @@ import Image from 'next/image'
 import { Card, CardBody } from '@/components/ui/Card'
 import Button from '@/components/ui/Button'
 import { Search, ChevronLeft, ChevronRight, Heart } from 'lucide-react'
-import { formatRelativeDate, extractExcerpt, getGravatarUrl } from '@/lib/utils'
+import { formatRelativeDate, extractExcerpt, getGravatarUrl, getAvatarUrl } from '@/lib/utils'
 
 interface Author {
   id: string
@@ -99,7 +99,7 @@ export default function FollowingPage() {
           <>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
               {posts.map((post) => {
-                const authorAvatarUrl = getGravatarUrl(post.author.email)
+                const authorAvatarUrl = getAvatarUrl(post.author.email, post.author.avatarUrl, 32)
                 const excerpt = extractExcerpt(post.content, 120)
 
                 return (
@@ -139,7 +139,6 @@ export default function FollowingPage() {
                             width={32}
                             height={32}
                             className="rounded-full"
-                            unoptimized
                           />
                           <div className="flex-1 min-w-0">
                             <p className="text-sm font-medium text-gray-900 truncate">
