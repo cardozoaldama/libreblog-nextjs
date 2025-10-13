@@ -6,7 +6,7 @@ import type { Post as PostType, User as UserType, Category as CategoryType } fro
 import { createClient } from '@/lib/supabase/server'
 import Button from '@/components/ui/Button'
 import { Card, CardBody } from '@/components/ui/Card'
-import { ArrowLeft, Edit, Trash2, Volume2 } from 'lucide-react'
+import { ArrowLeft, Edit, Trash2 } from 'lucide-react'
 import { formatDate, getGravatarUrl, extractYouTubeId } from '@/lib/utils'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
