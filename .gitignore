@@ -1,49 +1,60 @@
-# Dependencies
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
 /node_modules
 /.pnp
 .pnp.js
+.yarn/install-state.gz
 
-# Testing
+# testing
 /coverage
 
-# Next.js
+# next.js
 /.next/
 /out/
 
-# Production
+# production
 /build
 
-# Misc
+# misc
 .DS_Store
 *.pem
 
-# Debug
+# debug
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# Local env files
-.env*.local
+# local env files
 .env
+.env*.local
 
-# Vercel
+# vercel
 .vercel
 
-# TypeScript
+# typescript
 *.tsbuildinfo
 next-env.d.ts
 
-# Prisma
-/prisma/migrations/
-
-# IDE
+# development files
+*.log
 .vscode/
 .idea/
 *.swp
 *.swo
+*~
 
-# OS
-Thumbs.db
+# migration scripts (already in migrations folder)
+add-*.sql
+apply-*.js
+create-*.js
+test-connection.js
 
-# Personal/Academic Files
-EVALUACION_PROYECTO.md
+# temporary files
+TODO.md
+NOTES.md
+
+# markdown files (except README)
+*.md
+!README.md
+FIX_ENV.md

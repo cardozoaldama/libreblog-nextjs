@@ -7,9 +7,10 @@ import { createClient } from '@/lib/supabase/server'
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params
     const supabase = await createClient()
     
     // Verificar autenticación del usuario
@@ -20,7 +21,7 @@ export async function GET(
     }
 
     // Solo permitir ver los propios seguidores por privacidad
-    if (user.id !== params.id) {
+    if (user.id !== id) {
       return NextResponse.json({ error: 'No autorizado para ver estos seguidores' }, { status: 403 })
     }
 
@@ -29,7 +30,7 @@ export async function GET(
     const { data: followRelations, error: followError } = await supabase
       .from('follows')
       .select('follower_id')
-      .eq('following_id', params.id)
+      .eq('following_id', id)
 
     if (followError) {
       console.error('Error fetching follow relations:', followError)

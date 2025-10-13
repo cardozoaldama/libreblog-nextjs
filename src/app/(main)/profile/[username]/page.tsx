@@ -56,9 +56,7 @@ export default async function ProfilePage({
   let followersCount = 0
   let followingCount = 0
   try {
-    // @ts-expect-error - Prisma client regeneration needed
     followersCount = await prisma.follow.count({ where: { followingId: user.id } })
-    // @ts-expect-error - Prisma client regeneration needed
     followingCount = await prisma.follow.count({ where: { followerId: user.id } })
   } catch {
     // Si la tabla follow no existe, usar 0
@@ -88,7 +86,6 @@ export default async function ProfilePage({
   let isFollowing = false
   if (authUser && !isOwnProfile) {
     try {
-      // @ts-expect-error - Prisma client regeneration needed
       const followRelation = await prisma.follow.findUnique({
         where: {
           followerId_followingId: {

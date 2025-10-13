@@ -17,7 +17,6 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Invalid user ID' }, { status: 400 })
     }
 
-    // @ts-expect-error - Prisma client regeneration needed
     const follow = await prisma.follow.create({
       data: {
         followerId: user.id,
@@ -42,7 +41,6 @@ export async function DELETE(request: Request) {
 
     const { followingId } = await request.json()
 
-    // @ts-expect-error - Prisma client regeneration needed
     await prisma.follow.delete({
       where: {
         followerId_followingId: {

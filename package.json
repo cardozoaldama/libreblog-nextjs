@@ -4,10 +4,13 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "next build",
+    "build": "prisma generate && next build",
     "start": "next start",
     "lint": "eslint",
-    "seed:categories": "node prisma/seed-categories.js"
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "seed:categories": "node prisma/seed-categories.js",
+    "postinstall": "prisma generate"
   },
   "dependencies": {
     "@prisma/client": "^6.17.1",
@@ -41,6 +44,7 @@
     "prisma": "^6.17.1",
     "tailwindcss": "^4.1.14",
     "ts-node": "^10.9.2",
-    "typescript": "^5"
+    "typescript": "^5",
+    "vitest": "^2.1.8"
   }
 }

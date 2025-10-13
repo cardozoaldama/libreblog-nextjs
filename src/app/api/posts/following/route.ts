@@ -18,9 +18,8 @@ export async function GET(request: Request) {
     const offset = (page - 1) * limit
 
     // Obtener IDs de usuarios seguidos
-    let followingIds = []
+    let followingIds: string[] = []
     try {
-      // @ts-expect-error - Prisma client regeneration needed
       const follows = await prisma.follow.findMany({
         where: { followerId: user.id },
         select: { followingId: true },
@@ -30,7 +29,7 @@ export async function GET(request: Request) {
       // Si la tabla follow no existe, no hay seguidos
     }
 
-    let posts = []
+    let posts: any[] = []
     if (followingIds.length > 0) {
       posts = await prisma.post.findMany({
         where: {

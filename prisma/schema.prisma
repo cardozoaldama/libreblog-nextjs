@@ -72,6 +72,8 @@ model Like {
   @@unique([userId, postId])
   @@index([postId])
   @@index([userId])
+  @@index([postId], map: "idx_likes_post_id")
+  @@index([userId], map: "idx_likes_user_id")
   @@map("likes")
 }
 

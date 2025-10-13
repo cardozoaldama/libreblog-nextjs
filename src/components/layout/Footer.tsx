@@ -9,8 +9,6 @@ export default function Footer() {
   const [clickCount, setClickCount] = useState(0)
   const router = useRouter()
 
-
-
   const handleLogoClick = () => {
     setClickCount(prev => prev + 1)
     if (clickCount >= 4) {
