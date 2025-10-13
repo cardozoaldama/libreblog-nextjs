@@ -9,9 +9,9 @@ export default function Footer() {
   const [clickCount, setClickCount] = useState(0)
   const router = useRouter()
 
-  const playSound = (soundType: 'meow' | 'woof') => {
-    // Crear audio usando Web Audio API para mejor compatibilidad
-    const audioContext = new (window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext)()
+  // Función para reproducir sonidos (no utilizada actualmente)
+  // const playSound = (soundType: 'meow' | 'woof') => {
+  //   const audioContext = new (window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext)()
     
     if (soundType === 'meow') {
       // Sonido de gato (frecuencias altas)
@@ -28,27 +28,10 @@ export default function Footer() {
       gainNode.gain.setValueAtTime(0.3, audioContext.currentTime)
       gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3)
       
-      oscillator.start(audioContext.currentTime)
-      oscillator.stop(audioContext.currentTime + 0.3)
-    } else {
-      // Sonido de perro (frecuencias bajas)
-      const oscillator = audioContext.createOscillator()
-      const gainNode = audioContext.createGain()
-      
-      oscillator.connect(gainNode)
-      gainNode.connect(audioContext.destination)
-      
-      oscillator.frequency.setValueAtTime(200, audioContext.currentTime)
-      oscillator.frequency.exponentialRampToValueAtTime(150, audioContext.currentTime + 0.1)
-      oscillator.frequency.exponentialRampToValueAtTime(180, audioContext.currentTime + 0.2)
-      
-      gainNode.gain.setValueAtTime(0.4, audioContext.currentTime)
-      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.4)
-      
-      oscillator.start(audioContext.currentTime)
-      oscillator.stop(audioContext.currentTime + 0.4)
-    }
-  }
+  //     oscillator.start(audioContext.currentTime)
+  //     oscillator.stop(audioContext.currentTime + 0.3)
+  //   }
+  // }
 
   const handleLogoClick = () => {
     setClickCount(prev => prev + 1)
