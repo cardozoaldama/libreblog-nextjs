@@ -11,7 +11,7 @@ export default function Footer() {
 
   const playSound = (soundType: 'meow' | 'woof') => {
     // Crear audio usando Web Audio API para mejor compatibilidad
-    const audioContext = new (window.AudioContext || (window as any).webkitAudioContext)()
+    const audioContext = new (window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext)()
     
     if (soundType === 'meow') {
       // Sonido de gato (frecuencias altas)
