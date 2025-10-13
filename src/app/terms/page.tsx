@@ -59,7 +59,7 @@ export default function TermsPage() {
             <section>
               <h2 className="text-2xl font-bold text-gray-900 mb-3">7. Limitación de Responsabilidad</h2>
               <p className="text-gray-700">
-                LibreBlog se proporciona "tal cual" sin garantías de ningún tipo. No seremos responsables de daños indirectos, incidentales o consecuentes derivados del uso de la plataforma.
+                LibreBlog se proporciona tal cual sin garantías de ningún tipo. No seremos responsables de daños indirectos, incidentales o consecuentes derivados del uso de la plataforma.
               </p>
             </section>
 

@@ -9,29 +9,7 @@ export default function Footer() {
   const [clickCount, setClickCount] = useState(0)
   const router = useRouter()
 
-  // Función para reproducir sonidos (no utilizada actualmente)
-  // const playSound = (soundType: 'meow' | 'woof') => {
-  //   const audioContext = new (window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext)()
-    
-    if (soundType === 'meow') {
-      // Sonido de gato (frecuencias altas)
-      const oscillator = audioContext.createOscillator()
-      const gainNode = audioContext.createGain()
-      
-      oscillator.connect(gainNode)
-      gainNode.connect(audioContext.destination)
-      
-      oscillator.frequency.setValueAtTime(800, audioContext.currentTime)
-      oscillator.frequency.exponentialRampToValueAtTime(400, audioContext.currentTime + 0.1)
-      oscillator.frequency.exponentialRampToValueAtTime(600, audioContext.currentTime + 0.2)
-      
-      gainNode.gain.setValueAtTime(0.3, audioContext.currentTime)
-      gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3)
-      
-  //     oscillator.start(audioContext.currentTime)
-  //     oscillator.stop(audioContext.currentTime + 0.3)
-  //   }
-  // }
+
 
   const handleLogoClick = () => {
     setClickCount(prev => prev + 1)
