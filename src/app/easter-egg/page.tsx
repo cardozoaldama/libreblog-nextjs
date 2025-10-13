@@ -312,7 +312,7 @@ export default function EasterEggPage() {
           <div className="text-center p-8 bg-black/30 rounded-3xl border border-yellow-500/30 backdrop-blur-sm">
             <p className="text-2xl text-yellow-300 font-mono mb-4">
               <span className="animate-pulse">💡</span> 
-              "El código es poesía, los bugs son... experiencias de aprendizaje" 
+              El código es poesía, los bugs son... experiencias de aprendizaje 
               <span className="animate-pulse">💡</span>
             </p>
             <p className="text-white/60">- Sabiduría ancestral de desarrolladores</p>
@@ -321,7 +321,7 @@ export default function EasterEggPage() {
           <div className="text-center p-6 bg-gradient-to-r from-purple-900/50 to-pink-900/50 rounded-2xl border border-purple-500/30 backdrop-blur-sm">
             <p className="text-lg text-purple-300 mb-2">
               <Rocket className="w-5 h-5 inline mr-2" />
-              "Programar es como ser un mago, pero en lugar de varitas usamos teclados"
+              Programar es como ser un mago, pero en lugar de varitas usamos teclados
               <Sparkles className="w-5 h-5 inline ml-2" />
             </p>
             <p className="text-white/50 text-sm">- Filosofía del desarrollador moderno</p>
@@ -330,7 +330,7 @@ export default function EasterEggPage() {
           <div className="text-center p-6 bg-gradient-to-r from-blue-900/50 to-green-900/50 rounded-2xl border border-blue-500/30 backdrop-blur-sm">
             <p className="text-lg text-blue-300 mb-2">
               <Coffee className="w-5 h-5 inline mr-2" />
-              "Café + Código = Magia Digital"
+              Café + Código = Magia Digital
               <Heart className="w-5 h-5 inline ml-2 text-pink-400" />
             </p>
             <p className="text-white/50 text-sm">- La ecuación perfecta</p>
