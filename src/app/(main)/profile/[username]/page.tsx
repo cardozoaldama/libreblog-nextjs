@@ -292,6 +292,27 @@ export default async function ProfilePage({
                     </div>
                   )}
                   <CardBody className="p-6 flex-1">
+                    {/* Author Info */}
+                    <div className="flex items-center gap-2 mb-3">
+                      <div className="relative w-8 h-8 rounded-full overflow-hidden bg-gradient-to-br from-blue-500 to-purple-500">
+                        {user.avatarUrl ? (
+                          <Image
+                            src={user.avatarUrl}
+                            alt={user.displayName || user.email}
+                            fill
+                            className="object-cover"
+                          />
+                        ) : (
+                          <div className="w-full h-full flex items-center justify-center text-white text-sm font-bold">
+                            {(user.displayName || user.email).charAt(0).toUpperCase()}
+                          </div>
+                        )}
+                      </div>
+                      <span className="text-sm font-medium text-gray-700">
+                        {user.displayName || user.email.split('@')[0]}
+                      </span>
+                    </div>
+                    
                     <div className="flex items-center gap-2 mb-3">
                       {post.category && (
                         <span className="inline-block px-3 py-1.5 rounded-full text-xs font-medium bg-gradient-to-r from-blue-100 to-purple-100 text-blue-800 transition-all duration-300 group-hover:from-blue-200 group-hover:to-purple-200">

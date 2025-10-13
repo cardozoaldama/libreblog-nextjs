@@ -150,7 +150,15 @@ export default async function DashboardPage() {
               </CardBody>
             </Card>
           ) : (
-            <PostsList posts={postsWithLikes} />
+            <PostsList 
+          posts={postsWithLikes} 
+          currentUser={{
+            id: user.id,
+            email: user.email,
+            displayName: user.displayName,
+            avatarUrl: user.avatarUrl
+          }}
+        />
           )}
         </div>
       </div>

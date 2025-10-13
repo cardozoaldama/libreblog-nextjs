@@ -22,6 +22,12 @@ interface Post {
     name: string
     icon: string | null
   } | null
+  author?: {
+    id: string
+    email: string
+    displayName: string | null
+    avatarUrl: string | null
+  }
   _count: {
     likes: number
   }
@@ -29,14 +35,28 @@ interface Post {
 
 interface PostsListProps {
   posts: Post[]
+  currentUser?: {
+    id: string
+    email: string
+    displayName: string | null
+    avatarUrl: string | null
+  }
 }
 
-export default function PostsList({ posts }: PostsListProps) {
+export default function PostsList({ posts, currentUser }: PostsListProps) {
   const [searchQuery, setSearchQuery] = useState('')
 
   const filteredPosts = posts.filter(post =>
     post.title.toLowerCase().includes(searchQuery.toLowerCase())
   )
+
+  const getAuthorDisplay = (post: Post) => {
+    const author = post.author || currentUser
+    return {
+      name: author?.displayName || author?.email?.split('@')[0] || 'Autor desconocido',
+      avatar: author?.avatarUrl
+    }
+  }
 
   return (
     <>
@@ -63,7 +83,9 @@ export default function PostsList({ posts }: PostsListProps) {
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredPosts.map((post) => (
+          {filteredPosts.map((post) => {
+            const authorInfo = getAuthorDisplay(post)
+            return (
             <div
               key={post.id}
               className="bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow overflow-hidden"
@@ -85,6 +107,24 @@ export default function PostsList({ posts }: PostsListProps) {
 
               {/* Content */}
               <div className="p-4">
+                {/* Author Info */}
+                <div className="flex items-center gap-2 mb-3">
+                  <div className="relative w-8 h-8 rounded-full overflow-hidden bg-gradient-to-br from-blue-500 to-purple-500">
+                    {authorInfo.avatar ? (
+                      <Image
+                        src={authorInfo.avatar}
+                        alt={authorInfo.name}
+                        fill
+                        className="object-cover"
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-white text-sm font-bold">
+                        {authorInfo.name.charAt(0).toUpperCase()}
+                      </div>
+                    )}
+                  </div>
+                  <span className="text-sm font-medium text-gray-700">{authorInfo.name}</span>
+                </div>
                 {/* Badges */}
                 <div className="flex flex-wrap items-center gap-2 mb-3">
                   {post.category && (
@@ -143,7 +183,8 @@ export default function PostsList({ posts }: PostsListProps) {
                 </div>
               </div>
             </div>
-          ))}
+            )
+          })}
         </div>
       )}
     </>
