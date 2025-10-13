@@ -16,7 +16,7 @@ const categories = [
   { name: 'Negocios', slug: 'negocios', icon: '💼' },
   { name: 'Finanzas', slug: 'finanzas', icon: '💰' },
   { name: 'Diseño', slug: 'diseno', icon: '✨' },
-  { name: 'Fotografía', slug: 'fotografia', icon: '📷' },
+  { name: 'Fotografia', slug: 'fotografia', icon: '📷' },
   { name: 'Cine', slug: 'cine', icon: '🎬' },
   { name: 'Gaming', slug: 'gaming', icon: '🎮' },
   { name: 'Moda', slug: 'moda', icon: '👗' },
