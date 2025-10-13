@@ -1,0 +1,151 @@
+'use client'
+
+import { useState } from 'react'
+import Link from 'next/link'
+import Image from 'next/image'
+import Button from '@/components/ui/Button'
+import PinButton from '@/components/post/PinButton'
+import DeletePostButton from '@/components/posts/DeletePostButton'
+import { Eye, Edit, Pin, Search, Heart } from 'lucide-react'
+import { formatRelativeDate } from '@/lib/utils'
+
+interface Post {
+  id: string
+  title: string
+  slug: string
+  imageUrl: string | null
+  isPinned: boolean
+  isPublic: boolean
+  createdAt: Date
+  category: {
+    id: string
+    name: string
+    icon: string | null
+  } | null
+  _count: {
+    likes: number
+  }
+}
+
+interface PostsListProps {
+  posts: Post[]
+}
+
+export default function PostsList({ posts }: PostsListProps) {
+  const [searchQuery, setSearchQuery] = useState('')
+
+  const filteredPosts = posts.filter(post =>
+    post.title.toLowerCase().includes(searchQuery.toLowerCase())
+  )
+
+  return (
+    <>
+      {/* Search Bar */}
+      <div className="mb-6">
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
+          <input
+            type="text"
+            placeholder="Buscar en mis publicaciones..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full pl-10 pr-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+          />
+        </div>
+      </div>
+
+      {/* Posts Grid */}
+      {filteredPosts.length === 0 ? (
+        <div className="text-center py-12 px-4">
+          <p className="text-gray-600">
+            {searchQuery ? 'No se encontraron publicaciones' : 'Aún no tienes publicaciones'}
+          </p>
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          {filteredPosts.map((post) => (
+            <div
+              key={post.id}
+              className="bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow overflow-hidden"
+            >
+              {/* Image */}
+              {post.imageUrl && (
+                <Link href={`/post/${post.slug}`}>
+                  <div className="relative h-48 w-full bg-gray-200">
+                    <Image
+                      src={post.imageUrl}
+                      alt={post.title}
+                      fill
+                      className="object-cover"
+                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    />
+                  </div>
+                </Link>
+              )}
+
+              {/* Content */}
+              <div className="p-4">
+                {/* Badges */}
+                <div className="flex flex-wrap items-center gap-2 mb-3">
+                  {post.category && (
+                    <span className="inline-block px-2.5 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                      {post.category.icon} {post.category.name}
+                    </span>
+                  )}
+                  {post.isPinned && (
+                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-blue-500 text-white">
+                      <Pin className="w-3 h-3" /> Pineado
+                    </span>
+                  )}
+                  {post.isPublic ? (
+                    <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                      Público
+                    </span>
+                  ) : (
+                    <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                      Borrador
+                    </span>
+                  )}
+                </div>
+
+                {/* Title */}
+                <Link href={`/post/${post.slug}`}>
+                  <h3 className="text-lg font-bold text-gray-900 mb-2 hover:text-blue-600 transition-colors line-clamp-2">
+                    {post.title}
+                  </h3>
+                </Link>
+
+                {/* Date & Likes */}
+                <div className="flex items-center gap-3 mb-4">
+                  <p className="text-xs text-gray-500">
+                    {formatRelativeDate(post.createdAt)}
+                  </p>
+                  <div className="flex items-center gap-1 text-xs text-gray-500">
+                    <Heart className="w-3 h-3" />
+                    <span>{post._count.likes}</span>
+                  </div>
+                </div>
+
+                {/* Actions */}
+                <div className="flex items-center gap-2 flex-wrap">
+                  <PinButton postId={post.id} initialIsPinned={post.isPinned} />
+                  <Link href={`/post/${post.slug}`}>
+                    <Button variant="ghost" size="sm">
+                      <Eye className="w-4 h-4" />
+                    </Button>
+                  </Link>
+                  <Link href={`/post/edit/${post.id}`}>
+                    <Button variant="ghost" size="sm">
+                      <Edit className="w-4 h-4" />
+                    </Button>
+                  </Link>
+                  <DeletePostButton postId={post.id} postTitle={post.title} />
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </>
+  )
+}

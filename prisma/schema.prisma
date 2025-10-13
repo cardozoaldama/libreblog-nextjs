@@ -1,0 +1,91 @@
+generator client {
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id           String   @id @default(uuid()) @db.Uuid
+  email        String   @unique
+  displayName  String?  @map("display_name")
+  bio          String?
+  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt    DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+  avatarUrl    String?  @map("avatar_url")
+  websiteUrl   String?  @map("website_url")
+  facebookUrl  String?  @map("facebook_url")
+  instagramUrl String?  @map("instagram_url")
+  xUrl         String?  @map("x_url")
+  tiktokUrl    String?  @map("tiktok_url")
+  linkedinUrl  String?  @map("linkedin_url")
+  githubUrl    String?  @map("github_url")
+  following    Follow[] @relation("UserFollowing")
+  followers    Follow[] @relation("UserFollowers")
+  posts        Post[]
+
+  @@map("users")
+}
+
+model Post {
+  id         String    @id @default(uuid()) @db.Uuid
+  title      String    @db.VarChar(255)
+  content    String
+  slug       String    @unique @db.VarChar(255)
+  isPublic   Boolean   @default(false) @map("is_public")
+  imageUrl   String?   @map("image_url")
+  videoUrl   String?   @map("video_url")
+  authorId   String    @map("author_id") @db.Uuid
+  categoryId String?   @map("category_id") @db.Uuid
+  createdAt  DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt  DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+  isPinned   Boolean   @default(false) @map("is_pinned")
+  author     User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  category   Category? @relation(fields: [categoryId], references: [id])
+
+  @@index([authorId])
+  @@index([categoryId])
+  @@index([isPublic])
+  @@index([slug])
+  @@map("posts")
+}
+
+model Category {
+  id    String  @id @default(uuid()) @db.Uuid
+  name  String  @unique @db.VarChar(100)
+  slug  String  @unique @db.VarChar(100)
+  icon  String? @db.VarChar(10)
+  posts Post[]
+
+  @@map("categories")
+}
+
+model Like {
+  id        String   @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  postId    String   @map("post_id") @db.Uuid
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+
+  @@unique([userId, postId])
+  @@index([postId])
+  @@index([userId])
+  @@map("likes")
+}
+
+model Follow {
+  id          String    @id @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  followerId  String    @map("follower_id") @db.Uuid
+  followingId String    @map("following_id") @db.Uuid
+  createdAt   DateTime? @default(now()) @map("created_at") @db.Timestamptz(6)
+  follower    User      @relation("UserFollowing", fields: [followerId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+  following   User      @relation("UserFollowers", fields: [followingId], references: [id], onDelete: Cascade, onUpdate: NoAction)
+
+  @@unique([followerId, followingId])
+  @@index([followerId], map: "idx_follows_follower_id")
+  @@index([followingId], map: "idx_follows_following_id")
+  @@map("follows")
+}
