@@ -33,10 +33,10 @@ export default function ForgotPasswordPage() {
         type: 'success',
         text: 'Se ha enviado un enlace de recuperación a tu email'
       })
-    } catch (error: any) {
+    } catch (error: unknown) {
       setMessage({
         type: 'error',
-        text: error.message || 'Error al enviar el email de recuperación'
+        text: (error as Error).message || 'Error al enviar el email de recuperación'
       })
     } finally {
       setIsLoading(false)
