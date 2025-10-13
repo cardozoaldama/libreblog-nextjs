@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { Card, CardBody } from '@/components/ui/Card'
@@ -34,11 +34,7 @@ export default function FollowingPage() {
   const [currentPage, setCurrentPage] = useState(1)
   const [hasMore, setHasMore] = useState(false)
 
-  useEffect(() => {
-    loadPosts()
-  }, [currentPage, searchQuery])
-
-  const loadPosts = async () => {
+  const loadPosts = useCallback(async () => {
     setIsLoading(true)
     try {
       const params = new URLSearchParams()
@@ -55,7 +51,11 @@ export default function FollowingPage() {
     } finally {
       setIsLoading(false)
     }
-  }
+  }, [currentPage, searchQuery])
+
+  useEffect(() => {
+    loadPosts()
+  }, [loadPosts])
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
