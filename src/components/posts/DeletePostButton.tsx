@@ -23,14 +23,16 @@ export default function DeletePostButton({ postId, postTitle }: DeletePostButton
       })
 
       if (res.ok) {
+        router.push('/dashboard')
         router.refresh()
       } else {
         alert('Error al eliminar el post')
+        setIsDeleting(false)
+        setShowConfirm(false)
       }
     } catch {
       console.error('Error al eliminar el post')
       alert('Error al eliminar el post')
-    } finally {
       setIsDeleting(false)
       setShowConfirm(false)
     }
