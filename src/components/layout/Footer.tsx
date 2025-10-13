@@ -56,6 +56,7 @@ export default function Footer() {
               <li><Link href="/explore" className="text-gray-300 hover:text-white transition-colors">Explorar</Link></li>
               <li><Link href="/dashboard" className="text-gray-300 hover:text-white transition-colors">Dashboard</Link></li>
               <li><Link href="/post/create" className="text-gray-300 hover:text-white transition-colors">Crear Post</Link></li>
+              <li><Link href="https://github.com/IsmaNov12/libreblog-nextjs" className="text-gray-300 hover:text-white transition-colors">Repositorio</Link></li>
             </ul>
           </div>
 
