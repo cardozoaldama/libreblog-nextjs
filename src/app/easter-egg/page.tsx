@@ -3,7 +3,7 @@
 import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { ArrowLeft, Code, Coffee, Volume2, Sparkles, Heart, Zap, Star, Rocket } from 'lucide-react'
+import { ArrowLeft, Coffee, Volume2, Sparkles, Heart, Zap, Star, Rocket } from 'lucide-react'
 import Button from '@/components/ui/Button'
 
 // Tipos de sonido disponibles para reproducir
@@ -43,7 +43,7 @@ export default function EasterEggPage() {
   const playSound = (soundType: 'meow' | 'woof' | 'magic') => {
     try {
       const audio = new Audio()
-      
+
       switch (soundType) {
         case 'meow':
           audio.src = '/audio/miguel-meow.mp3'
@@ -55,7 +55,7 @@ export default function EasterEggPage() {
           audio.src = '/audio/magic-sound.mp3'
           break
       }
-      
+
       audio.volume = 0.5
       audio.play().catch(console.error)
     } catch (error) {
@@ -74,54 +74,54 @@ export default function EasterEggPage() {
       // Crear contexto de audio (compatible con navegadores antiguos)
       const AudioContextClass = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext
       const audioContext = new AudioContextClass()
-    
+
     if (soundType === 'meow') {
       const oscillator = audioContext.createOscillator()
       const gainNode = audioContext.createGain()
-      
+
       oscillator.connect(gainNode)
       gainNode.connect(audioContext.destination)
-      
+
       oscillator.frequency.setValueAtTime(800, audioContext.currentTime)
       oscillator.frequency.exponentialRampToValueAtTime(400, audioContext.currentTime + 0.1)
       oscillator.frequency.exponentialRampToValueAtTime(600, audioContext.currentTime + 0.2)
-      
+
       gainNode.gain.setValueAtTime(0.3, audioContext.currentTime)
       gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3)
-      
+
       oscillator.start(audioContext.currentTime)
       oscillator.stop(audioContext.currentTime + 0.3)
     } else if (soundType === 'woof') {
       const oscillator = audioContext.createOscillator()
       const gainNode = audioContext.createGain()
-      
+
       oscillator.connect(gainNode)
       gainNode.connect(audioContext.destination)
-      
+
       oscillator.frequency.setValueAtTime(200, audioContext.currentTime)
       oscillator.frequency.exponentialRampToValueAtTime(150, audioContext.currentTime + 0.1)
       oscillator.frequency.exponentialRampToValueAtTime(180, audioContext.currentTime + 0.2)
-      
+
       gainNode.gain.setValueAtTime(0.4, audioContext.currentTime)
       gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.4)
-      
+
       oscillator.start(audioContext.currentTime)
       oscillator.stop(audioContext.currentTime + 0.4)
     } else if (soundType === 'magic') {
       for (let i = 0; i < 3; i++) {
         const oscillator = audioContext.createOscillator()
         const gainNode = audioContext.createGain()
-        
+
         oscillator.connect(gainNode)
         gainNode.connect(audioContext.destination)
-        
+
         const baseFreq = 440 + (i * 220)
         oscillator.frequency.setValueAtTime(baseFreq, audioContext.currentTime + i * 0.1)
         oscillator.frequency.exponentialRampToValueAtTime(baseFreq * 2, audioContext.currentTime + 0.3 + i * 0.1)
-        
+
         gainNode.gain.setValueAtTime(0.1, audioContext.currentTime + i * 0.1)
         gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5 + i * 0.1)
-        
+
         oscillator.start(audioContext.currentTime + i * 0.1)
         oscillator.stop(audioContext.currentTime + 0.5 + i * 0.1)
       }
@@ -179,7 +179,7 @@ export default function EasterEggPage() {
               Volver al inicio
             </Button>
           </Link>
-          
+
           <div className="mb-8">
             <h1 className="text-6xl md:text-8xl font-bold bg-gradient-to-r from-yellow-400 via-pink-400 to-purple-400 bg-clip-text text-transparent mb-4 animate-pulse">
               🎉 EASTER EGG 🎉
@@ -233,7 +233,7 @@ export default function EasterEggPage() {
                 <Heart className="w-5 h-5 text-pink-400" />
               </div>
             </div>
-            
+
             <div className="text-center group">
               <div className="relative">
                 <div className="absolute -inset-4 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full blur opacity-75 group-hover:opacity-100 transition duration-500"></div>
@@ -281,7 +281,7 @@ export default function EasterEggPage() {
                 <span className="text-sm">¡Hazme click!</span>
               </div>
             </div>
-            
+
             <div className="text-center group">
               <button
                 onClick={() => playSound('woof')}
@@ -311,8 +311,8 @@ export default function EasterEggPage() {
         <div className="space-y-8 animate-in fade-in slide-in-from-bottom duration-1000 delay-1200">
           <div className="text-center p-8 bg-black/30 rounded-3xl border border-yellow-500/30 backdrop-blur-sm">
             <p className="text-2xl text-yellow-300 font-mono mb-4">
-              <span className="animate-pulse">💡</span> 
-              El código es poesía, los bugs son... experiencias de aprendizaje 
+              <span className="animate-pulse">💡</span>
+              El código es poesía, los bugs son... experiencias de aprendizaje
               <span className="animate-pulse">💡</span>
             </p>
             <p className="text-white/60">- Sabiduría ancestral de desarrolladores</p>
