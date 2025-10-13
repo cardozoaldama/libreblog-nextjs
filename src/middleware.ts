@@ -2,13 +2,19 @@ import { createServerClient } from '@supabase/ssr'
 import { NextResponse, type NextRequest } from 'next/server'
 
 export async function middleware(request: NextRequest) {
+  // Validar que las variables de entorno existan
+  if (!process.env.NEXT_PUBLIC_SUPABASE_URL || !process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
+    console.error('Missing Supabase environment variables')
+    return NextResponse.next({ request })
+  }
+
   let supabaseResponse = NextResponse.next({
     request,
   })
 
   const supabase = createServerClient(
-    process.env.NEXT_PUBLIC_SUPABASE_URL!,
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
+    process.env.NEXT_PUBLIC_SUPABASE_URL,
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
     {
       cookies: {
         getAll() {
@@ -28,9 +34,13 @@ export async function middleware(request: NextRequest) {
   )
 
   // Verificar autenticación
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+  let user = null
+  try {
+    const { data } = await supabase.auth.getUser()
+    user = data.user
+  } catch (error) {
+    console.error('Error getting user:', error)
+  }
 
   // Rutas protegidas que requieren autenticación
   const protectedRoutes = ['/dashboard', '/settings', '/post/create', '/following']
