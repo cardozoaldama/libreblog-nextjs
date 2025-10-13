@@ -100,6 +100,7 @@ export default function PostsList({ posts, currentUser }: PostsListProps) {
                       fill
                       className="object-cover"
                       sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                      unoptimized
                     />
                   </div>
                 </Link>
@@ -110,12 +111,19 @@ export default function PostsList({ posts, currentUser }: PostsListProps) {
                 {/* Author Info */}
                 <div className="flex items-center gap-2 mb-3">
                   <div className="relative w-8 h-8 rounded-full overflow-hidden bg-gradient-to-br from-blue-500 to-purple-500">
-                    <Image
-                      src={authorInfo.avatar}
-                      alt={authorInfo.name}
-                      fill
-                      className="object-cover"
-                    />
+                    {authorInfo.avatar ? (
+                      <Image
+                        src={authorInfo.avatar}
+                        alt={authorInfo.name}
+                        fill
+                        className="object-cover"
+                        unoptimized
+                      />
+                    ) : (
+                      <div className="w-full h-full flex items-center justify-center text-white text-sm font-bold">
+                        {authorInfo.name.charAt(0).toUpperCase()}
+                      </div>
+                    )}
                   </div>
                   <span className="text-sm font-medium text-gray-700">{authorInfo.name}</span>
                 </div>

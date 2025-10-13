@@ -295,6 +295,7 @@ export default function ExplorePage() {
                             fill
                             sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
                             className="object-cover rounded-t-xl"
+                            unoptimized
                           />
                         </div>
                       )}
@@ -327,6 +328,7 @@ export default function ExplorePage() {
                             width={32}
                             height={32}
                             className="rounded-full"
+                            unoptimized
                           />
                           <div className="flex-1 min-w-0">
                             <p className="text-sm font-medium text-gray-900 truncate">
