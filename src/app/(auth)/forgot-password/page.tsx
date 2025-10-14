@@ -25,6 +25,14 @@ export default function ForgotPasswordPage() {
       })
 
       if (error) {
+        // Mostrar mensaje de éxito incluso si hay rate limiting
+        if (error.message.includes('rate') || error.message.includes('limit')) {
+          setMessage({
+            type: 'error',
+            text: 'Has solicitado demasiados emails. Espera unos minutos e inténtalo de nuevo.'
+          })
+          return
+        }
         throw error
       }
 
@@ -34,9 +42,12 @@ export default function ForgotPasswordPage() {
         text: 'Se ha enviado un enlace de recuperación a tu email'
       })
     } catch (error: unknown) {
+      const errorMessage = (error as Error).message || 'Error al enviar el email de recuperación'
       setMessage({
         type: 'error',
-        text: (error as Error).message || 'Error al enviar el email de recuperación'
+        text: errorMessage.includes('rate') || errorMessage.includes('limit')
+          ? 'Has solicitado demasiados emails. Espera unos minutos.'
+          : errorMessage
       })
     } finally {
       setIsLoading(false)
@@ -73,6 +84,9 @@ export default function ForgotPasswordPage() {
           <h1 className="text-2xl font-bold text-gray-900">Recuperar Contraseña</h1>
           <p className="text-gray-600 mt-2">
             Ingresa tu email para recibir un enlace de recuperación
+          </p>
+          <p className="text-xs text-gray-500 mt-1">
+            Si no recibes el email, revisa tu carpeta de spam
           </p>
         </CardHeader>
         

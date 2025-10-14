@@ -16,6 +16,7 @@ export default function ResetPasswordPage() {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
+  const [userEmail, setUserEmail] = useState<string | null>(null)
   const [passwordCheck, setPasswordCheck] = useState<{
     isCompromised: boolean
     count: number
@@ -25,10 +26,10 @@ export default function ResetPasswordPage() {
   useEffect(() => {
     const checkSession = async () => {
       const supabase = createClient()
-      const { data: { session } } = await supabase.auth.getSession()
+      const { data: { user } } = await supabase.auth.getUser()
       
-      if (!session) {
-        router.push('/login')
+      if (user?.email) {
+        setUserEmail(user.email)
       }
     }
     
@@ -150,6 +151,12 @@ export default function ResetPasswordPage() {
       <Card variant="elevated" className="w-full max-w-md">
         <CardHeader className="text-center pb-4">
           <h1 className="text-2xl font-bold text-gray-900">Nueva Contraseña</h1>
+          {userEmail && (
+            <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
+              <p className="text-sm text-blue-900 font-medium">Cuenta:</p>
+              <p className="text-base text-blue-800 font-mono">{userEmail}</p>
+            </div>
+          )}
           <p className="text-gray-600 mt-2">
             Crea una contraseña segura para tu cuenta
           </p>
