@@ -146,72 +146,138 @@ export default async function Home() {
                 <TrendingUpIcon className="w-5 h-5 text-orange-600" />
                 <span className="text-sm font-semibold text-orange-900">Más Populares</span>
               </div>
-              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-2">
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-2 flex items-center justify-center gap-3">
+                <Heart className="w-8 h-8 text-red-500 fill-current" />
                 Posts con Más Likes
               </h2>
               <p className="text-gray-600">Los posts más queridos por la comunidad</p>
             </div>
             
-            <div className="flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide">
-              {topPosts.map((post, index) => {
+            {/* Post #1 - Destacado */}
+            {topPosts[0] && (() => {
+              const post = topPosts[0]
+              const authorAvatarUrl = getAvatarUrl(post.author.email, post.author.avatarUrl, 40)
+              const excerpt = extractExcerpt(post.content, 120)
+              
+              return (
+                <Link href={`/post/${post.slug}`} className="block mb-8">
+                  <Card variant="hover" className="cursor-pointer group max-w-2xl mx-auto">
+                    <CardBody className="p-0">
+                      {post.imageUrl && (
+                        <div className="relative w-full h-64">
+                          <Image
+                            src={post.imageUrl}
+                            alt={post.title}
+                            fill
+                            sizes="672px"
+                            className="object-cover rounded-t-xl"
+                            unoptimized
+                          />
+                          <div className="absolute top-3 left-3 bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-4 py-2 rounded-full text-base font-bold flex items-center gap-2 shadow-lg">
+                            <span className="text-2xl">👑</span>
+                            <span>#1</span>
+                          </div>
+                        </div>
+                      )}
+                      <div className="p-6">
+                        {post.category && (
+                          <span className="inline-block px-3 py-1.5 rounded-full text-sm font-medium bg-blue-100 text-blue-800 mb-3">
+                            {post.category.icon} {post.category.name}
+                          </span>
+                        )}
+                        <h3 className="text-2xl font-bold text-gray-900 mb-3 group-hover:text-blue-600 transition-colors">
+                          {post.title}
+                        </h3>
+                        <p className="text-sm text-gray-600 mb-4 line-clamp-2">{excerpt}</p>
+                        <div className="flex items-center justify-between pt-4 border-t border-gray-200">
+                          <div className="flex items-center gap-3">
+                            <Image
+                              src={authorAvatarUrl}
+                              alt={post.author.displayName || post.author.email}
+                              width={40}
+                              height={40}
+                              className="rounded-full"
+                              unoptimized
+                            />
+                            <span className="text-sm font-medium text-gray-700">
+                              {post.author.displayName || post.author.email.split('@')[0]}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-2 text-red-500">
+                            <Heart className="w-6 h-6 fill-current" />
+                            <span className="text-xl font-bold">{post._count.likes}</span>
+                          </div>
+                        </div>
+                      </div>
+                    </CardBody>
+                  </Card>
+                </Link>
+              )
+            })()}
+
+            {/* Posts #2-5 - Scroll horizontal */}
+            {topPosts.length > 1 && (
+              <div className="flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide">
+                {topPosts.slice(1).map((post, index) => {
                 const authorAvatarUrl = getAvatarUrl(post.author.email, post.author.avatarUrl, 32)
                 const excerpt = extractExcerpt(post.content, 80)
                 
-                return (
-                  <Link key={post.id} href={`/post/${post.slug}`} className="flex-shrink-0 w-64 snap-start">
-                    <Card variant="hover" className="h-full cursor-pointer group">
-                      <CardBody className="p-0">
-                        {post.imageUrl && (
-                          <div className="relative w-full h-32">
-                            <Image
-                              src={post.imageUrl}
-                              alt={post.title}
-                              fill
-                              sizes="256px"
-                              className="object-cover rounded-t-xl"
-                              unoptimized
-                            />
-                            <div className="absolute top-2 left-2 bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-2 py-1 rounded-full text-xs font-bold flex items-center gap-1">
-                              #{index + 1}
-                            </div>
-                          </div>
-                        )}
-                        <div className="p-4">
-                          {post.category && (
-                            <span className="inline-block px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 mb-2">
-                              {post.category.icon} {post.category.name}
-                            </span>
-                          )}
-                          <h3 className="text-base font-bold text-gray-900 mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors">
-                            {post.title}
-                          </h3>
-                          <p className="text-xs text-gray-600 mb-3 line-clamp-2">{excerpt}</p>
-                          <div className="flex items-center justify-between pt-3 border-t border-gray-200">
-                            <div className="flex items-center gap-2">
+                  return (
+                    <Link key={post.id} href={`/post/${post.slug}`} className="flex-shrink-0 w-64 snap-start">
+                      <Card variant="hover" className="h-full cursor-pointer group">
+                        <CardBody className="p-0">
+                          {post.imageUrl && (
+                            <div className="relative w-full h-32">
                               <Image
-                                src={authorAvatarUrl}
-                                alt={post.author.displayName || post.author.email}
-                                width={24}
-                                height={24}
-                                className="rounded-full"
+                                src={post.imageUrl}
+                                alt={post.title}
+                                fill
+                                sizes="256px"
+                                className="object-cover rounded-t-xl"
                                 unoptimized
                               />
-                              <span className="text-xs font-medium text-gray-700 truncate max-w-[100px]">
-                                {post.author.displayName || post.author.email.split('@')[0]}
-                              </span>
+                              <div className="absolute top-2 left-2 bg-gradient-to-r from-gray-700 to-gray-900 text-white px-2 py-1 rounded-full text-xs font-bold">
+                                #{index + 2}
+                              </div>
                             </div>
-                            <div className="flex items-center gap-1 text-red-500">
-                              <Heart className="w-4 h-4 fill-current" />
-                              <span className="text-sm font-bold">{post._count.likes}</span>
+                          )}
+                          <div className="p-4">
+                            {post.category && (
+                              <span className="inline-block px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 mb-2">
+                                {post.category.icon} {post.category.name}
+                              </span>
+                            )}
+                            <h3 className="text-base font-bold text-gray-900 mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors">
+                              {post.title}
+                            </h3>
+                            <p className="text-xs text-gray-600 mb-3 line-clamp-2">{excerpt}</p>
+                            <div className="flex items-center justify-between pt-3 border-t border-gray-200">
+                              <div className="flex items-center gap-2">
+                                <Image
+                                  src={authorAvatarUrl}
+                                  alt={post.author.displayName || post.author.email}
+                                  width={24}
+                                  height={24}
+                                  className="rounded-full"
+                                  unoptimized
+                                />
+                                <span className="text-xs font-medium text-gray-700 truncate max-w-[100px]">
+                                  {post.author.displayName || post.author.email.split('@')[0]}
+                                </span>
+                              </div>
+                              <div className="flex items-center gap-1 text-red-500">
+                                <Heart className="w-4 h-4 fill-current" />
+                                <span className="text-sm font-bold">{post._count.likes}</span>
+                              </div>
                             </div>
                           </div>
-                        </div>
-                      </CardBody>
-                    </Card>
-                  </Link>
-                )
-              })}
-            </div>
+                        </CardBody>
+                      </Card>
+                    </Link>
+                  )
+                })}
+              </div>
+            )}
           </div>
         </section>
       )}

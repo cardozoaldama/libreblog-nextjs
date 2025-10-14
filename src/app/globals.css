@@ -272,7 +272,8 @@
 }
 
 /* Deshabilitar selección de texto por defecto */
-* {
+body,
+body * {
   user-select: none;
   -webkit-user-select: none;
   -moz-user-select: none;
@@ -284,10 +285,10 @@ input,
 textarea,
 [contenteditable="true"],
 .selectable {
-  user-select: text;
-  -webkit-user-select: text;
-  -moz-user-select: text;
-  -ms-user-select: text;
+  user-select: text !important;
+  -webkit-user-select: text !important;
+  -moz-user-select: text !important;
+  -ms-user-select: text !important;
 }
 
 /* Focus visible mejorado */
