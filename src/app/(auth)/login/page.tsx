@@ -1,17 +1,29 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
+import { useSearchParams } from 'next/navigation'
 import Button from '@/components/ui/Button'
 import { Card, CardContent } from '@/components/ui/Card'
 import { createClient } from '@/lib/supabase/client'
-import { LogIn, Mail, Lock, AlertCircle } from 'lucide-react'
+import { LogIn, Mail, Lock, AlertCircle, CheckCircle } from 'lucide-react'
 
 export default function LoginPage() {
+  const searchParams = useSearchParams()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
+  const [success, setSuccess] = useState('')
   const [isLoading, setIsLoading] = useState(false)
+
+  useEffect(() => {
+    const message = searchParams.get('message')
+    if (message === 'confirmed') {
+      setSuccess('¡Email confirmado! Ya puedes iniciar sesión.')
+    } else if (message === 'password-updated') {
+      setSuccess('Contraseña actualizada exitosamente.')
+    }
+  }, [searchParams])
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -69,6 +81,14 @@ export default function LoginPage() {
         <Card variant="default">
           <CardContent className="p-6">
             <form onSubmit={handleLogin} className="space-y-5">
+              {/* Success Alert */}
+              {success && (
+                <div className="bg-green-50 border border-green-200 text-green-800 px-4 py-3 rounded-lg flex items-start gap-3">
+                  <CheckCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
+                  <p className="text-sm">{success}</p>
+                </div>
+              )}
+
               {/* Error Alert */}
               {error && (
                 <div className="bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg flex items-start gap-3">
