@@ -31,7 +31,7 @@ export default async function ProfilePage({
   const user = await prisma.user.findFirst({
     where: {
       OR: [
-        { displayName: username },
+        { username: username },
         { email: { startsWith: username } },
       ],
     },
@@ -136,7 +136,7 @@ export default async function ProfilePage({
                         {user.displayName || user.email.split('@')[0]}
                       </h1>
                       <p className="text-base sm:text-lg text-gray-600 font-medium animate-in slide-in-from-left duration-700 delay-100 break-all">
-                        @{user.email.split('@')[0]}
+                        @{user.username || user.email.split('@')[0]}
                       </p>
                     </div>
                     

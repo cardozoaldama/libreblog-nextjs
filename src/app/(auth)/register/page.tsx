@@ -14,6 +14,8 @@ export default function RegisterPage() {
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [displayName, setDisplayName] = useState('')
+  const [username, setUsername] = useState('')
+  const [usernameAvailable, setUsernameAvailable] = useState<boolean | null>(null)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
@@ -29,6 +31,18 @@ export default function RegisterPage() {
     setIsLoading(true)
 
     // Validaciones
+    if (!username || username.length < 3) {
+      setError('El username debe tener al menos 3 caracteres')
+      setIsLoading(false)
+      return
+    }
+
+    if (usernameAvailable === false) {
+      setError('Este username no está disponible')
+      setIsLoading(false)
+      return
+    }
+
     if (password.length < 8) {
       setError('La contraseña debe tener al menos 8 caracteres')
       setIsLoading(false)
@@ -63,7 +77,8 @@ export default function RegisterPage() {
         options: {
           emailRedirectTo: `${window.location.origin}/api/auth/callback`,
           data: {
-            display_name: displayName || email.split('@')[0],
+            username: username.toLowerCase(),
+            display_name: displayName || username,
           },
         },
       })
@@ -132,10 +147,68 @@ export default function RegisterPage() {
                 </div>
               )}
 
+              {/* Username Input */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Username *
+                </label>
+                <div className="relative">
+                  <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+                  <input
+                    type="text"
+                    value={username}
+                    onChange={async (e) => {
+                      const value = e.target.value.toLowerCase().replace(/[^a-z0-9_-]/g, '')
+                      setUsername(value)
+                      
+                      if (value.length >= 3) {
+                        try {
+                          const res = await fetch('/api/users/check-username', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ username: value })
+                          })
+                          const data = await res.json()
+                          setUsernameAvailable(data.available)
+                        } catch (error) {
+                          console.error('Error checking username:', error)
+                        }
+                      } else {
+                        setUsernameAvailable(null)
+                      }
+                    }}
+                    placeholder="tu_username"
+                    pattern="[a-z0-9_-]+"
+                    minLength={3}
+                    maxLength={30}
+                    required
+                    className="w-full pl-10 pr-4 py-2.5 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
+                  />
+                </div>
+                {username.length >= 3 && usernameAvailable !== null && (
+                  <div className="mt-2">
+                    {usernameAvailable ? (
+                      <div className="flex items-center gap-2 text-green-600 text-sm">
+                        <CheckCircle className="w-4 h-4" />
+                        <span>Username disponible</span>
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-2 text-red-600 text-sm">
+                        <AlertCircle className="w-4 h-4" />
+                        <span>Username no disponible</span>
+                      </div>
+                    )}
+                  </div>
+                )}
+                <p className="text-xs text-gray-500 mt-1">
+                  Tu perfil será: libreblog.com/@{username || 'username'}
+                </p>
+              </div>
+
               {/* Display Name Input */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Nombre de Usuario (opcional)
+                  Nombre para Mostrar (opcional)
                 </label>
                 <div className="relative">
                   <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />

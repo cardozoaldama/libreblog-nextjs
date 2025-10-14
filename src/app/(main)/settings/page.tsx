@@ -9,11 +9,18 @@ import { Card, CardBody, CardHeader } from '@/components/ui/Card'
 import { User, Trash2, Save, AlertTriangle, Globe, Facebook, Instagram, Linkedin, Github, ChevronDown, ChevronUp, Users, UserPlus } from 'lucide-react'
 import { getGravatarUrl } from '@/lib/utils'
 import { createClient } from '@/lib/supabase/client'
+import UsernameSection from '@/components/settings/UsernameSection'
+import PublicEmailSection from '@/components/settings/PublicEmailSection'
+import TwoFactorSection from '@/components/settings/TwoFactorSection'
+import ProfileSection from '@/components/settings/ProfileSection'
 
 // Interfaz para los datos del usuario
 interface UserData {
   id: string
   email: string
+  username: string
+  publicEmail: string | null
+  usernameLastChanged: Date | null
   displayName: string | null
   bio: string | null
   avatarUrl: string | null
@@ -54,6 +61,7 @@ export default function SettingsPage() {
   const [following, setFollowing] = useState<FollowUser[]>([])
   const [loadingFollowers, setLoadingFollowers] = useState(false)
   const [loadingFollowing, setLoadingFollowing] = useState(false)
+  const [is2FAEnabled, setIs2FAEnabled] = useState(false)
 
   const [isSaving, setIsSaving] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
@@ -98,6 +106,10 @@ export default function SettingsPage() {
         setXUrl(userData.xUrl || '')
         setTiktokUrl(userData.tiktokUrl || '')
         setLinkedinUrl(userData.linkedinUrl || '')
+        
+        // Verificar estado de 2FA
+        const factors = await supabase.auth.mfa.listFactors()
+        setIs2FAEnabled(factors.data?.totp?.length > 0)
       } catch (error) {
         console.error('Error cargando usuario:', error)
         setMessage({ 
@@ -150,7 +162,7 @@ export default function SettingsPage() {
       
       // Recargar página para actualizar navbar y luego redirigir
       setTimeout(() => {
-        window.location.href = `/profile/${user.email.split('@')[0]}`
+        window.location.href = `/profile/${user.username}`
       }, 1000)
     } catch (error) {
       console.error('Error guardando perfil:', error)
@@ -238,6 +250,63 @@ export default function SettingsPage() {
             {message.text}
           </div>
         )}
+
+        {/* Username Section */}
+        <div className="mb-6">
+          <UsernameSection
+            currentUsername={user.username}
+            usernameLastChanged={user.usernameLastChanged}
+            onUpdate={async (username) => {
+              try {
+                const res = await fetch(`/api/users/${user.id}`, {
+                  method: 'PUT',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ username })
+                })
+                if (!res.ok) throw new Error('Error al actualizar username')
+                setMessage({ type: 'success', text: 'Username actualizado' })
+                setTimeout(() => window.location.reload(), 1000)
+              } catch (error) {
+                setMessage({ type: 'error', text: 'Error al actualizar username' })
+              }
+            }}
+          />
+        </div>
+
+        {/* Public Email Section */}
+        <div className="mb-6">
+          <PublicEmailSection
+            currentPublicEmail={user.publicEmail}
+            onUpdate={async (publicEmail) => {
+              try {
+                const res = await fetch(`/api/users/${user.id}`, {
+                  method: 'PUT',
+                  headers: { 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ publicEmail })
+                })
+                if (!res.ok) throw new Error('Error al actualizar email público')
+                setMessage({ type: 'success', text: 'Email público actualizado' })
+                setTimeout(() => window.location.reload(), 1000)
+              } catch (error) {
+                setMessage({ type: 'error', text: 'Error al actualizar email público' })
+              }
+            }}
+          />
+        </div>
+
+        {/* Two Factor Section */}
+        <div className="mb-6">
+          <TwoFactorSection
+            isEnabled={is2FAEnabled}
+            onStatusChange={() => {
+              setIs2FAEnabled(!is2FAEnabled)
+              setMessage({ 
+                type: 'success', 
+                text: is2FAEnabled ? '2FA desactivado' : '2FA activado correctamente' 
+              })
+            }}
+          />
+        </div>
 
         {/* Profile Settings */}
         <Card variant="elevated" className="mb-6">
@@ -603,7 +672,7 @@ export default function SettingsPage() {
               )}
 
               <div className="text-center pt-4">
-                <Link href={`/profile/${user?.email.split('@')[0]}`}>
+                <Link href={`/profile/${user?.username}`}>
                   <Button variant="outline">
                     Ver mi perfil público
                   </Button>

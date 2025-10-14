@@ -9,24 +9,28 @@ datasource db {
 }
 
 model User {
-  id           String   @id @default(uuid()) @db.Uuid
-  email        String   @unique
-  displayName  String?  @map("display_name")
-  bio          String?
-  createdAt    DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
-  updatedAt    DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
-  avatarUrl    String?  @map("avatar_url")
-  websiteUrl   String?  @map("website_url")
-  facebookUrl  String?  @map("facebook_url")
-  instagramUrl String?  @map("instagram_url")
-  xUrl         String?  @map("x_url")
-  tiktokUrl    String?  @map("tiktok_url")
-  linkedinUrl  String?  @map("linkedin_url")
-  githubUrl    String?  @map("github_url")
-  following    Follow[] @relation("UserFollowing")
-  followers    Follow[] @relation("UserFollowers")
-  posts        Post[]
+  id                  String    @id @default(uuid()) @db.Uuid
+  email               String    @unique
+  displayName         String?   @map("display_name")
+  bio                 String?
+  createdAt           DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt           DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+  avatarUrl           String?   @map("avatar_url")
+  websiteUrl          String?   @map("website_url")
+  facebookUrl         String?   @map("facebook_url")
+  instagramUrl        String?   @map("instagram_url")
+  xUrl                String?   @map("x_url")
+  tiktokUrl           String?   @map("tiktok_url")
+  linkedinUrl         String?   @map("linkedin_url")
+  githubUrl           String?   @map("github_url")
+  username            String    @unique(map: "users_username_unique") @db.VarChar(30)
+  publicEmail         String?   @map("public_email") @db.VarChar(255)
+  usernameLastChanged DateTime? @map("username_last_changed") @db.Timestamptz(6)
+  following           Follow[]  @relation("UserFollowing")
+  followers           Follow[]  @relation("UserFollowers")
+  posts               Post[]
 
+  @@index([username], map: "idx_users_username")
   @@map("users")
 }
 

@@ -16,7 +16,7 @@ export async function GET(
     const supabase = await createClient()
     const { data: user, error } = await supabase
       .from('users')
-      .select('id, email, display_name, bio, avatar_url, website_url, github_url, facebook_url, instagram_url, x_url, tiktok_url, linkedin_url, created_at')
+      .select('id, email, username, public_email, username_last_changed, display_name, bio, avatar_url, website_url, github_url, facebook_url, instagram_url, x_url, tiktok_url, linkedin_url, created_at')
       .eq('id', id)
       .single()
 
@@ -27,6 +27,9 @@ export async function GET(
     return NextResponse.json({
       id: user.id,
       email: user.email,
+      username: user.username,
+      publicEmail: user.public_email,
+      usernameLastChanged: user.username_last_changed,
       displayName: user.display_name,
       bio: user.bio,
       avatarUrl: user.avatar_url,
@@ -72,22 +75,57 @@ export async function PUT(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
     }
 
-    const { displayName, bio, avatarUrl, websiteUrl, githubUrl, facebookUrl, instagramUrl, xUrl, tiktokUrl, linkedinUrl } = await request.json()
+    const { username, publicEmail, usernameLastChanged, displayName, bio, avatarUrl, websiteUrl, githubUrl, facebookUrl, instagramUrl, xUrl, tiktokUrl, linkedinUrl } = await request.json()
+
+    // Validar username si cambió
+    if (username) {
+      const { data: existingUser } = await supabase
+        .from('users')
+        .select('username')
+        .eq('id', id)
+        .single()
+
+      if (existingUser && username.toLowerCase() !== existingUser.username) {
+        const { data: usernameExists } = await supabase
+          .from('users')
+          .select('id')
+          .eq('username', username.toLowerCase())
+          .single()
+
+        if (usernameExists) {
+          return NextResponse.json(
+            { error: 'Username no disponible' },
+            { status: 400 }
+          )
+        }
+      }
+    }
+
+    const updateData: any = {
+      display_name: displayName || null,
+      bio: bio || null,
+      avatar_url: avatarUrl || null,
+      website_url: websiteUrl || null,
+      github_url: githubUrl || null,
+      facebook_url: facebookUrl || null,
+      instagram_url: instagramUrl || null,
+      x_url: xUrl || null,
+      tiktok_url: tiktokUrl || null,
+      linkedin_url: linkedinUrl || null,
+    }
+
+    if (username !== undefined) {
+      updateData.username = username.toLowerCase()
+      updateData.username_last_changed = new Date().toISOString()
+    }
+
+    if (publicEmail !== undefined) {
+      updateData.public_email = publicEmail || null
+    }
 
     const { data: user, error } = await supabase
       .from('users')
-      .update({
-        display_name: displayName || null,
-        bio: bio || null,
-        avatar_url: avatarUrl || null,
-        website_url: websiteUrl || null,
-        github_url: githubUrl || null,
-        facebook_url: facebookUrl || null,
-        instagram_url: instagramUrl || null,
-        x_url: xUrl || null,
-        tiktok_url: tiktokUrl || null,
-        linkedin_url: linkedinUrl || null,
-      })
+      .update(updateData)
       .eq('id', id)
       .select()
       .single()

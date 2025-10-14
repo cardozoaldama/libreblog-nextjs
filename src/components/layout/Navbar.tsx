@@ -14,6 +14,7 @@ interface NavbarProps {
   user?: {
     id: string
     email: string
+    username?: string
     displayName?: string | null
     avatarUrl?: string | null
   } | null
@@ -150,7 +151,7 @@ export default function Navbar({ user }: NavbarProps) {
                     />
                     <div className="absolute right-0 mt-3 w-52 bg-white/95 backdrop-blur-xl rounded-2xl shadow-2xl border border-gray-200/50 py-2 z-20 animate-in slide-in-from-top-2 duration-200">
                       <Link
-                        href={`/profile/${user.email.split('@')[0]}`}
+                        href={`/profile/${user.username || user.email.split('@')[0]}`}
                         className="flex items-center space-x-3 px-4 py-3 text-sm text-gray-700 hover:bg-blue-50/80 hover:text-blue-600 rounded-xl mx-2 transition-all duration-200 group"
                         onClick={() => setUserMenuOpen(false)}
                       >
@@ -266,7 +267,7 @@ export default function Navbar({ user }: NavbarProps) {
                   
                   <div className="px-2 py-2 space-y-1">
                     <Link
-                      href={`/profile/${user.email.split('@')[0]}`}
+                      href={`/profile/${user.username || user.email.split('@')[0]}`}
                       onClick={() => setMobileMenuOpen(false)}
                       className="flex items-center space-x-3 px-4 py-3 text-sm text-gray-700 hover:bg-blue-50/80 hover:text-blue-600 rounded-xl transition-all duration-200 group"
                     >

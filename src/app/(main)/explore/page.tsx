@@ -18,6 +18,7 @@ interface Category {
 interface Author {
   id: string
   email: string
+  username: string
   displayName: string | null
   avatarUrl: string | null
 }
@@ -258,7 +259,7 @@ export default function ExplorePage() {
                       {user.displayName || user.email.split('@')[0]}
                     </h3>
                     <p className="text-sm text-gray-500 mb-4">{user.email}</p>
-                    <Link href={`/profile/${user.email.split('@')[0]}`}>
+                    <Link href={`/profile/${user.username || user.email.split('@')[0]}`}>
                       <Button variant="outline" size="sm" className="w-full">
                         Ver Perfil
                       </Button>

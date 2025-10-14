@@ -21,11 +21,15 @@ export async function GET(request: Request) {
       // Si no existe, crearlo
       if (!existingUser) {
         try {
+          const username = data.user.user_metadata?.username || data.user.email!.split('@')[0].toLowerCase().replace(/[^a-z0-9_-]/g, '')
+          
           await prisma.user.create({
             data: {
               id: data.user.id,
               email: data.user.email!,
-              displayName: data.user.user_metadata?.display_name || data.user.email!.split('@')[0],
+              username: username,
+              displayName: data.user.user_metadata?.display_name || username,
+              usernameLastChanged: new Date(),
             },
           })
         } catch (err) {

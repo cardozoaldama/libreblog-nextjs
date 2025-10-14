@@ -113,7 +113,7 @@ export default async function ViewPostPage({ params }: PageProps) {
             {/* Meta Info */}
             <div className="flex items-center justify-between mb-8 pb-8 border-b border-gray-200">
               <Link
-                href={`/profile/${post.author.email.split('@')[0]}`}
+                href={`/profile/${post.author.username || post.author.email.split('@')[0]}`}
                 className="flex items-center gap-3 hover:opacity-80 transition-opacity"
               >
                 <Image
@@ -204,7 +204,7 @@ export default async function ViewPostPage({ params }: PageProps) {
                   <p className="text-gray-600 text-sm mt-1">{post.author.bio}</p>
                 )}
               </div>
-              <Link href={`/profile/${post.author.email.split('@')[0]}`}>
+              <Link href={`/profile/${post.author.username || post.author.email.split('@')[0]}`}>
                 <Button variant="outline" size="sm">
                   Ver Perfil
                 </Button>
