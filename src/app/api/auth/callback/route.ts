@@ -8,12 +8,18 @@ export async function GET(request: Request) {
 
   if (code) {
     const supabase = await createClient()
+    const type = requestUrl.searchParams.get('type')
     
     // Intercambiar código por sesión
     const { data, error } = await supabase.auth.exchangeCodeForSession(code)
     
     if (!error && data.user) {
-      // Verificar si el usuario existe en BD local
+      // Si es recovery (reset password), redirigir a reset-password
+      if (type === 'recovery') {
+        return NextResponse.redirect(new URL('/reset-password', requestUrl.origin))
+      }
+
+      // Si es confirmación de email, verificar/crear usuario
       const existingUser = await prisma.user.findUnique({
         where: { id: data.user.id },
       })
