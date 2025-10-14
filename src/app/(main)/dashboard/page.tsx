@@ -35,10 +35,12 @@ export default async function DashboardPage() {
 
   if (!user) {
     // Si el usuario no existe en la BD, crearlo
+    const baseUsername = authUser.email!.split('@')[0].toLowerCase().replace(/[^a-z0-9_-]/g, '')
     await prisma.user.create({
       data: {
         id: authUser.id,
         email: authUser.email!,
+        username: baseUsername,
         displayName: authUser.user_metadata?.display_name || authUser.email!.split('@')[0],
       },
     })
