@@ -26,10 +26,28 @@ export default function ResetPasswordPage() {
   useEffect(() => {
     const checkSession = async () => {
       const supabase = createClient()
+      
+      // Obtener código de la URL si existe
+      const hashParams = new URLSearchParams(window.location.hash.substring(1))
+      const code = hashParams.get('access_token') ? null : new URLSearchParams(window.location.search).get('code')
+      
+      if (code) {
+        // Intercambiar código por sesión
+        const { error } = await supabase.auth.exchangeCodeForSession(code)
+        if (error) {
+          console.error('Error exchanging code:', error)
+          setMessage({ type: 'error', text: 'Enlace de recuperación inválido o expirado' })
+          return
+        }
+      }
+      
+      // Obtener usuario de la sesión
       const { data: { user } } = await supabase.auth.getUser()
       
       if (user?.email) {
         setUserEmail(user.email)
+      } else {
+        setMessage({ type: 'error', text: 'No se pudo obtener la sesión. Intenta solicitar un nuevo enlace.' })
       }
     }
     
