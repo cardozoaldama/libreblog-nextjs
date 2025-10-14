@@ -274,15 +274,17 @@ export default async function Home() {
                               {/* Imagen */}
                               <div className="relative w-full h-40 bg-gradient-to-br from-gray-100 to-gray-200 flex-shrink-0">
                                 {post.imageUrl ? (
-                                  <Image
-                                    src={post.imageUrl}
-                                    alt={post.title}
-                                    fill
-                                    sizes="288px"
-                                    className="object-cover"
-                                    unoptimized
-                                  />
-                                  <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
+                                  <>
+                                    <Image
+                                      src={post.imageUrl}
+                                      alt={post.title}
+                                      fill
+                                      sizes="288px"
+                                      className="object-cover"
+                                      unoptimized
+                                    />
+                                    <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
+                                  </>
                                 ) : (
                                   <div className="w-full h-full flex items-center justify-center text-gray-400">
                                     <span className="text-4xl">{post.category?.icon || '📝'}</span>
