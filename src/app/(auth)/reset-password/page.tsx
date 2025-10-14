@@ -27,27 +27,39 @@ export default function ResetPasswordPage() {
     const checkSession = async () => {
       const supabase = createClient()
       
-      // Obtener código de la URL si existe
-      const hashParams = new URLSearchParams(window.location.hash.substring(1))
-      const code = hashParams.get('access_token') ? null : new URLSearchParams(window.location.search).get('code')
+      // Primero verificar si ya hay una sesión activa
+      const { data: { session } } = await supabase.auth.getSession()
       
-      if (code) {
-        // Intercambiar código por sesión
-        const { error } = await supabase.auth.exchangeCodeForSession(code)
-        if (error) {
-          console.error('Error exchanging code:', error)
-          setMessage({ type: 'error', text: 'Enlace de recuperación inválido o expirado' })
-          return
+      if (!session) {
+        // Si no hay sesión, buscar código en la URL
+        const hashParams = new URLSearchParams(window.location.hash.substring(1))
+        const queryParams = new URLSearchParams(window.location.search)
+        const code = hashParams.get('code') || queryParams.get('code')
+        
+        // Solo intentar intercambiar si hay un código
+        if (code) {
+          const { error } = await supabase.auth.exchangeCodeForSession(code)
+          if (error) {
+            console.error('Error exchanging code:', error)
+            setMessage({ type: 'error', text: 'Enlace de recuperación inválido o expirado' })
+            return
+          }
+          
+          // Obtener usuario después del intercambio exitoso
+          const { data: { user } } = await supabase.auth.getUser()
+          if (user?.email) {
+            setUserEmail(user.email)
+          }
+        } else {
+          // No hay código ni sesión
+          setMessage({ type: 'error', text: 'Enlace de recuperación no válido' })
         }
-      }
-      
-      // Obtener usuario de la sesión
-      const { data: { user } } = await supabase.auth.getUser()
-      
-      if (user?.email) {
-        setUserEmail(user.email)
       } else {
-        setMessage({ type: 'error', text: 'No se pudo obtener la sesión. Intenta solicitar un nuevo enlace.' })
+        // Ya hay sesión activa, obtener usuario
+        const { data: { user } } = await supabase.auth.getUser()
+        if (user?.email) {
+          setUserEmail(user.email)
+        }
       }
     }
     
@@ -127,6 +139,11 @@ export default function ResetPasswordPage() {
       }
 
       setIsSuccess(true)
+      
+      // Redirigir al login después de 2 segundos
+      setTimeout(() => {
+        router.push('/login')
+      }, 2000)
     } catch (error: unknown) {
       setMessage({
         type: 'error',
@@ -147,14 +164,14 @@ export default function ResetPasswordPage() {
               Contraseña Actualizada
             </h1>
             <p className="text-gray-600 mb-6">
-              Tu contraseña ha sido cambiada exitosamente.
+              Tu contraseña ha sido cambiada exitosamente. Inicia sesión con tu nueva contraseña.
             </p>
             <Button 
               variant="primary" 
               className="w-full"
-              onClick={() => router.push('/dashboard')}
+              onClick={() => router.push('/login')}
             >
-              Ir al Dashboard
+              Ir al Login
             </Button>
           </CardBody>
         </Card>
