@@ -174,10 +174,12 @@ export default async function ProfilePage({
                       </div>
                     </div>
                     
-                    <div className="flex items-center justify-center sm:justify-start gap-2 text-gray-600 animate-in slide-in-from-left duration-700 delay-300">
-                      <Mail className="w-4 h-4 flex-shrink-0" />
-                      <span className="text-sm break-all">{user.email}</span>
-                    </div>
+                    {user.publicEmail && (
+                      <div className="flex items-center justify-center sm:justify-start gap-2 text-gray-600 animate-in slide-in-from-left duration-700 delay-300">
+                        <Mail className="w-4 h-4 flex-shrink-0" />
+                        <span className="text-sm break-all">{user.publicEmail}</span>
+                      </div>
+                    )}
                   </div>
 
                   <div className="animate-in slide-in-from-right duration-700 delay-400 w-full sm:w-auto">

@@ -252,48 +252,25 @@ export default function SettingsPage() {
           </div>
         )}
 
-        {/* Username Section */}
-        <div className="mb-6">
-          <UsernameSection
-            currentUsername={user.username}
-            usernameLastChanged={user.usernameLastChanged}
-            onUpdate={async (username) => {
-              try {
-                const res = await fetch(`/api/users/${user.id}`, {
-                  method: 'PUT',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({ username })
-                })
-                if (!res.ok) throw new Error('Error al actualizar username')
-                setMessage({ type: 'success', text: 'Username actualizado' })
-                setTimeout(() => window.location.reload(), 1000)
-              } catch (error) {
-                setMessage({ type: 'error', text: 'Error al actualizar username' })
-              }
-            }}
-          />
-        </div>
-
-        {/* Public Email Section */}
-        <div className="mb-6">
-          <PublicEmailSection
-            currentPublicEmail={user.publicEmail}
-            onUpdate={async (publicEmail) => {
-              try {
-                const res = await fetch(`/api/users/${user.id}`, {
-                  method: 'PUT',
-                  headers: { 'Content-Type': 'application/json' },
-                  body: JSON.stringify({ publicEmail })
-                })
-                if (!res.ok) throw new Error('Error al actualizar email público')
-                setMessage({ type: 'success', text: 'Email público actualizado' })
-                setTimeout(() => window.location.reload(), 1000)
-              } catch (error) {
-                setMessage({ type: 'error', text: 'Error al actualizar email público' })
-              }
-            }}
-          />
-        </div>
+        {/* Quick Actions */}
+        <Card variant="elevated" className="mb-6">
+          <CardBody className="p-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="font-semibold text-gray-900">Editar Perfil Público</h3>
+                <p className="text-sm text-gray-600 mt-1">
+                  Personaliza tu nombre, username, bio y redes sociales
+                </p>
+              </div>
+              <Link href="/edit-profile">
+                <Button variant="primary">
+                  <User className="w-4 h-4 mr-2" />
+                  Editar Perfil
+                </Button>
+              </Link>
+            </div>
+          </CardBody>
+        </Card>
 
         {/* Two Factor Section */}
         <div className="mb-6">
@@ -309,206 +286,48 @@ export default function SettingsPage() {
           />
         </div>
 
-        {/* Profile Settings */}
+        {/* Account Info */}
         <Card variant="elevated" className="mb-6">
           <CardHeader>
             <div className="flex items-center gap-3">
               <User className="w-6 h-6 text-blue-600" />
-              <h2 className="text-xl font-bold text-gray-900">Perfil</h2>
+              <h2 className="text-xl font-bold text-gray-900">Información de Cuenta</h2>
             </div>
           </CardHeader>
           <CardBody>
-            <form onSubmit={handleSaveProfile} className="space-y-6">
-              {/* Avatar */}
-              <div className="flex items-center gap-6">
+            <div className="space-y-4">
+              <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg">
                 <Image
                   src={isValidUrl(avatarUrl) ? avatarUrl : gravatarUrl}
-                  alt={`Foto de perfil de ${user.displayName || user.email || 'Usuario'}`}
-                  width={80}
-                  height={80}
-                  className="rounded-full border-4 border-gray-100"
-                  priority
+                  alt="Avatar"
+                  width={64}
+                  height={64}
+                  className="rounded-full border-2 border-gray-200"
                   unoptimized
                 />
-                <div>
-                  <h3 className="font-semibold text-gray-900">{user.email}</h3>
-                  <p className="text-sm text-gray-500 mt-1">
-                    {avatarUrl ? 'Foto personalizada' : 'Foto de Gravatar'}
-                  </p>
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-gray-700">Username</p>
+                  <p className="text-lg font-semibold text-gray-900">@{user.username}</p>
                 </div>
               </div>
 
-              {/* Avatar URL */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  URL de Foto de Perfil (opcional)
-                </label>
-                <input
-                  type="url"
-                  value={avatarUrl}
-                  onChange={(e) => setAvatarUrl(e.target.value)}
-                  placeholder="https://ejemplo.com/mi-foto.jpg o .gif"
-                  className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
-                <p className="text-xs text-gray-500 mt-1">
-                  Soporta JPG, PNG, GIF y otros formatos. Deja vacío para usar Gravatar
+              <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                <p className="text-sm font-medium text-blue-900 mb-1">Email de la cuenta</p>
+                <p className="text-base text-blue-800 font-mono">{user.email}</p>
+                <p className="text-xs text-blue-600 mt-2">
+                  Este es tu email de inicio de sesión. No se muestra públicamente.
                 </p>
               </div>
 
-              {/* Display Name */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Nombre de Usuario
-                </label>
-                <input
-                  type="text"
-                  value={displayName}
-                  onChange={(e) => setDisplayName(e.target.value)}
-                  placeholder="Tu nombre"
-                  className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                />
+              <div className="text-center pt-2">
+                <Link href="/edit-profile">
+                  <Button variant="outline">
+                    <User className="w-4 h-4 mr-2" />
+                    Editar Perfil Público
+                  </Button>
+                </Link>
               </div>
-
-              {/* Bio */}
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Biografía (soporta Markdown)
-                </label>
-                <textarea
-                  value={bio}
-                  onChange={(e) => setBio(e.target.value)}
-                  placeholder="Cuéntanos sobre ti... Puedes usar **negrita**, *cursiva*, [enlaces](url)"
-                  rows={4}
-                  maxLength={500}
-                  className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono text-sm"
-                />
-                <p className="text-xs text-gray-500 mt-1">
-                  {bio.length}/500 caracteres • Markdown soportado
-                </p>
-              </div>
-
-              {/* Social Links */}
-              <div className="border-2 border-gray-200 rounded-lg">
-                <button
-                  type="button"
-                  onClick={() => setShowSocialLinks(!showSocialLinks)}
-                  className="w-full flex items-center justify-between p-4 hover:bg-gray-50 transition-colors"
-                >
-                  <h3 className="text-sm font-semibold text-gray-900">Redes Sociales (opcional)</h3>
-                  {showSocialLinks ? <ChevronUp className="w-5 h-5" /> : <ChevronDown className="w-5 h-5" />}
-                </button>
-                
-                {showSocialLinks && (
-                  <div className="p-4 pt-0 space-y-4">
-                    <div>
-                      <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
-                        <Globe className="w-4 h-4" /> Sitio Web
-                      </label>
-                      <input
-                        type="url"
-                        value={websiteUrl}
-                        onChange={(e) => setWebsiteUrl(e.target.value)}
-                        placeholder="https://tusitio.com"
-                        className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
-                        <Github className="w-4 h-4" /> GitHub
-                      </label>
-                      <input
-                        type="url"
-                        value={githubUrl}
-                        onChange={(e) => setGithubUrl(e.target.value)}
-                        placeholder="https://github.com/tuperfil"
-                        className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
-                        <Facebook className="w-4 h-4" /> Facebook
-                      </label>
-                      <input
-                        type="url"
-                        value={facebookUrl}
-                        onChange={(e) => setFacebookUrl(e.target.value)}
-                        placeholder="https://facebook.com/tuperfil"
-                        className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
-                        <Instagram className="w-4 h-4" /> Instagram
-                      </label>
-                      <input
-                        type="url"
-                        value={instagramUrl}
-                        onChange={(e) => setInstagramUrl(e.target.value)}
-                        placeholder="https://instagram.com/tuperfil"
-                        className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
-                        <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
-                          <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
-                        </svg> X (Twitter)
-                      </label>
-                      <input
-                        type="url"
-                        value={xUrl}
-                        onChange={(e) => setXUrl(e.target.value)}
-                        placeholder="https://x.com/tuperfil"
-                        className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
-                        <svg className="w-4 h-4" viewBox="0 0 24 24" fill="currentColor">
-                          <path d="M19.59 6.69a4.83 4.83 0 01-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 01-5.2 1.74 2.89 2.89 0 012.31-4.64 2.93 2.93 0 01.88.13V9.4a6.84 6.84 0 00-1-.05A6.33 6.33 0 005 20.1a6.34 6.34 0 0010.86-4.43v-7a8.16 8.16 0 004.77 1.52v-3.4a4.85 4.85 0 01-1-.1z"/>
-                        </svg> TikTok
-                      </label>
-                      <input
-                        type="url"
-                        value={tiktokUrl}
-                        onChange={(e) => setTiktokUrl(e.target.value)}
-                        placeholder="https://tiktok.com/@tuperfil"
-                        className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      />
-                    </div>
-
-                    <div>
-                      <label className="flex items-center gap-2 text-sm font-medium text-gray-700 mb-2">
-                        <Linkedin className="w-4 h-4" /> LinkedIn
-                      </label>
-                      <input
-                        type="url"
-                        value={linkedinUrl}
-                        onChange={(e) => setLinkedinUrl(e.target.value)}
-                        placeholder="https://linkedin.com/in/tuperfil"
-                        className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                      />
-                    </div>
-                  </div>
-                )}
-              </div>
-
-              {/* Save Button */}
-              <Button
-                type="submit"
-                variant="primary"
-                isLoading={isSaving}
-                className="w-full md:w-auto"
-              >
-                <Save className="w-4 h-4 mr-2" />
-                Guardar Cambios
-              </Button>
-            </form>
+            </div>
           </CardBody>
         </Card>
 

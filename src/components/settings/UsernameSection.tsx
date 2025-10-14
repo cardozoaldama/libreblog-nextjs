@@ -25,7 +25,7 @@ export default function UsernameSection({
       const daysSinceChange = Math.floor(
         (Date.now() - new Date(usernameLastChanged).getTime()) / (1000 * 60 * 60 * 24)
       );
-      const remaining = 30 - daysSinceChange;
+      const remaining = 14 - daysSinceChange;
       
       if (remaining > 0) {
         setCanChange(false);
@@ -103,7 +103,7 @@ export default function UsernameSection({
       
       {!canChange && (
         <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg text-sm text-yellow-800">
-          Podrás cambiar tu username en {daysUntilChange} días
+          ⏳ Podrás cambiar tu username en {daysUntilChange} días (se permite cada 14 días)
         </div>
       )}
 
