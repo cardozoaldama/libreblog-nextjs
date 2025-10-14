@@ -6,7 +6,8 @@ import type { Post as PostType, User as UserType, Category as CategoryType } fro
 import { createClient } from '@/lib/supabase/server'
 import Button from '@/components/ui/Button'
 import { Card, CardBody } from '@/components/ui/Card'
-import { ArrowLeft, Edit, Trash2 } from 'lucide-react'
+import { ArrowLeft, Edit } from 'lucide-react'
+import DeletePostButton from '@/components/posts/DeletePostButton'
 import { formatDate, getGravatarUrl, extractYouTubeId } from '@/lib/utils'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
@@ -71,12 +72,7 @@ export default async function ViewPostPage({ params }: PageProps) {
                   Editar
                 </Button>
               </Link>
-              <form action={`/api/posts/${post.id}`} method="DELETE">
-                <Button variant="danger" size="sm">
-                  <Trash2 className="w-4 h-4 mr-2" />
-                  Eliminar
-                </Button>
-              </form>
+              <DeletePostButton postId={post.id} postTitle={post.title} />
             </div>
           )}
         </div>
