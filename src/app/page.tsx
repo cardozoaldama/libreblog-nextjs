@@ -22,13 +22,15 @@ export default async function Home() {
     include: {
       author: true,
       category: true,
-      _count: {
-        select: { likes: true }
-      }
+      likes: true
     }
   })
 
   const topPosts = allPosts
+    .map(post => ({
+      ...post,
+      _count: { likes: post.likes.length }
+    }))
     .sort((a, b) => b._count.likes - a._count.likes)
     .slice(0, 5)
 
