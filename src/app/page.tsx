@@ -21,16 +21,24 @@ export default async function Home() {
     where: { isPublic: true },
     include: {
       author: true,
-      category: true,
-      likes: true
+      category: true
     }
   })
 
-  const topPosts = allPosts
-    .map(post => ({
-      ...post,
-      _count: { likes: post.likes.length }
-    }))
+  // Obtener conteo de likes para cada post
+  const postsWithLikes = await Promise.all(
+    allPosts.map(async (post) => {
+      const likeCount = await prisma.like.count({
+        where: { postId: post.id }
+      })
+      return {
+        ...post,
+        _count: { likes: likeCount }
+      }
+    })
+  )
+
+  const topPosts = postsWithLikes
     .sort((a, b) => b._count.likes - a._count.likes)
     .slice(0, 5)
 
