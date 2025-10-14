@@ -280,16 +280,16 @@ export default function ExplorePage() {
                 const excerpt = extractExcerpt(post.content, 120)
 
                 return (
-                  <Link key={post.id} href={`/post/${post.slug}`} className="block">
+                  <Link key={post.id} href={`/post/${post.slug}`} className="block h-full">
                     <Card
                       variant="hover"
-                      className="group animate-in fade-in slide-in-from-bottom duration-500 cursor-pointer"
+                      className="group animate-in fade-in slide-in-from-bottom duration-500 cursor-pointer h-full flex flex-col"
                       style={{animationDelay: `${posts.indexOf(post) * 100}ms`}}
                     >
-                      <CardBody className="p-0">
+                      <CardBody className="p-0 flex flex-col h-full">
                       {/* Image */}
-                      {post.imageUrl && (
-                        <div className="relative w-full h-48">
+                      <div className="relative w-full h-48 flex-shrink-0">
+                        {post.imageUrl ? (
                           <Image
                             src={post.imageUrl}
                             alt={post.title}
@@ -298,10 +298,14 @@ export default function ExplorePage() {
                             className="object-cover rounded-t-xl"
                             unoptimized
                           />
-                        </div>
-                      )}
+                        ) : (
+                          <div className="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center rounded-t-xl">
+                            <span className="text-6xl text-gray-400">{post.category?.icon || '📝'}</span>
+                          </div>
+                        )}
+                      </div>
 
-                      <div className="p-6">
+                      <div className="p-6 flex-1 flex flex-col">
                         {/* Category */}
                         {post.category && (
                           <span className="inline-block px-3 py-1.5 rounded-full text-xs font-medium bg-gradient-to-r from-blue-100 to-purple-100 text-blue-800 mb-3 transition-all duration-300 group-hover:from-blue-200 group-hover:to-purple-200">
@@ -310,17 +314,17 @@ export default function ExplorePage() {
                         )}
 
                         {/* Title */}
-                        <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-all duration-300 line-clamp-2 group-hover:scale-[1.02]">
+                        <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-all duration-300 line-clamp-2 group-hover:scale-[1.02] min-h-[3.5rem]">
                           {post.title}
                         </h3>
 
                         {/* Excerpt */}
-                        <p className="text-gray-600 text-sm mb-4 line-clamp-3">
+                        <p className="text-gray-600 text-sm mb-4 line-clamp-3 flex-1">
                           {excerpt}
                         </p>
 
                         {/* Author & Likes */}
-                        <div className="flex items-center gap-3 pt-4 border-t border-gray-200">
+                        <div className="flex items-center gap-3 pt-4 border-t border-gray-200 mt-auto">
                           <Image
                             src={authorAvatarUrl}
                             alt={`Foto de perfil de ${post.author.displayName || post.author.email}`}

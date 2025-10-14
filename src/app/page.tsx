@@ -258,9 +258,9 @@ export default async function Home() {
                   
                     return (
                       <Link key={post.id} href={`/post/${post.slug}`} className="flex-shrink-0 w-72 snap-start">
-                        <div className="relative perspective-1000">
-                          <div className={`relative bg-gradient-to-br ${medalColors[index]} p-0.5 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105 group`}>
-                            <div className="bg-white rounded-2xl overflow-hidden h-full">
+                        <div className="relative perspective-1000 h-full">
+                          <div className={`relative bg-gradient-to-br ${medalColors[index]} p-0.5 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105 group h-[420px] flex flex-col`}>
+                            <div className="bg-white rounded-2xl overflow-hidden flex flex-col h-full">
                               {/* Borde decorativo superior */}
                               <div className={`h-2 bg-gradient-to-r ${medalColors[index]}`}></div>
                               
@@ -272,8 +272,8 @@ export default async function Home() {
                               </div>
 
                               {/* Imagen */}
-                              {post.imageUrl && (
-                                <div className="relative w-full h-40 bg-gradient-to-br from-gray-100 to-gray-200">
+                              <div className="relative w-full h-40 bg-gradient-to-br from-gray-100 to-gray-200 flex-shrink-0">
+                                {post.imageUrl ? (
                                   <Image
                                     src={post.imageUrl}
                                     alt={post.title}
@@ -283,22 +283,26 @@ export default async function Home() {
                                     unoptimized
                                   />
                                   <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
-                                </div>
-                              )}
+                                ) : (
+                                  <div className="w-full h-full flex items-center justify-center text-gray-400">
+                                    <span className="text-4xl">{post.category?.icon || '📝'}</span>
+                                  </div>
+                                )}
+                              </div>
 
                               {/* Contenido */}
-                              <div className="p-4 relative">
+                              <div className="p-4 relative flex-1 flex flex-col">
                                 {post.category && (
                                   <span className="inline-block px-2 py-0.5 rounded-full text-xs font-semibold bg-gradient-to-r from-blue-100 to-purple-100 text-blue-800 mb-2">
                                     {post.category.icon} {post.category.name}
                                   </span>
                                 )}
                                 
-                                <h3 className="text-base font-bold text-gray-900 mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors">
+                                <h3 className="text-base font-bold text-gray-900 mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors min-h-[3rem]">
                                   {post.title}
                                 </h3>
                                 
-                                <p className="text-xs text-gray-600 mb-3 line-clamp-2">{excerpt}</p>
+                                <p className="text-xs text-gray-600 mb-3 line-clamp-2 flex-1">{excerpt}</p>
                                 
                                 {/* Sección inferior */}
                                 <div className="flex items-center justify-between pt-3 border-t border-gray-200">
@@ -323,7 +327,7 @@ export default async function Home() {
                               </div>
 
                               {/* Borde decorativo inferior */}
-                              <div className={`h-1.5 bg-gradient-to-r ${medalColors[index]}`}></div>
+                              <div className={`h-1.5 bg-gradient-to-r ${medalColors[index]} flex-shrink-0`}></div>
                             </div>
                           </div>
                           {/* Efecto de brillo */}
