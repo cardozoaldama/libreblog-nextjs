@@ -59,10 +59,13 @@ export async function POST(request: Request) {
       return NextResponse.json({ message: 'User already exists' }, { status: 200 })
     }
 
+    const username = email.split('@')[0].toLowerCase().replace(/[^a-z0-9_-]/g, '')
+    
     const user = await prisma.user.create({
       data: {
         id,
         email,
+        username,
         displayName: displayName || email.split('@')[0],
       },
     })
