@@ -135,12 +135,20 @@ export default function ResetPasswordPage() {
       })
 
       if (error) {
-        throw error
+        // Traducir mensajes de error comunes
+        let errorMessage = error.message
+        if (error.message.includes('New password should be different')) {
+          errorMessage = 'La nueva contraseña debe ser diferente a la anterior'
+        } else if (error.message.includes('Password should be at least')) {
+          errorMessage = 'La contraseña debe tener al menos 8 caracteres'
+        }
+        throw new Error(errorMessage)
       }
 
       setIsSuccess(true)
       
-      // Redirigir al login después de 2 segundos
+      // Cerrar sesión y redirigir al login
+      await supabase.auth.signOut()
       setTimeout(() => {
         router.push('/login')
       }, 2000)
