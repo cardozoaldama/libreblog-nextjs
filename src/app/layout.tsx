@@ -43,6 +43,7 @@ export default async function RootLayout({
         select: {
           id: true,
           email: true,
+          username: true,
           displayName: true,
           avatarUrl: true,
         },
@@ -51,10 +52,12 @@ export default async function RootLayout({
       // Si no existe el usuario en la BD, crearlo automáticamente
       if (!user) {
         console.log('Usuario no encontrado en BD, creando automáticamente...')
+        const username = (authUser.email || '').split('@')[0].toLowerCase().replace(/[^a-z0-9_-]/g, '')
         user = await prisma.user.create({
           data: {
             id: authUser.id,
             email: authUser.email || '',
+            username: username,
             displayName: authUser.user_metadata?.display_name || null,
             avatarUrl: authUser.user_metadata?.avatar_url || null,
           },
