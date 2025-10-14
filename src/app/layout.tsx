@@ -64,6 +64,7 @@ export default async function RootLayout({
           select: {
             id: true,
             email: true,
+            username: true,
             displayName: true,
             avatarUrl: true,
           },
