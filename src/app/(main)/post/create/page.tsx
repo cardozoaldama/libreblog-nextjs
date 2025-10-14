@@ -142,7 +142,7 @@ export default function CreatePostPage() {
                       onChange={(e) => setTitle(e.target.value)}
                       placeholder="Un título atractivo para tu post..."
                       required
-                      className="w-full px-4 py-3 border-2 border-gray-300/50 rounded-xl bg-white/80 backdrop-blur-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 hover:border-gray-400/50"
+                      className="w-full px-4 py-3 border-2 border-gray-300/50 rounded-xl bg-white/80 backdrop-blur-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 hover:border-gray-400/50 selectable"
                     />
                   </div>
 
@@ -176,7 +176,7 @@ export default function CreatePostPage() {
                       placeholder="Escribe tu contenido en Markdown...&#10;&#10;**Negrita**, *cursiva*, # Títulos&#10;&#10;- Lista&#10;- De items&#10;&#10;```javascript&#10;// Código&#10;```"
                       required
                       rows={15}
-                      className="w-full px-4 py-3 border-2 border-gray-300/50 rounded-xl bg-white/80 backdrop-blur-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono text-sm transition-all duration-300 hover:border-gray-400/50"
+                      className="w-full px-4 py-3 border-2 border-gray-300/50 rounded-xl bg-white/80 backdrop-blur-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono text-sm transition-all duration-300 hover:border-gray-400/50 selectable"
                     />
                     <details className="mt-2">
                       <summary className="text-xs text-blue-600 cursor-pointer hover:text-blue-700 font-medium">
@@ -199,29 +199,29 @@ export default function CreatePostPage() {
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       <ImageIcon className="w-4 h-4 inline mr-1" aria-hidden="true" />
-                      URL de Imagen (opcional)
+                      URL de Imagen - Portada del Post (opcional)
                     </label>
                     <input
                       type="url"
                       value={imageUrl}
                       onChange={(e) => setImageUrl(e.target.value)}
                       placeholder="https://ejemplo.com/imagen.jpg"
-                      className="w-full px-4 py-3 border-2 border-gray-300/50 rounded-xl bg-white/80 backdrop-blur-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 hover:border-gray-400/50"
+                      className="w-full px-4 py-3 border-2 border-gray-300/50 rounded-xl bg-white/80 backdrop-blur-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 hover:border-gray-400/50 selectable"
                     />
                   </div>
 
-                  {/* URL de Video YouTube */}
+                  {/* URL de Video */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       <Video className="w-4 h-4 inline mr-1" />
-                      URL de Video YouTube (opcional)
+                      URL de Video - YouTube, TikTok, Facebook, etc. (opcional)
                     </label>
                     <input
                       type="url"
                       value={videoUrl}
                       onChange={(e) => setVideoUrl(e.target.value)}
-                      placeholder="https://youtube.com/watch?v=..."
-                      className="w-full px-4 py-3 border-2 border-gray-300/50 rounded-xl bg-white/80 backdrop-blur-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 hover:border-gray-400/50"
+                      placeholder="https://youtube.com/watch?v=... o https://tiktok.com/@user/video/..."
+                      className="w-full px-4 py-3 border-2 border-gray-300/50 rounded-xl bg-white/80 backdrop-blur-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 hover:border-gray-400/50 selectable"
                     />
                   </div>
 

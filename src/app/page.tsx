@@ -1,14 +1,33 @@
 import Link from 'next/link'
+import Image from 'next/image'
 import Button from '@/components/ui/Button'
-import { PenSquare, Search, Users, Sparkles, TrendingUp, Shield } from 'lucide-react'
+import { Card, CardBody } from '@/components/ui/Card'
+import { PenSquare, Search, Users, Sparkles, TrendingUp, Shield, Heart, TrendingUpIcon } from 'lucide-react'
 import { prisma } from '@/lib/prisma'
+import { getAvatarUrl, extractExcerpt } from '@/lib/utils'
 
 export default async function Home() {
-  // Obtener estadísticas
-  const [totalPosts, totalUsers, totalCategories] = await Promise.all([
+  // Obtener estadísticas y posts más populares
+  const [totalPosts, totalUsers, totalCategories, topPosts] = await Promise.all([
     prisma.post.count({ where: { isPublic: true } }),
     prisma.user.count(),
     prisma.category.count(),
+    prisma.post.findMany({
+      where: { isPublic: true },
+      take: 5,
+      orderBy: {
+        likes: {
+          _count: 'desc'
+        }
+      },
+      include: {
+        author: true,
+        category: true,
+        _count: {
+          select: { likes: true }
+        }
+      }
+    })
   ])
 
   return (
@@ -105,6 +124,85 @@ export default async function Home() {
           </svg>
         </div>
       </section>
+
+      {/* Top Posts Section */}
+      {topPosts.length > 0 && (
+        <section className="py-12 sm:py-16 md:py-20 bg-white">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-8">
+              <div className="inline-flex items-center gap-2 bg-gradient-to-r from-yellow-100 to-orange-100 px-4 py-2 rounded-full mb-4">
+                <TrendingUpIcon className="w-5 h-5 text-orange-600" />
+                <span className="text-sm font-semibold text-orange-900">Más Populares</span>
+              </div>
+              <h2 className="text-2xl sm:text-3xl md:text-4xl font-bold text-gray-900 mb-2">
+                Posts con Más Likes
+              </h2>
+              <p className="text-gray-600">Los posts más queridos por la comunidad</p>
+            </div>
+            
+            <div className="flex gap-4 overflow-x-auto pb-4 snap-x snap-mandatory scrollbar-hide">
+              {topPosts.map((post, index) => {
+                const authorAvatarUrl = getAvatarUrl(post.author.email, post.author.avatarUrl, 32)
+                const excerpt = extractExcerpt(post.content, 80)
+                
+                return (
+                  <Link key={post.id} href={`/post/${post.slug}`} className="flex-shrink-0 w-64 snap-start">
+                    <Card variant="hover" className="h-full cursor-pointer group">
+                      <CardBody className="p-0">
+                        {post.imageUrl && (
+                          <div className="relative w-full h-32">
+                            <Image
+                              src={post.imageUrl}
+                              alt={post.title}
+                              fill
+                              sizes="256px"
+                              className="object-cover rounded-t-xl"
+                              unoptimized
+                            />
+                            <div className="absolute top-2 left-2 bg-gradient-to-r from-yellow-500 to-orange-500 text-white px-2 py-1 rounded-full text-xs font-bold flex items-center gap-1">
+                              #{index + 1}
+                            </div>
+                          </div>
+                        )}
+                        <div className="p-4">
+                          {post.category && (
+                            <span className="inline-block px-2 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 mb-2">
+                              {post.category.icon} {post.category.name}
+                            </span>
+                          )}
+                          <h3 className="text-base font-bold text-gray-900 mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors">
+                            {post.title}
+                          </h3>
+                          <p className="text-xs text-gray-600 mb-3 line-clamp-2">{excerpt}</p>
+                          <div className="flex items-center justify-between pt-3 border-t border-gray-200">
+                            <div className="flex items-center gap-2">
+                              <Image
+                                src={authorAvatarUrl}
+                                alt={post.author.displayName || post.author.email}
+                                width={24}
+                                height={24}
+                                className="rounded-full"
+                                unoptimized
+                              />
+                              <span className="text-xs font-medium text-gray-700 truncate max-w-[100px]">
+                                {post.author.displayName || post.author.email.split('@')[0]}
+                              </span>
+                            </div>
+                            <div className="flex items-center gap-1 text-red-500">
+                              <Heart className="w-4 h-4 fill-current" />
+                              <span className="text-sm font-bold">{post._count.likes}</span>
+                            </div>
+                          </div>
+                        </div>
+                      </CardBody>
+                    </Card>
+                  </Link>
+                )
+              })}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Features Section */}
       <section className="py-12 sm:py-16 md:py-20 bg-gray-50">

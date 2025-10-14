@@ -184,7 +184,7 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
                       onChange={(e) => setTitle(e.target.value)}
                       placeholder="Un título atractivo para tu post..."
                       required
-                      className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent selectable"
                     />
                   </div>
 
@@ -218,7 +218,7 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
                       placeholder="Escribe tu contenido en Markdown...&#10;&#10;**Negrita**, *cursiva*, # Títulos&#10;&#10;- Lista&#10;- De items&#10;&#10;```javascript&#10;// Código&#10;```"
                       required
                       rows={15}
-                      className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono text-sm"
+                      className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono text-sm selectable"
                     />
                     <details className="mt-2">
                       <summary className="text-xs text-blue-600 cursor-pointer hover:text-blue-700 font-medium">
@@ -241,29 +241,29 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       <ImageIcon className="w-4 h-4 inline mr-1" aria-hidden="true" />
-                      URL de Imagen (opcional)
+                      URL de Imagen - Portada del Post (opcional)
                     </label>
                     <input
                       type="url"
                       value={imageUrl}
                       onChange={(e) => setImageUrl(e.target.value)}
                       placeholder="https://ejemplo.com/imagen.jpg"
-                      className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent selectable"
                     />
                   </div>
 
-                  {/* URL de Video YouTube */}
+                  {/* URL de Video */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       <Video className="w-4 h-4 inline mr-1" />
-                      URL de Video YouTube (opcional)
+                      URL de Video - YouTube, TikTok, Facebook, etc. (opcional)
                     </label>
                     <input
                       type="url"
                       value={videoUrl}
                       onChange={(e) => setVideoUrl(e.target.value)}
-                      placeholder="https://youtube.com/watch?v=..."
-                      className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      placeholder="https://youtube.com/watch?v=... o https://tiktok.com/@user/video/..."
+                      className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent selectable"
                     />
                   </div>
 

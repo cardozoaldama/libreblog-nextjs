@@ -280,13 +280,13 @@ export default function ExplorePage() {
                 const excerpt = extractExcerpt(post.content, 120)
 
                 return (
-                  <Card
-                    key={post.id}
-                    variant="hover"
-                    className="group animate-in fade-in slide-in-from-bottom duration-500"
-                    style={{animationDelay: `${posts.indexOf(post) * 100}ms`}}
-                  >
-                    <CardBody className="p-0">
+                  <Link key={post.id} href={`/post/${post.slug}`} className="block">
+                    <Card
+                      variant="hover"
+                      className="group animate-in fade-in slide-in-from-bottom duration-500 cursor-pointer"
+                      style={{animationDelay: `${posts.indexOf(post) * 100}ms`}}
+                    >
+                      <CardBody className="p-0">
                       {/* Image */}
                       {post.imageUrl && (
                         <div className="relative w-full h-48">
@@ -310,11 +310,9 @@ export default function ExplorePage() {
                         )}
 
                         {/* Title */}
-                        <Link href={`/post/${post.slug}`}>
-                          <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-all duration-300 line-clamp-2 group-hover:scale-[1.02]">
-                            {post.title}
-                          </h3>
-                        </Link>
+                        <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-all duration-300 line-clamp-2 group-hover:scale-[1.02]">
+                          {post.title}
+                        </h3>
 
                         {/* Excerpt */}
                         <p className="text-gray-600 text-sm mb-4 line-clamp-3">
@@ -350,8 +348,9 @@ export default function ExplorePage() {
                           </div>
                         </div>
                       </div>
-                    </CardBody>
-                  </Card>
+                      </CardBody>
+                    </Card>
+                  </Link>
                 )
               })}
             </div>

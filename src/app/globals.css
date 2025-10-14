@@ -255,10 +255,39 @@
   background: linear-gradient(135deg, rgb(37, 99, 235), rgb(126, 34, 206));
 }
 
+/* Ocultar scrollbar pero mantener funcionalidad */
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+
 /* Selección de texto personalizada */
 ::selection {
   background: linear-gradient(135deg, rgba(59, 130, 246, 0.3), rgba(147, 51, 234, 0.3));
   color: rgb(17, 24, 39);
+}
+
+/* Deshabilitar selección de texto por defecto */
+* {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+/* Habilitar selección solo en inputs, textareas y elementos editables */
+input,
+textarea,
+[contenteditable="true"],
+.selectable {
+  user-select: text;
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
 }
 
 /* Focus visible mejorado */

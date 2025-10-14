@@ -248,7 +248,7 @@ export default function EditProfilePage() {
                   value={avatarUrl}
                   onChange={(e) => setAvatarUrl(e.target.value)}
                   placeholder="https://ejemplo.com/mi-foto.jpg"
-                  className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent selectable"
                 />
               </div>
 
@@ -307,7 +307,7 @@ export default function EditProfilePage() {
                         value={websiteUrl}
                         onChange={(e) => setWebsiteUrl(e.target.value)}
                         placeholder="https://tusitio.com"
-                        className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent selectable"
                       />
                     </div>
 
@@ -320,7 +320,7 @@ export default function EditProfilePage() {
                         value={githubUrl}
                         onChange={(e) => setGithubUrl(e.target.value)}
                         placeholder="https://github.com/tuperfil"
-                        className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent selectable"
                       />
                     </div>
 
@@ -333,7 +333,7 @@ export default function EditProfilePage() {
                         value={facebookUrl}
                         onChange={(e) => setFacebookUrl(e.target.value)}
                         placeholder="https://facebook.com/tuperfil"
-                        className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent selectable"
                       />
                     </div>
 
@@ -346,7 +346,7 @@ export default function EditProfilePage() {
                         value={instagramUrl}
                         onChange={(e) => setInstagramUrl(e.target.value)}
                         placeholder="https://instagram.com/tuperfil"
-                        className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent selectable"
                       />
                     </div>
 
@@ -359,7 +359,7 @@ export default function EditProfilePage() {
                         value={linkedinUrl}
                         onChange={(e) => setLinkedinUrl(e.target.value)}
                         placeholder="https://linkedin.com/in/tuperfil"
-                        className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent selectable"
                       />
                     </div>
                   </div>
