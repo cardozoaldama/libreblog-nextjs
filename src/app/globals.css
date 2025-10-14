@@ -265,6 +265,30 @@
   display: none;
 }
 
+/* Scrollbar delgado personalizado */
+.scrollbar-thin {
+  scrollbar-width: thin;
+}
+
+.scrollbar-thin::-webkit-scrollbar {
+  height: 8px;
+}
+
+.scrollbar-thumb-yellow-400::-webkit-scrollbar-thumb {
+  background: rgb(250, 204, 21);
+  border-radius: 10px;
+}
+
+.scrollbar-track-yellow-100::-webkit-scrollbar-track {
+  background: rgb(254, 249, 195);
+  border-radius: 10px;
+}
+
+/* Perspectiva 3D */
+.perspective-1000 {
+  perspective: 1000px;
+}
+
 /* Selección de texto personalizada */
 ::selection {
   background: rgba(59, 130, 246, 0.5);

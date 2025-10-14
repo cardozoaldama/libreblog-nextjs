@@ -153,7 +153,7 @@ export default async function Home() {
               <p className="text-lg text-gray-700">Los posts más queridos por la comunidad</p>
             </div>
             
-            {/* Post #1 - Destacado */}
+            {/* Post #1 - Destacado estilo tarjeta Pokémon */}
             {topPosts[0] && (() => {
               const post = topPosts[0]
               const authorAvatarUrl = getAvatarUrl(post.author.email, post.author.avatarUrl, 40)
@@ -161,66 +161,90 @@ export default async function Home() {
               
               return (
                 <Link href={`/post/${post.slug}`} className="block mb-10">
-                  <Card variant="hover" className="cursor-pointer group max-w-2xl mx-auto border-4 border-yellow-400 shadow-2xl hover:shadow-yellow-500/50 transition-all duration-300">
-                    <CardBody className="p-0">
-                      {post.imageUrl && (
-                        <div className="relative w-full h-64">
-                          <Image
-                            src={post.imageUrl}
-                            alt={post.title}
-                            fill
-                            sizes="672px"
-                            className="object-cover rounded-t-xl"
-                            unoptimized
-                          />
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent rounded-t-xl" />
-                          <div className="absolute top-4 left-4 bg-gradient-to-r from-yellow-400 via-yellow-500 to-orange-500 text-white px-5 py-3 rounded-full text-lg font-black flex items-center gap-2 shadow-2xl animate-pulse">
-                            <span className="text-3xl">👑</span>
+                  <div className="relative max-w-sm mx-auto perspective-1000">
+                    <div className="relative bg-gradient-to-br from-yellow-400 via-yellow-300 to-orange-400 p-1 rounded-3xl shadow-2xl hover:shadow-yellow-500/50 transition-all duration-300 hover:scale-105 group">
+                      <div className="bg-gradient-to-br from-yellow-50 to-white rounded-3xl overflow-hidden">
+                        {/* Borde decorativo superior */}
+                        <div className="h-3 bg-gradient-to-r from-yellow-400 via-orange-400 to-red-400"></div>
+                        
+                        {/* Badge #1 */}
+                        <div className="absolute top-6 left-6 z-10">
+                          <div className="bg-gradient-to-r from-yellow-400 via-yellow-500 to-orange-500 text-white px-4 py-2 rounded-full text-base font-black flex items-center gap-2 shadow-2xl animate-pulse border-2 border-white">
+                            <span className="text-2xl">👑</span>
                             <span>#1</span>
                           </div>
                         </div>
-                      )}
-                      <div className="p-6 bg-gradient-to-br from-white to-yellow-50">
-                        {post.category && (
-                          <span className="inline-block px-3 py-1.5 rounded-full text-sm font-bold bg-gradient-to-r from-blue-500 to-purple-500 text-white mb-3 shadow-lg">
-                            {post.category.icon} {post.category.name}
-                          </span>
-                        )}
-                        <h3 className="text-2xl font-black text-gray-900 mb-3 group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:from-blue-600 group-hover:to-purple-600 group-hover:bg-clip-text transition-all">
-                          {post.title}
-                        </h3>
-                        <p className="text-sm text-gray-700 mb-4 line-clamp-2">{excerpt}</p>
-                        <div className="flex items-center justify-between pt-4 border-t-2 border-yellow-200">
-                          <div className="flex items-center gap-3">
+
+                        {/* Imagen */}
+                        {post.imageUrl && (
+                          <div className="relative w-full h-56 bg-gradient-to-br from-blue-100 to-purple-100">
                             <Image
-                              src={authorAvatarUrl}
-                              alt={post.author.displayName || post.author.email}
-                              width={40}
-                              height={40}
-                              className="rounded-full border-2 border-yellow-400"
+                              src={post.imageUrl}
+                              alt={post.title}
+                              fill
+                              sizes="384px"
+                              className="object-cover"
                               unoptimized
                             />
-                            <span className="text-sm font-bold text-gray-800">
-                              {post.author.displayName || post.author.email.split('@')[0]}
-                            </span>
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent"></div>
                           </div>
-                          <div className="flex items-center gap-2 bg-gradient-to-r from-red-500 to-pink-500 text-white px-3 py-2 rounded-full shadow-lg">
-                            <Heart className="w-5 h-5 fill-current" />
-                            <span className="text-xl font-black">{post._count.likes}</span>
+                        )}
+
+                        {/* Contenido */}
+                        <div className="p-6 relative">
+                          {/* Patrón decorativo */}
+                          <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-yellow-200/20 to-transparent rounded-full blur-2xl"></div>
+                          
+                          {post.category && (
+                            <span className="inline-block px-3 py-1 rounded-full text-xs font-bold bg-gradient-to-r from-blue-500 to-purple-500 text-white mb-3 shadow-md">
+                              {post.category.icon} {post.category.name}
+                            </span>
+                          )}
+                          
+                          <h3 className="text-xl font-black text-gray-900 mb-2 group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:from-blue-600 group-hover:to-purple-600 group-hover:bg-clip-text transition-all relative z-10">
+                            {post.title}
+                          </h3>
+                          
+                          <p className="text-sm text-gray-700 mb-4 line-clamp-2 relative z-10">{excerpt}</p>
+                          
+                          {/* Sección inferior */}
+                          <div className="flex items-center justify-between pt-4 border-t-2 border-yellow-300/50 relative z-10">
+                            <div className="flex items-center gap-2">
+                              <Image
+                                src={authorAvatarUrl}
+                                alt={post.author.displayName || post.author.email}
+                                width={36}
+                                height={36}
+                                className="rounded-full border-2 border-yellow-400 shadow-md"
+                                unoptimized
+                              />
+                              <span className="text-xs font-bold text-gray-800">
+                                {post.author.displayName || post.author.email.split('@')[0]}
+                              </span>
+                            </div>
+                            <div className="flex items-center gap-1.5 bg-gradient-to-r from-red-500 to-pink-500 text-white px-3 py-1.5 rounded-full shadow-lg">
+                              <Heart className="w-4 h-4 fill-current" />
+                              <span className="text-lg font-black">{post._count.likes}</span>
+                            </div>
                           </div>
                         </div>
+
+                        {/* Borde decorativo inferior */}
+                        <div className="h-2 bg-gradient-to-r from-red-400 via-orange-400 to-yellow-400"></div>
                       </div>
-                    </CardBody>
-                  </Card>
+                    </div>
+                    {/* Efecto de brillo */}
+                    <div className="absolute inset-0 rounded-3xl bg-gradient-to-tr from-white/0 via-white/20 to-white/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+                  </div>
                 </Link>
               )
             })()}
 
-            {/* Posts #2-6 - Grid responsive */}
+            {/* Posts #2-6 - Carrusel estilo tarjetas Pokémon */}
             {topPosts.length > 1 && (
               <div>
                 <h3 className="text-2xl font-bold text-gray-800 mb-6 text-center">Otros Destacados</h3>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
+                <div className="flex gap-6 overflow-x-auto pb-6 snap-x snap-mandatory scrollbar-thin scrollbar-thumb-yellow-400 scrollbar-track-yellow-100 px-4">
                   {topPosts.slice(1).map((post, index) => {
                   const authorAvatarUrl = getAvatarUrl(post.author.email, post.author.avatarUrl, 28)
                   const excerpt = extractExcerpt(post.content, 80)
@@ -233,57 +257,78 @@ export default async function Home() {
                   ]
                   
                     return (
-                      <Link key={post.id} href={`/post/${post.slug}`} className="block">
-                        <Card variant="hover" className="h-full cursor-pointer group shadow-xl hover:shadow-2xl transition-all duration-300">
-                          <CardBody className="p-0">
-                            {post.imageUrl && (
-                              <div className="relative w-full h-40">
-                                <Image
-                                  src={post.imageUrl}
-                                  alt={post.title}
-                                  fill
-                                  sizes="288px"
-                                  className="object-cover rounded-t-xl"
-                                  unoptimized
-                                />
-                                <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent rounded-t-xl" />
-                                <div className={`absolute top-3 left-3 bg-gradient-to-r ${medalColors[index]} text-white px-3 py-1.5 rounded-full text-sm font-bold shadow-lg`}>
+                      <Link key={post.id} href={`/post/${post.slug}`} className="flex-shrink-0 w-72 snap-start">
+                        <div className="relative perspective-1000">
+                          <div className={`relative bg-gradient-to-br ${medalColors[index]} p-0.5 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105 group`}>
+                            <div className="bg-white rounded-2xl overflow-hidden h-full">
+                              {/* Borde decorativo superior */}
+                              <div className={`h-2 bg-gradient-to-r ${medalColors[index]}`}></div>
+                              
+                              {/* Badge posición */}
+                              <div className="absolute top-4 left-4 z-10">
+                                <div className={`bg-gradient-to-r ${medalColors[index]} text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg border border-white`}>
                                   #{index + 2}
                                 </div>
                               </div>
-                            )}
-                            <div className="p-5">
-                              {post.category && (
-                                <span className="inline-block px-3 py-1 rounded-full text-xs font-semibold bg-gradient-to-r from-blue-100 to-purple-100 text-blue-800 mb-3">
-                                  {post.category.icon} {post.category.name}
-                                </span>
-                              )}
-                              <h3 className="text-lg font-bold text-gray-900 mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors">
-                                {post.title}
-                              </h3>
-                              <p className="text-sm text-gray-600 mb-4 line-clamp-2">{excerpt}</p>
-                              <div className="flex items-center justify-between pt-4 border-t-2 border-gray-100">
-                                <div className="flex items-center gap-2">
+
+                              {/* Imagen */}
+                              {post.imageUrl && (
+                                <div className="relative w-full h-40 bg-gradient-to-br from-gray-100 to-gray-200">
                                   <Image
-                                    src={authorAvatarUrl}
-                                    alt={post.author.displayName || post.author.email}
-                                    width={28}
-                                    height={28}
-                                    className="rounded-full"
+                                    src={post.imageUrl}
+                                    alt={post.title}
+                                    fill
+                                    sizes="288px"
+                                    className="object-cover"
                                     unoptimized
                                   />
-                                  <span className="text-xs font-semibold text-gray-700 truncate max-w-[120px]">
-                                    {post.author.displayName || post.author.email.split('@')[0]}
-                                  </span>
+                                  <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
                                 </div>
-                                <div className="flex items-center gap-1.5 bg-red-50 text-red-600 px-2.5 py-1 rounded-full">
-                                  <Heart className="w-4 h-4 fill-current" />
-                                  <span className="text-sm font-bold">{post._count.likes}</span>
+                              )}
+
+                              {/* Contenido */}
+                              <div className="p-4 relative">
+                                {post.category && (
+                                  <span className="inline-block px-2 py-0.5 rounded-full text-xs font-semibold bg-gradient-to-r from-blue-100 to-purple-100 text-blue-800 mb-2">
+                                    {post.category.icon} {post.category.name}
+                                  </span>
+                                )}
+                                
+                                <h3 className="text-base font-bold text-gray-900 mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors">
+                                  {post.title}
+                                </h3>
+                                
+                                <p className="text-xs text-gray-600 mb-3 line-clamp-2">{excerpt}</p>
+                                
+                                {/* Sección inferior */}
+                                <div className="flex items-center justify-between pt-3 border-t border-gray-200">
+                                  <div className="flex items-center gap-2">
+                                    <Image
+                                      src={authorAvatarUrl}
+                                      alt={post.author.displayName || post.author.email}
+                                      width={24}
+                                      height={24}
+                                      className="rounded-full border border-gray-300"
+                                      unoptimized
+                                    />
+                                    <span className="text-xs font-semibold text-gray-700 truncate max-w-[100px]">
+                                      {post.author.displayName || post.author.email.split('@')[0]}
+                                    </span>
+                                  </div>
+                                  <div className="flex items-center gap-1 bg-red-50 text-red-600 px-2 py-1 rounded-full">
+                                    <Heart className="w-3 h-3 fill-current" />
+                                    <span className="text-xs font-bold">{post._count.likes}</span>
+                                  </div>
                                 </div>
                               </div>
+
+                              {/* Borde decorativo inferior */}
+                              <div className={`h-1.5 bg-gradient-to-r ${medalColors[index]}`}></div>
                             </div>
-                          </CardBody>
-                        </Card>
+                          </div>
+                          {/* Efecto de brillo */}
+                          <div className="absolute inset-0 rounded-2xl bg-gradient-to-tr from-white/0 via-white/30 to-white/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+                        </div>
                       </Link>
                     )
                   })}
