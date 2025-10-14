@@ -104,7 +104,7 @@ export default function FollowingPage() {
 
                 return (
                   <Link key={post.id} href={`/post/${post.slug}`} className="block">
-                    <Card variant="elevated" className="hover:shadow-2xl transition-shadow duration-300 cursor-pointer">
+                    <Card variant="hover" className="group animate-in fade-in slide-in-from-bottom duration-500 cursor-pointer">
                       <CardBody className="p-0">
                       {post.imageUrl && (
                         <div className="relative w-full h-48">
@@ -121,12 +121,12 @@ export default function FollowingPage() {
 
                       <div className="p-6">
                         {post.category && (
-                          <span className="inline-block px-2.5 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 mb-3">
+                          <span className="inline-block px-3 py-1.5 rounded-full text-xs font-medium bg-gradient-to-r from-blue-100 to-purple-100 text-blue-800 mb-3 transition-all duration-300 group-hover:from-blue-200 group-hover:to-purple-200">
                             {post.category.icon} {post.category.name}
                           </span>
                         )}
 
-                        <h3 className="text-xl font-bold text-gray-900 mb-2 hover:text-blue-600 transition-colors line-clamp-2">
+                        <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-blue-600 transition-all duration-300 line-clamp-2 group-hover:scale-[1.02]">
                           {post.title}
                         </h3>
 

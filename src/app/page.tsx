@@ -156,20 +156,20 @@ export default async function Home() {
             {/* Post #1 - Destacado */}
             {topPosts[0] && (() => {
               const post = topPosts[0]
-              const authorAvatarUrl = getAvatarUrl(post.author.email, post.author.avatarUrl, 48)
-              const excerpt = extractExcerpt(post.content, 150)
+              const authorAvatarUrl = getAvatarUrl(post.author.email, post.author.avatarUrl, 40)
+              const excerpt = extractExcerpt(post.content, 120)
               
               return (
                 <Link href={`/post/${post.slug}`} className="block mb-10">
-                  <Card variant="hover" className="cursor-pointer group max-w-3xl mx-auto border-4 border-yellow-400 shadow-2xl hover:shadow-yellow-500/50 transition-all duration-300">
+                  <Card variant="hover" className="cursor-pointer group max-w-2xl mx-auto border-4 border-yellow-400 shadow-2xl hover:shadow-yellow-500/50 transition-all duration-300">
                     <CardBody className="p-0">
                       {post.imageUrl && (
-                        <div className="relative w-full h-80">
+                        <div className="relative w-full h-64">
                           <Image
                             src={post.imageUrl}
                             alt={post.title}
                             fill
-                            sizes="896px"
+                            sizes="672px"
                             className="object-cover rounded-t-xl"
                             unoptimized
                           />
@@ -180,33 +180,33 @@ export default async function Home() {
                           </div>
                         </div>
                       )}
-                      <div className="p-8 bg-gradient-to-br from-white to-yellow-50">
+                      <div className="p-6 bg-gradient-to-br from-white to-yellow-50">
                         {post.category && (
-                          <span className="inline-block px-4 py-2 rounded-full text-sm font-bold bg-gradient-to-r from-blue-500 to-purple-500 text-white mb-4 shadow-lg">
+                          <span className="inline-block px-3 py-1.5 rounded-full text-sm font-bold bg-gradient-to-r from-blue-500 to-purple-500 text-white mb-3 shadow-lg">
                             {post.category.icon} {post.category.name}
                           </span>
                         )}
-                        <h3 className="text-3xl font-black text-gray-900 mb-4 group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:from-blue-600 group-hover:to-purple-600 group-hover:bg-clip-text transition-all">
+                        <h3 className="text-2xl font-black text-gray-900 mb-3 group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:from-blue-600 group-hover:to-purple-600 group-hover:bg-clip-text transition-all">
                           {post.title}
                         </h3>
-                        <p className="text-base text-gray-700 mb-6 line-clamp-3">{excerpt}</p>
-                        <div className="flex items-center justify-between pt-5 border-t-2 border-yellow-200">
-                          <div className="flex items-center gap-4">
+                        <p className="text-sm text-gray-700 mb-4 line-clamp-2">{excerpt}</p>
+                        <div className="flex items-center justify-between pt-4 border-t-2 border-yellow-200">
+                          <div className="flex items-center gap-3">
                             <Image
                               src={authorAvatarUrl}
                               alt={post.author.displayName || post.author.email}
-                              width={48}
-                              height={48}
+                              width={40}
+                              height={40}
                               className="rounded-full border-2 border-yellow-400"
                               unoptimized
                             />
-                            <span className="text-base font-bold text-gray-800">
+                            <span className="text-sm font-bold text-gray-800">
                               {post.author.displayName || post.author.email.split('@')[0]}
                             </span>
                           </div>
-                          <div className="flex items-center gap-2 bg-gradient-to-r from-red-500 to-pink-500 text-white px-4 py-2 rounded-full shadow-lg">
-                            <Heart className="w-6 h-6 fill-current" />
-                            <span className="text-2xl font-black">{post._count.likes}</span>
+                          <div className="flex items-center gap-2 bg-gradient-to-r from-red-500 to-pink-500 text-white px-3 py-2 rounded-full shadow-lg">
+                            <Heart className="w-5 h-5 fill-current" />
+                            <span className="text-xl font-black">{post._count.likes}</span>
                           </div>
                         </div>
                       </div>
@@ -216,11 +216,11 @@ export default async function Home() {
               )
             })()}
 
-            {/* Posts #2-6 - Scroll horizontal */}
+            {/* Posts #2-6 - Grid responsive */}
             {topPosts.length > 1 && (
               <div>
                 <h3 className="text-2xl font-bold text-gray-800 mb-6 text-center">Otros Destacados</h3>
-                <div className="flex gap-6 overflow-x-auto pb-6 snap-x snap-mandatory scrollbar-hide px-2">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-6">
                   {topPosts.slice(1).map((post, index) => {
                   const authorAvatarUrl = getAvatarUrl(post.author.email, post.author.avatarUrl, 28)
                   const excerpt = extractExcerpt(post.content, 80)
@@ -233,7 +233,7 @@ export default async function Home() {
                   ]
                   
                     return (
-                      <Link key={post.id} href={`/post/${post.slug}`} className="flex-shrink-0 w-72 snap-start">
+                      <Link key={post.id} href={`/post/${post.slug}`} className="block">
                         <Card variant="hover" className="h-full cursor-pointer group shadow-xl hover:shadow-2xl transition-all duration-300">
                           <CardBody className="p-0">
                             {post.imageUrl && (
