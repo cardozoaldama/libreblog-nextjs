@@ -18,10 +18,14 @@ export default function LoginPage() {
 
   useEffect(() => {
     const message = searchParams.get('message')
+    const redirect = searchParams.get('redirect')
+    
     if (message === 'confirmed') {
       setSuccess('¡Email confirmado! Ya puedes iniciar sesión.')
     } else if (message === 'password-updated') {
       setSuccess('Contraseña actualizada exitosamente.')
+    } else if (redirect) {
+      setError('Debes iniciar sesión para acceder a este contenido.')
     }
   }, [searchParams])
 

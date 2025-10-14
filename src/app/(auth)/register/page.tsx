@@ -61,6 +61,7 @@ export default function RegisterPage() {
         email,
         password,
         options: {
+          emailRedirectTo: `${window.location.origin}/api/auth/callback`,
           data: {
             display_name: displayName || email.split('@')[0],
           },
@@ -68,8 +69,10 @@ export default function RegisterPage() {
       })
 
       if (authError) {
-        if (authError.message.includes('already registered')) {
-          setError('Este correo ya está registrado')
+        if (authError.message.includes('already registered') || authError.message.includes('User already registered')) {
+          setError('Este correo ya está registrado. Intenta iniciar sesión.')
+        } else if (authError.message.includes('invalid email')) {
+          setError('El correo electrónico no es válido')
         } else {
           setError(authError.message)
         }
@@ -77,27 +80,14 @@ export default function RegisterPage() {
       }
 
       if (data.user) {
-        // Crear usuario en la base de datos
-        const response = await fetch('/api/users/create', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            id: data.user.id,
-            email: data.user.email,
-            displayName: displayName || email.split('@')[0],
-          }),
-        })
-
-        if (!response.ok) {
-          console.error('Error creating user in database')
-        }
-
-        setSuccess(true)
+        // NO crear usuario en BD hasta que confirme email
+        // El callback lo creará después de la confirmación
         
-        // Forzar recarga completa para actualizar el layout con el nuevo usuario
-        setTimeout(() => {
-          window.location.href = '/dashboard'
-        }, 2000)
+        setSuccess(true)
+        setError('')
+        
+        // No redirigir automáticamente, mostrar mensaje
+        // El usuario debe confirmar su email primero
       }
     } catch (err) {
       setError('Error al crear la cuenta. Intenta nuevamente.')
@@ -137,7 +127,7 @@ export default function RegisterPage() {
                   <CheckCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
                   <div className="text-sm">
                     <p className="font-semibold">¡Cuenta creada exitosamente!</p>
-                    <p className="mt-1">Redirigiendo al dashboard...</p>
+                    <p className="mt-1">Revisa tu correo para confirmar tu cuenta. Después podrás iniciar sesión.</p>
                   </div>
                 </div>
               )}

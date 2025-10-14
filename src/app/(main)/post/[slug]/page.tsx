@@ -1,4 +1,4 @@
-import { notFound } from 'next/navigation'
+import { notFound, redirect } from 'next/navigation'
 import Link from 'next/link'
 import Image from 'next/image'
 import { prisma } from '@/lib/prisma'
@@ -37,13 +37,18 @@ export default async function ViewPostPage({ params }: PageProps) {
     notFound()
   }
 
-  // Verificar permisos
+  // Verificar autenticación
   const supabase = await createClient()
   const {
     data: { user },
   } = await supabase.auth.getUser()
 
-  const isAuthor = user?.id === post.authorId
+  // Redirigir a login si no está autenticado
+  if (!user) {
+    redirect('/login')
+  }
+
+  const isAuthor = user.id === post.authorId
 
   // Si el post no es público y el usuario no es el autor, no mostrar
   if (!post.isPublic && !isAuthor) {
