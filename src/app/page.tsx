@@ -6,29 +6,31 @@ import { PenSquare, Search, Users, Sparkles, TrendingUp, Shield, Heart, Trending
 import { prisma } from '@/lib/prisma'
 import { getAvatarUrl, extractExcerpt } from '@/lib/utils'
 
+export const revalidate = 60 // Revalidar cada 60 segundos
+
 export default async function Home() {
-  // Obtener estadísticas y posts más populares
-  const [totalPosts, totalUsers, totalCategories, topPosts] = await Promise.all([
+  // Obtener estadísticas
+  const [totalPosts, totalUsers, totalCategories] = await Promise.all([
     prisma.post.count({ where: { isPublic: true } }),
     prisma.user.count(),
     prisma.category.count(),
-    prisma.post.findMany({
-      where: { isPublic: true },
-      take: 5,
-      orderBy: {
-        likes: {
-          _count: 'desc'
-        }
-      },
-      include: {
-        author: true,
-        category: true,
-        _count: {
-          select: { likes: true }
-        }
-      }
-    })
   ])
+
+  // Obtener posts más populares
+  const allPosts = await prisma.post.findMany({
+    where: { isPublic: true },
+    include: {
+      author: true,
+      category: true,
+      _count: {
+        select: { likes: true }
+      }
+    }
+  })
+
+  const topPosts = allPosts
+    .sort((a, b) => b._count.likes - a._count.likes)
+    .slice(0, 5)
 
   return (
     <div className="min-h-screen">
