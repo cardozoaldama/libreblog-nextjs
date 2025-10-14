@@ -6,6 +6,9 @@ import Image from 'next/image'
 import { ArrowLeft, Coffee, Volume2, Sparkles, Heart, Zap, Star, Rocket } from 'lucide-react'
 import Button from '@/components/ui/Button'
 
+// NOTA: Este archivo es completamente independiente del proyecto principal
+// Para removerlo: elimina /src/app/easter-egg/, /public/images/ y /public/audio/
+
 // Tipos de sonido disponibles para reproducir
 type SoundType = 'meow' | 'woof' | 'magic'
 
@@ -132,7 +135,7 @@ export default function EasterEggPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-pink-900 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-blue-900 via-purple-900 to-pink-900 relative overflow-hidden">
       {/* Animated Background Particles */}
       {particles.map((particle) => (
         <div
@@ -191,8 +194,12 @@ export default function EasterEggPage() {
 
           {/* Magic Button */}
           <button
-            onClick={() => playSound('magic')}
-            className="mb-12 px-8 py-4 bg-gradient-to-r from-yellow-400 via-pink-500 to-purple-600 rounded-full text-white font-bold text-xl shadow-2xl hover:shadow-3xl transform hover:scale-110 transition-all duration-300 animate-bounce"
+            onClick={() => {
+              playSound('magic')
+              setShowConfetti(false)
+              setTimeout(() => setShowConfetti(true), 50)
+            }}
+            className="mb-12 px-8 py-4 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 rounded-full text-white font-bold text-xl shadow-2xl hover:shadow-3xl transform hover:scale-110 transition-all duration-300 animate-bounce"
           >
             <Volume2 className="w-6 h-6 inline mr-2" />
             ¡Haz magia!
@@ -215,15 +222,16 @@ export default function EasterEggPage() {
           <div className="flex justify-center space-x-16 animate-in fade-in slide-in-from-left duration-1000 delay-700">
             <div className="text-center group">
               <div className="relative">
-                <div className="absolute -inset-4 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full blur opacity-75 group-hover:opacity-100 transition duration-500"></div>
-                <Image
-                  src="/images/guillermo-martinez.jpg"
-                  alt="Guillermo Martinez"
-                  width={128}
-                  height={128}
-                  className="relative rounded-full mb-6 shadow-2xl group-hover:scale-110 transition-transform duration-500 object-cover"
-                  style={{ width: 'auto', height: 'auto' }}
-                />
+                <div className="absolute -inset-4 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full blur opacity-75 group-hover:opacity-100 transition duration-500"></div>
+                <div className="relative w-32 h-32 mb-6">
+                  <Image
+                    src="/images/guillermo-martinez.jpg"
+                    alt="Guillermo Martinez"
+                    fill
+                    sizes="128px"
+                    className="rounded-full shadow-2xl group-hover:scale-110 transition-transform duration-500 object-cover"
+                  />
+                </div>
               </div>
               <h3 className="text-2xl font-bold text-blue-400 mb-2">Guillermo Martinez</h3>
               <p className="text-white/70 text-lg mb-2">Developer</p>
@@ -236,7 +244,7 @@ export default function EasterEggPage() {
 
             <div className="text-center group">
               <div className="relative">
-                <div className="absolute -inset-4 bg-gradient-to-r from-purple-600 to-pink-600 rounded-full blur opacity-75 group-hover:opacity-100 transition duration-500"></div>
+                <div className="absolute -inset-4 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full blur opacity-75 group-hover:opacity-100 transition duration-500"></div>
                 <div className="relative w-32 h-32 mb-6">
                   <Image
                     src="/images/alejandro-alonso.jpg"

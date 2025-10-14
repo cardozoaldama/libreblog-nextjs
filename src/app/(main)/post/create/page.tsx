@@ -199,7 +199,7 @@ export default function CreatePostPage() {
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       <ImageIcon className="w-4 h-4 inline mr-1" aria-hidden="true" />
-                      URL de Imagen - Portada del Post (opcional)
+                      Imagen de Portada (opcional)
                     </label>
                     <input
                       type="url"
@@ -208,21 +208,23 @@ export default function CreatePostPage() {
                       placeholder="https://ejemplo.com/imagen.jpg"
                       className="w-full px-4 py-3 border-2 border-gray-300/50 rounded-xl bg-white/80 backdrop-blur-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 hover:border-gray-400/50 selectable"
                     />
+                    <p className="text-xs text-gray-500 mt-1">Imagen principal que aparecerá en la cabecera del post</p>
                   </div>
 
-                  {/* URL de Video */}
+                  {/* URL de Videos */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       <Video className="w-4 h-4 inline mr-1" />
-                      URL de Video - YouTube, TikTok, Facebook, etc. (opcional)
+                      Videos Embebidos (opcional)
                     </label>
-                    <input
-                      type="url"
+                    <textarea
                       value={videoUrl}
                       onChange={(e) => setVideoUrl(e.target.value)}
-                      placeholder="https://youtube.com/watch?v=... o https://tiktok.com/@user/video/..."
-                      className="w-full px-4 py-3 border-2 border-gray-300/50 rounded-xl bg-white/80 backdrop-blur-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 hover:border-gray-400/50 selectable"
+                      placeholder="Pega URLs de videos (YouTube, TikTok, Facebook, Instagram, etc.)&#10;Una URL por línea para múltiples videos:&#10;https://youtube.com/watch?v=...&#10;https://tiktok.com/@user/video/...&#10;https://facebook.com/watch?v=..."
+                      rows={4}
+                      className="w-full px-4 py-3 border-2 border-gray-300/50 rounded-xl bg-white/80 backdrop-blur-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 hover:border-gray-400/50 selectable font-mono text-sm"
                     />
+                    <p className="text-xs text-gray-500 mt-1">Soporta: YouTube, Shorts, TikTok, Facebook, Instagram, Vimeo. Una URL por línea para múltiples videos.</p>
                   </div>
 
                   {/* Público/Privado */}
