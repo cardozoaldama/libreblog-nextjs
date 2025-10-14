@@ -109,9 +109,10 @@ export default function SettingsPage() {
         
         // Verificar estado de 2FA
         const factors = await supabase.auth.mfa.listFactors()
-        setIs2FAEnabled(factors.data?.totp?.length > 0)
+        setIs2FAEnabled((factors.data?.totp?.length ?? 0) > 0)
       } catch (error) {
         console.error('Error cargando usuario:', error)
+        setIs2FAEnabled(false)
         setMessage({ 
           type: 'error', 
           text: error instanceof Error ? error.message : 'Error al cargar los datos del usuario' 
