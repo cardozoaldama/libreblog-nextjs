@@ -71,11 +71,37 @@ export function extractExcerpt(markdown: string, maxLength: number = 200): strin
   return truncateText(plainText, maxLength)
 }
 
-// Extraer ID de video de YouTube desde URL
+// Extraer ID de video de YouTube desde URL (incluyendo Shorts)
 export function extractYouTubeId(url: string): string | null {
-  const regex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/
+  const regex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?|shorts)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/
   const match = url.match(regex)
   return match ? match[1] : null
+}
+
+// Detectar tipo de video y generar embed
+export function getVideoEmbed(url: string): { type: 'youtube' | 'tiktok' | 'facebook' | null; embedUrl: string | null } {
+  // YouTube (videos normales, Shorts, listas, mixes)
+  const youtubeId = extractYouTubeId(url)
+  if (youtubeId) {
+    // Extraer parámetros de lista si existen
+    const listMatch = url.match(/[?&]list=([^&]+)/)
+    const listParam = listMatch ? `?list=${listMatch[1]}` : ''
+    return { type: 'youtube', embedUrl: `https://www.youtube.com/embed/${youtubeId}${listParam}` }
+  }
+
+  // TikTok
+  const tiktokMatch = url.match(/tiktok\.com\/@[^\/]+\/video\/(\d+)/)
+  if (tiktokMatch) {
+    return { type: 'tiktok', embedUrl: `https://www.tiktok.com/embed/v2/${tiktokMatch[1]}` }
+  }
+
+  // Facebook Reels
+  const facebookMatch = url.match(/facebook\.com\/reel\/(\d+)/)
+  if (facebookMatch) {
+    return { type: 'facebook', embedUrl: `https://www.facebook.com/plugins/video.php?href=https://www.facebook.com/reel/${facebookMatch[1]}` }
+  }
+
+  return { type: null, embedUrl: null }
 }
 
 // Validar URL de imagen

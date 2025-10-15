@@ -8,7 +8,7 @@ import Button from '@/components/ui/Button'
 import { Card, CardBody } from '@/components/ui/Card'
 import { ArrowLeft, Edit } from 'lucide-react'
 import DeletePostButton from '@/components/posts/DeletePostButton'
-import { formatDate, getGravatarUrl, extractYouTubeId } from '@/lib/utils'
+import { formatDate, getGravatarUrl, getVideoEmbed } from '@/lib/utils'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import PostActions from '@/components/post/PostActions'
@@ -56,7 +56,7 @@ export default async function ViewPostPage({ params }: PageProps) {
   }
 
   const authorAvatarUrl = post.author.avatarUrl || getGravatarUrl(post.author.email)
-  const youtubeId = post.videoUrl ? extractYouTubeId(post.videoUrl) : null
+  const videoEmbed = post.videoUrl ? getVideoEmbed(post.videoUrl) : { type: null, embedUrl: null }
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
@@ -159,15 +159,16 @@ export default async function ViewPostPage({ params }: PageProps) {
               </ReactMarkdown>
             </article>
 
-            {/* YouTube Video */}
-            {youtubeId && (
+            {/* Video Embed (YouTube, TikTok, Facebook) */}
+            {videoEmbed.embedUrl && (
               <div className="mt-8">
-                <div className="aspect-video">
+                <div className={videoEmbed.type === 'tiktok' ? 'max-w-[325px] mx-auto' : 'aspect-video'}>
                   <iframe
-                    src={`https://www.youtube.com/embed/${youtubeId}`}
-                    className="w-full h-full rounded-lg shadow-lg"
+                    src={videoEmbed.embedUrl}
+                    className={`w-full rounded-lg shadow-lg ${videoEmbed.type === 'tiktok' ? 'h-[738px]' : 'h-full'}`}
                     allowFullScreen
-                    title="YouTube video"
+                    allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
+                    title="Video embebido"
                   />
                 </div>
               </div>

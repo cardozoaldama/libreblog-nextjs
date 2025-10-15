@@ -10,6 +10,7 @@ import Link from 'next/link'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { use } from 'react'
+import { getVideoEmbed } from '@/lib/utils'
 
 interface Category {
   id: string
@@ -253,20 +254,19 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
                     <p className="text-xs text-gray-500 mt-1">Imagen principal que aparecerá en la cabecera del post</p>
                   </div>
 
-                  {/* URL de Videos */}
+                  {/* URL de Video */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       <Video className="w-4 h-4 inline mr-1" />
-                      Videos Embebidos (opcional)
+                      Video Embebido (opcional)
                     </label>
-                    <textarea
+                    <input
+                      type="url"
                       value={videoUrl}
                       onChange={(e) => setVideoUrl(e.target.value)}
-                      placeholder="Pega URLs de videos (YouTube, TikTok, Facebook, Instagram, etc.)&#10;Una URL por línea para múltiples videos:&#10;https://youtube.com/watch?v=...&#10;https://tiktok.com/@user/video/...&#10;https://facebook.com/watch?v=..."
-                      rows={4}
-                      className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent selectable font-mono text-sm"
+                      className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent selectable"
                     />
-                    <p className="text-xs text-gray-500 mt-1">Soporta: YouTube, Shorts, TikTok, Facebook, Instagram, Vimeo. Una URL por línea para múltiples videos.</p>
+                    <p className="text-xs text-gray-500 mt-1">Soporta: YouTube, Shorts, TikTok, Facebook Reels</p>
                   </div>
 
                   {/* Público/Privado */}
@@ -325,16 +325,20 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
                   <ReactMarkdown remarkPlugins={[remarkGfm]}>
                     {content || '*Escribe algo para ver la vista previa...*'}
                   </ReactMarkdown>
-                  {videoUrl && extractYouTubeId(videoUrl) && (
-                    <div className="aspect-video">
-                      <iframe
-                        src={`https://www.youtube.com/embed/${extractYouTubeId(videoUrl)}`}
-                        className="w-full h-full rounded-lg"
-                        allowFullScreen
-                        title="YouTube video"
-                      />
-                    </div>
-                  )}
+                  {videoUrl && (() => {
+                    const embed = getVideoEmbed(videoUrl)
+                    return embed.embedUrl ? (
+                      <div className={embed.type === 'tiktok' ? 'max-w-[325px] mx-auto' : 'aspect-video'}>
+                        <iframe
+                          src={embed.embedUrl}
+                          className={`w-full rounded-lg ${embed.type === 'tiktok' ? 'h-[738px]' : 'h-full'}`}
+                          allowFullScreen
+                          allow="autoplay; clipboard-write; encrypted-media; picture-in-picture; web-share"
+                          title="Video preview"
+                        />
+                      </div>
+                    ) : null
+                  })()}
                 </article>
               </CardBody>
             </Card>
@@ -343,10 +347,4 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
       </div>
     </div>
   )
-}
-
-function extractYouTubeId(url: string): string | null {
-  const regex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/
-  const match = url.match(regex)
-  return match ? match[1] : null
 }
