@@ -2,7 +2,7 @@
 
 Una plataforma moderna de blogging construida con Next.js 15, donde los usuarios pueden crear, compartir y descubrir contenido de forma libre y creativa.
 
-##  Características
+## ✨ Características
 
 -  **Editor Markdown** - Escribe con formato profesional
 -  **Exploración** - Descubre contenido por categorías
@@ -14,6 +14,9 @@ Una plataforma moderna de blogging construida con Next.js 15, donde los usuarios
 -  **Seguridad Avanzada** - Verificación de contraseñas comprometidas
 -  **Recuperación de Cuenta** - Sistema completo de reset de contraseña
 -  **Logo Personalizado** - Identidad visual única con SVG animado
+-  **Easter Egg** - Página secreta con información del equipo
+-  **Protección Anti-Spam** - Validación de emails y honeypots
+-  **Control de Entorno** - Gestión inteligente de emails por ambiente
 
 ## Tecnologías
 
@@ -49,6 +52,11 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=tu_supabase_anon_key
 
 # Database
 DATABASE_URL=tu_database_url
+DIRECT_URL=tu_direct_database_url
+
+# App Configuration
+NEXT_PUBLIC_APP_ENV=development
+NEXT_PUBLIC_EMAIL_AUTH_ENABLED=true
 ```
 
 4. **Configurar la base de datos**
@@ -82,7 +90,7 @@ src/
 └── types/                # Definiciones de tipos TypeScript
 ```
 
-##  Funcionalidades de Seguridad
+## 🔒 Funcionalidades de Seguridad
 
 ### Verificación de Contraseñas
 - **HaveIBeenPwned Integration** - Verifica contraseñas filtradas en brechas de datos
@@ -95,6 +103,20 @@ src/
 - **Reset Seguro** - Verificación en tiempo real durante el cambio
 - **Validación Robusta** - Mínimo 8 caracteres, verificación de compromiso
 - **UX Optimizada** - Flujo claro con mensajes informativos
+- **Cooldown de 60s** - Previene spam en solicitudes de reset
+
+### Protección Anti-Spam
+- **Validación de Email** - Formato correcto y dominios válidos
+- **Bloqueo de Desechables** - Previene emails temporales (10minutemail, etc.)
+- **Honeypot Invisible** - Detecta y bloquea bots automáticamente
+- **Rate Limiting** - Control de solicitudes por usuario
+- **Control por Entorno** - No envía emails reales en desarrollo
+
+### Confirmación de Email
+- **Registro Seguro** - Solo usuarios confirmados se crean en BD
+- **Verificación Automática** - Callback valida `email_confirmed_at`
+- **Mensajes Claros** - Feedback específico para cada estado
+- **Limpieza Automática** - No usuarios "fantasma" en la base de datos
 
 ### Rutas de Seguridad
 - `/forgot-password` - Solicitar recuperación de contraseña
@@ -146,14 +168,34 @@ NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
 
 # Database
 DATABASE_URL=your_postgresql_database_url
+DIRECT_URL=your_direct_database_url
+
+# App Configuration
+NEXT_PUBLIC_APP_ENV=production
+NEXT_PUBLIC_EMAIL_AUTH_ENABLED=true
 ```
 
 ### Configuración de Supabase
 
-1. **Email Templates** - Configura plantillas para recuperación de contraseña
-2. **Auth Settings** - Habilita email confirmations y password recovery
-3. **Security** - Configura rate limiting y políticas de contraseña
+1. **Authentication → Sign In / Providers**:
+   - ✅ **Enable Email provider**
+   - ✅ **Allow new users to sign up**
+   - ✅ **Confirm email** (OBLIGATORIO para seguridad)
+   - ✅ **Secure email change**
+   - ✅ **Secure password change**
+
+2. **Authentication → Settings**:
+   - **Minimum password length**: 8 caracteres
+   - **Password Requirements**: Al menos 1 mayúscula, 1 minúscula, 1 número
+
+3. **Email Templates** - Configura plantillas para recuperación de contraseña
 4. **Redirect URLs** - Añade `your-domain.com/reset-password` a allowed redirects
+
+### Configuración de Vercel
+
+En Vercel Dashboard → Project → Environment Variables:
+- `NEXT_PUBLIC_APP_ENV=production` (Scope: Production)
+- `NEXT_PUBLIC_EMAIL_AUTH_ENABLED=true` (Scope: Production)
 
 ## 🤝 Contribuir
 
@@ -176,7 +218,16 @@ Este proyecto está bajo la Licencia MIT. Ver `LICENSE` para más detalles.
 - **Miguel** - Gato Supervisor 🐱
 - **Terry** - Perro Motivacional 🐶
 
-##  Diseño y Branding
+## 🎉 Easter Egg
+
+Descubre la página secreta del equipo en `/easter-egg` con:
+- **Información del equipo** - Conoce a los desarrolladores
+- **Efectos visuales** - Confeti, animaciones y sonidos
+- **Tecnologías utilizadas** - Stack completo del proyecto
+- **Mensajes motivacionales** - Frases inspiradoras del desarrollo
+- **Diseño responsive** - Optimizado para móviles y desktop
+
+## 🎨 Diseño y Branding
 
 ### Logo Personalizado
 - **SVG Animado** - Logo único con gradientes y efectos
@@ -189,4 +240,24 @@ Este proyecto está bajo la Licencia MIT. Ver `LICENSE` para más detalles.
 - **Efectos de Profundidad** - Sombras, blur y backdrop-blur
 - **Animaciones Fluidas** - Transiciones suaves en toda la UI
 - **Favicon Personalizado** - SVG optimizado para navegadores
+
+## 🚀 Características Técnicas
+
+### Optimizaciones de Rendimiento
+- **Next.js 15** - App Router y Server Components
+- **Prisma ORM** - Type-safe database queries
+- **Tailwind CSS** - Utility-first styling
+- **TypeScript** - Type safety en todo el proyecto
+
+### Seguridad Implementada
+- **Validación de Emails** - Formato y dominios desechables
+- **Honeypot Anti-Bot** - Protección invisible contra spam
+- **Rate Limiting** - Control de solicitudes por usuario
+- **Confirmación de Email** - Solo usuarios verificados en BD
+- **Contraseñas Seguras** - Verificación con HaveIBeenPwned
+
+### Control de Entorno
+- **Desarrollo** - Simulación de emails, sin envíos reales
+- **Producción** - Emails reales de Supabase
+- **Configuración Flexible** - Flags para habilitar/deshabilitar funcionalidades
 
