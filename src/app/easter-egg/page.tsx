@@ -442,11 +442,11 @@ return (
           <div className="mt-16 text-center animate-in fade-in slide-in-from-bottom duration-1000 delay-2000">
             <div className="p-8 bg-gradient-to-r from-yellow-900/30 to-orange-900/30 rounded-3xl border border-yellow-500/50 backdrop-blur-sm">
               <h3 className="text-3xl font-bold text-yellow-400 mb-4">
-                ¡Gracias por descubrir nuestro Easter Egg! 🎊
+                ¡Gracias por la antencion brindada a nuestro proyecto LibreBlog! 🎊
               </h3>
               <p className="text-white/80 text-lg mb-6">
                 Esperamos que disfrutes usando LibreBlog tanto como nosotros
-                disfrutamos creándolo.
+                sufrimos creándolo.
               </p>
               <Link href="/">
                 <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold py-3 px-8 rounded-full shadow-2xl hover:shadow-3xl transform hover:scale-105 transition-all duration-300">
