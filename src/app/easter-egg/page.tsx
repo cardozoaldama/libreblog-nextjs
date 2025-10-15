@@ -446,7 +446,7 @@ return (
               </h3>
               <p className="text-white/80 text-lg mb-6">
                 Esperamos que disfrutes usando LibreBlog tanto como nosotros
-                disfrutamos creándolo.
+                sufrimos creándolo.
               </p>
               <Link href="/">
                 <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold py-3 px-8 rounded-full shadow-2xl hover:shadow-3xl transform hover:scale-105 transition-all duration-300">

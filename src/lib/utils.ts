@@ -118,3 +118,48 @@ export function isValidImageUrl(url: string): boolean {
 export function cn(...classes: (string | undefined | null | false)[]): string {
   return classes.filter(Boolean).join(' ')
 }
+
+// Config helpers (client-safe via NEXT_PUBLIC_*)
+export function getAppEnv(): 'development' | 'preview' | 'production' {
+  const env = (process.env.NEXT_PUBLIC_APP_ENV || process.env.NODE_ENV || 'development') as
+    | 'development'
+    | 'preview'
+    | 'production'
+  return env
+}
+
+export function isProductionEnv(): boolean {
+  return getAppEnv() === 'production'
+}
+
+export function isEmailAuthEnabled(): boolean {
+  const flag = process.env.NEXT_PUBLIC_EMAIL_AUTH_ENABLED
+  if (typeof flag === 'string') {
+    return flag === 'true' || flag === '1'
+  }
+  // Default: enabled unless explicitly disabled
+  return true
+}
+
+// Basic email validation and disposable domain blocking
+const basicEmailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/
+
+const disposableDomains: Set<string> = new Set([
+  'mailinator.com',
+  'trashmail.com',
+  '10minutemail.com',
+  'tempmail.com',
+  'guerrillamail.com',
+  'yopmail.com',
+])
+
+export function isValidEmailFormat(email: string): boolean {
+  return basicEmailRegex.test(email.trim().toLowerCase())
+}
+
+export function isDisposableEmail(email: string): boolean {
+  const atIndex = email.lastIndexOf('@')
+  if (atIndex === -1) return true
+  const domain = email.slice(atIndex + 1).trim().toLowerCase()
+  return disposableDomains.has(domain)
+}

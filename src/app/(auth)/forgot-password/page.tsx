@@ -1,17 +1,50 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Button from '@/components/ui/Button'
 import { Card, CardBody, CardHeader } from '@/components/ui/Card'
 import { Mail, ArrowLeft, CheckCircle } from 'lucide-react'
 import { createClient } from '@/lib/supabase/client'
+import { isEmailAuthEnabled, isProductionEnv, isValidEmailFormat, isDisposableEmail } from '@/lib/utils'
 
 export default function ForgotPasswordPage() {
   const [email, setEmail] = useState('')
+  const [botTrap, setBotTrap] = useState('')
   const [isLoading, setIsLoading] = useState(false)
   const [isSuccess, setIsSuccess] = useState(false)
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
+  const [lastSentAt, setLastSentAt] = useState<number | null>(null)
+  const [remainingSeconds, setRemainingSeconds] = useState<number>(0)
+
+  // Load/send cooldown from localStorage
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem('forgotPwdLastSentAt')
+      if (stored) {
+        const ts = parseInt(stored, 10)
+        if (!Number.isNaN(ts)) {
+          setLastSentAt(ts)
+        }
+      }
+    } catch {}
+  }, [])
+
+  useEffect(() => {
+    const tick = () => {
+      if (!lastSentAt) {
+        setRemainingSeconds(0)
+        return
+      }
+      const elapsed = Math.floor((Date.now() - lastSentAt) / 1000)
+      const cooldown = 60
+      const remaining = Math.max(0, cooldown - elapsed)
+      setRemainingSeconds(remaining)
+    }
+    tick()
+    const id = setInterval(tick, 1000)
+    return () => clearInterval(id)
+  }, [lastSentAt])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -19,8 +52,43 @@ export default function ForgotPasswordPage() {
     setIsLoading(true)
 
     try {
+      // Honeypot: if filled, simulate success and exit
+      if (botTrap.trim().length > 0) {
+        setIsSuccess(true)
+        setMessage({ type: 'success', text: 'Se ha enviado un enlace de recuperación a tu email' })
+        return
+      }
+      // Cooldown client-side: 60s between requests
+      if (remainingSeconds > 0) {
+        setMessage({ type: 'error', text: `Espera ${remainingSeconds}s antes de volver a intentarlo.` })
+        return
+      }
+      // Gate by feature flag
+      if (!isEmailAuthEnabled()) {
+        setMessage({ type: 'error', text: 'La recuperación por email está deshabilitada.' })
+        return
+      }
+
+      // Prevent sending real emails outside production
+      if (!isProductionEnv()) {
+        setIsSuccess(true)
+        setMessage({ type: 'success', text: 'Email de recuperación simulado (entorno no productivo).' })
+        return
+      }
+
+      // Basic validations
+      const normalized = email.trim().toLowerCase()
+      if (!isValidEmailFormat(normalized)) {
+        setMessage({ type: 'error', text: 'Ingresa un correo válido.' })
+        return
+      }
+      if (isDisposableEmail(normalized)) {
+        setMessage({ type: 'error', text: 'No se permiten correos temporales/desechables.' })
+        return
+      }
+
       const supabase = createClient()
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      const { error } = await supabase.auth.resetPasswordForEmail(normalized, {
         redirectTo: `${window.location.origin}/reset-password`,
       })
 
@@ -37,6 +105,9 @@ export default function ForgotPasswordPage() {
       }
 
       setIsSuccess(true)
+      const now = Date.now()
+      setLastSentAt(now)
+      try { localStorage.setItem('forgotPwdLastSentAt', String(now)) } catch {}
       setMessage({
         type: 'success',
         text: 'Se ha enviado un enlace de recuperación a tu email'
@@ -119,6 +190,28 @@ export default function ForgotPasswordPage() {
                   className="w-full pl-10 pr-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
               </div>
+              {/* Real-time warning for disposable/invalid email */}
+              {email && (
+                <p className={`mt-2 text-xs ${!isValidEmailFormat(email.trim().toLowerCase()) || isDisposableEmail(email.trim().toLowerCase()) ? 'text-red-600' : 'text-gray-500'}`}>
+                  {!isValidEmailFormat(email.trim().toLowerCase())
+                    ? 'Ingresa un correo válido.'
+                    : isDisposableEmail(email.trim().toLowerCase())
+                      ? 'Este dominio parece desechable. Usa un correo permanente para evitar problemas.'
+                      : 'Usa un correo válido y activo para recibir el enlace.'}
+                </p>
+              )}
+            </div>
+
+            {/* Honeypot (hidden) */}
+            <div className="hidden" aria-hidden>
+              <label>Tu sitio web</label>
+              <input
+                type="text"
+                autoComplete="off"
+                tabIndex={-1}
+                value={botTrap}
+                onChange={(e) => setBotTrap(e.target.value)}
+              />
             </div>
 
             <Button

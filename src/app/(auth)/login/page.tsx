@@ -6,6 +6,7 @@ import { useSearchParams } from 'next/navigation'
 import Button from '@/components/ui/Button'
 import { Card, CardContent } from '@/components/ui/Card'
 import { createClient } from '@/lib/supabase/client'
+import { isEmailAuthEnabled } from '@/lib/utils'
 import { LogIn, Mail, Lock, AlertCircle, CheckCircle } from 'lucide-react'
 
 export default function LoginPage() {
@@ -84,6 +85,7 @@ export default function LoginPage() {
         {/* Card de Login */}
         <Card variant="default">
           <CardContent className="p-6">
+            {isEmailAuthEnabled() ? (
             <form onSubmit={handleLogin} className="space-y-5">
               {/* Success Alert */}
               {success && (
@@ -148,6 +150,13 @@ export default function LoginPage() {
                 {isLoading ? 'Iniciando sesión...' : 'Iniciar Sesión'}
               </Button>
             </form>
+            ) : (
+              <div className="space-y-4">
+                <div className="bg-blue-50 border border-blue-200 text-blue-800 px-4 py-3 rounded-lg">
+                  El inicio de sesión por email/contraseña está deshabilitado. Usa OAuth (GitHub) desde la navegación.
+                </div>
+              </div>
+            )}
           </CardContent>
         </Card>
 

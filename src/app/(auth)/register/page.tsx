@@ -6,11 +6,13 @@ import { useRouter } from 'next/navigation'
 import Button from '@/components/ui/Button'
 import { Card, CardContent } from '@/components/ui/Card'
 import { createClient } from '@/lib/supabase/client'
+import { isEmailAuthEnabled, isProductionEnv, isValidEmailFormat, isDisposableEmail } from '@/lib/utils'
 import { UserPlus, Mail, Lock, User, AlertCircle, CheckCircle, Shield, AlertTriangle } from 'lucide-react'
 
 export default function RegisterPage() {
   const router = useRouter()
   const [email, setEmail] = useState('')
+  const [botTrap, setBotTrap] = useState('')
   const [password, setPassword] = useState('')
   const [confirmPassword, setConfirmPassword] = useState('')
   const [displayName, setDisplayName] = useState('')
@@ -62,6 +64,37 @@ export default function RegisterPage() {
     }
 
     try {
+      // Gate by feature flag
+      if (!isEmailAuthEnabled()) {
+        setError('El registro con email está deshabilitado. Usa OAuth (GitHub).')
+        return
+      }
+
+      // Honeypot: if filled, simulate success
+      if (botTrap.trim().length > 0) {
+        setSuccess(true)
+        setError('')
+        return
+      }
+
+      // Validate email format and block disposable
+      const normalizedEmail = email.trim().toLowerCase()
+      if (!isValidEmailFormat(normalizedEmail)) {
+        setError('El correo electrónico no es válido')
+        return
+      }
+      if (isDisposableEmail(normalizedEmail)) {
+        setError('No se permiten correos temporales/desechables')
+        return
+      }
+
+      // In non-production, simulate success to avoid sending emails
+      if (!isProductionEnv()) {
+        setSuccess(true)
+        setError('')
+        return
+      }
+
       const supabase = createClient()
       
       // Cerrar sesión actual si existe (cambio de cuenta)
@@ -72,7 +105,7 @@ export default function RegisterPage() {
 
       // Registrar usuario en Supabase Auth
       const { data, error: authError } = await supabase.auth.signUp({
-        email,
+        email: normalizedEmail,
         password,
         options: {
           emailRedirectTo: `${window.location.origin}/api/auth/callback`,
@@ -239,6 +272,29 @@ export default function RegisterPage() {
                   />
                 </div>
               </div>
+
+            {/* Real-time warning for disposable/invalid email */}
+            {email && (
+              <p className={`mt-2 text-xs ${!isValidEmailFormat(email.trim().toLowerCase()) || isDisposableEmail(email.trim().toLowerCase()) ? 'text-red-600' : 'text-gray-500'}`}>
+                {!isValidEmailFormat(email.trim().toLowerCase())
+                  ? 'Ingresa un correo válido.'
+                  : isDisposableEmail(email.trim().toLowerCase())
+                    ? 'Este dominio parece desechable. Usa un correo permanente para evitar problemas.'
+                    : 'Usa un correo válido y activo para recibir el enlace de confirmación.'}
+              </p>
+            )}
+
+            {/* Honeypot (hidden) */}
+            <div className="hidden" aria-hidden>
+              <label>Tu sitio web</label>
+              <input
+                type="text"
+                autoComplete="off"
+                tabIndex={-1}
+                value={botTrap}
+                onChange={(e) => setBotTrap(e.target.value)}
+              />
+            </div>
 
               {/* Password Input */}
               <div>
