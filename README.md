@@ -214,19 +214,6 @@ Este proyecto está bajo la Licencia MIT. Ver `LICENSE` para más detalles.
 - **Guillermo Martinez** - Developer 
 - **Alejandro Alonso** - Developer 
 
-### Apoyo Emocional
-- **Miguel** - Gato Supervisor 🐱
-- **Terry** - Perro Motivacional 🐶
-
-## 🎉 Easter Egg
-
-Descubre la página secreta del equipo en `/easter-egg` con:
-- **Información del equipo** - Conoce a los desarrolladores
-- **Efectos visuales** - Confeti, animaciones y sonidos
-- **Tecnologías utilizadas** - Stack completo del proyecto
-- **Mensajes motivacionales** - Frases inspiradoras del desarrollo
-- **Diseño responsive** - Optimizado para móviles y desktop
-
 ## 🎨 Diseño y Branding
 
 ### Logo Personalizado
