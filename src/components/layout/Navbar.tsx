@@ -167,13 +167,18 @@ export default function Navbar({ user }: NavbarProps) {
                         <span className="font-medium">Configuración</span>
                       </Link>
                       <hr className="my-2 border-gray-200/50 mx-2" />
-                      <button
-                        onClick={handleLogout}
-                        className="flex items-center space-x-3 w-full px-4 py-3 text-sm text-red-600 hover:bg-red-50/80 hover:text-red-700 rounded-xl mx-2 transition-all duration-200 group"
+                      <a
+                        onClick={(e) => {
+                          e.preventDefault()
+                          handleLogout()
+                          setUserMenuOpen(false)
+                        }}
+                        role="button"
+                        className="flex items-center space-x-3 px-4 py-3 text-sm text-red-600 hover:bg-red-50/80 hover:text-red-700 rounded-xl mx-2 transition-all duration-200 group cursor-pointer"
                       >
                         <LogOut className="w-4 h-4 group-hover:scale-110 transition-transform duration-200" />
                         <span className="font-medium">Cerrar Sesión</span>
-                      </button>
+                      </a>
                     </div>
                   </>
                 )}
@@ -282,16 +287,18 @@ export default function Navbar({ user }: NavbarProps) {
                       <Settings className="w-4 h-4 group-hover:scale-110 transition-transform duration-200" />
                       <span className="font-medium">Configuración</span>
                     </Link>
-                    <button
-                      onClick={() => {
+                    <a
+                      onClick={(e) => {
+                        e.preventDefault()
                         handleLogout()
                         setMobileMenuOpen(false)
                       }}
-                      className="flex items-center space-x-3 w-full px-4 py-3 text-sm text-red-600 hover:bg-red-50/80 hover:text-red-700 rounded-xl transition-all duration-200 group"
+                      role="button"
+                      className="flex items-center space-x-3 w-full px-4 py-3 text-sm text-red-600 hover:bg-red-50/80 hover:text-red-700 rounded-xl transition-all duration-200 group cursor-pointer"
                     >
                       <LogOut className="w-4 h-4 group-hover:scale-110 transition-transform duration-200" />
                       <span className="font-medium">Cerrar Sesión</span>
-                    </button>
+                    </a>
                   </div>
                 </>
               ) : (
