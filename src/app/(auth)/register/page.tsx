@@ -1,8 +1,8 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import Button from '@/components/ui/Button'
 import { Card, CardContent } from '@/components/ui/Card'
 import { createClient } from '@/lib/supabase/client'
@@ -11,6 +11,7 @@ import { UserPlus, Mail, Lock, User, AlertCircle, CheckCircle, Shield, AlertTria
 
 export default function RegisterPage() {
   const router = useRouter()
+  const searchParams = useSearchParams()
   const [email, setEmail] = useState('')
   const [botTrap, setBotTrap] = useState('')
   const [password, setPassword] = useState('')
@@ -25,6 +26,16 @@ export default function RegisterPage() {
     isCompromised: boolean
     count: number
   } | null>(null)
+
+  useEffect(() => {
+    const errorParam = searchParams.get('error')
+    
+    if (errorParam === 'email-not-confirmed') {
+      setError('Debes confirmar tu email antes de poder usar la cuenta.')
+    } else if (errorParam === 'confirmation-failed') {
+      setError('Error al confirmar el email. Intenta registrarte nuevamente.')
+    }
+  }, [searchParams])
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault()

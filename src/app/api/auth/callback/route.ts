@@ -19,32 +19,38 @@ export async function GET(request: Request) {
         return NextResponse.redirect(new URL('/reset-password', requestUrl.origin))
       }
 
-      // Si es confirmación de email, verificar/crear usuario
-      const existingUser = await prisma.user.findUnique({
-        where: { id: data.user.id },
-      })
+      // Solo crear usuario si el email está confirmado
+      if (data.user.email_confirmed_at) {
+        // Si es confirmación de email, verificar/crear usuario
+        const existingUser = await prisma.user.findUnique({
+          where: { id: data.user.id },
+        })
 
-      // Si no existe, crearlo
-      if (!existingUser) {
-        try {
-          const username = data.user.user_metadata?.username || data.user.email!.split('@')[0].toLowerCase().replace(/[^a-z0-9_-]/g, '')
-          
-          await prisma.user.create({
-            data: {
-              id: data.user.id,
-              email: data.user.email!,
-              username: username,
-              displayName: data.user.user_metadata?.display_name || username,
-              usernameLastChanged: new Date(),
-            },
-          })
-        } catch (err) {
-          console.error('Error creating user in database:', err)
+        // Si no existe, crearlo
+        if (!existingUser) {
+          try {
+            const username = data.user.user_metadata?.username || data.user.email!.split('@')[0].toLowerCase().replace(/[^a-z0-9_-]/g, '')
+            
+            await prisma.user.create({
+              data: {
+                id: data.user.id,
+                email: data.user.email!,
+                username: username,
+                displayName: data.user.user_metadata?.display_name || username,
+                usernameLastChanged: new Date(),
+              },
+            })
+          } catch (err) {
+            console.error('Error creating user in database:', err)
+          }
         }
-      }
 
-      // Redirigir al login con mensaje de éxito
-      return NextResponse.redirect(new URL('/login?message=confirmed', requestUrl.origin))
+        // Redirigir al login con mensaje de éxito
+        return NextResponse.redirect(new URL('/login?message=confirmed', requestUrl.origin))
+      } else {
+        // Email no confirmado, redirigir con error
+        return NextResponse.redirect(new URL('/register?error=email-not-confirmed', requestUrl.origin))
+      }
     }
   }
 
