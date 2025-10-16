@@ -1,13 +1,12 @@
 'use client'
 
-import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import Button from '@/components/ui/Button'
 import { Card, CardBody, CardHeader } from '@/components/ui/Card'
 import { ArrowLeft, Shield, AlertTriangle, X, Check } from 'lucide-react'
 
 export default function NSFWRulesPage() {
-  const router = useRouter()
+
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/30 to-purple-50/30 py-8">
@@ -41,12 +40,64 @@ export default function NSFWRulesPage() {
               <div>
                 <h2 className="text-xl font-semibold text-gray-900 mb-2">¿Qué es contenido NSFW?</h2>
                 <p className="text-gray-700 mb-4">
-                NSFW significa "Not Safe For Work" (No apto para el trabajo) y se refiere a contenido que puede ser
+                NSFW significa &quot;Not Safe For Work&quot; (No apto para el trabajo) y se refiere a contenido que puede ser
                 inapropiado en entornos profesionales. En LibreBlog, aplicamos filtros automáticos
                 a este tipo de contenido para respetar las preferencias de nuestra comunidad.
                 </p>
                 <p className="text-gray-700">
                   Los usuarios pueden elegir si quieren ver este contenido con filtros o sin ellos en sus configuraciones personales.
+                </p>
+              </div>
+            </div>
+          </CardBody>
+        </Card>
+
+        {/* Dynamic Re-moderation Feature */}
+        <Card variant="elevated" className="mb-6 border-2 border-green-200 bg-green-50/50">
+          <CardHeader className="bg-green-100">
+            <div className="flex items-center gap-3">
+              <Check className="w-6 h-6 text-green-600" />
+              <h3 className="text-lg font-semibold text-green-900">✨ Re-moderación Dinámica Automática</h3>
+            </div>
+          </CardHeader>
+          <CardBody className="p-6">
+            <div className="space-y-4">
+              <div>
+                <p className="text-gray-900 font-medium mb-2">
+                  🔄 <strong>¡Cada vez que editas un post, se re-modera automáticamente!</strong>
+                </p>
+                <p className="text-sm text-gray-700 mb-3">
+                  Esto resuelve el problema de los posts que permanecen marcados como NSFW incluso después de eliminar el contenido problemático.
+                </p>
+              </div>
+
+              <div className="bg-white rounded-lg p-4 border border-green-200">
+                <h4 className="font-semibold text-gray-900 mb-2">¿Cómo funciona?</h4>
+                <ul className="text-sm text-gray-700 space-y-2">
+                  <li className="flex items-start gap-2">
+                    <Check className="w-4 h-4 text-green-600 flex-shrink-0 mt-0.5" />
+                    <span><strong>Si eliminas contenido NSFW:</strong> El filtro se quitará automáticamente al guardar</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="w-4 h-4 text-green-600 flex-shrink-0 mt-0.5" />
+                    <span><strong>Si agregas contenido NSFW:</strong> El filtro se aplicará automáticamente</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="w-4 h-4 text-green-600 flex-shrink-0 mt-0.5" />
+                    <span><strong>Cambios detectados:</strong> Título, contenido, imágenes y videos activan la re-moderación</span>
+                  </li>
+                  <li className="flex items-start gap-2">
+                    <Check className="w-4 h-4 text-green-600 flex-shrink-0 mt-0.5" />
+                    <span><strong>100% automático:</strong> No necesitas hacer nada especial, funciona transparentemente</span>
+                  </li>
+                </ul>
+              </div>
+
+              <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
+                <p className="text-sm text-blue-900">
+                  <strong>💡 Tip:</strong> Si tu post fue marcado como NSFW por error, simplemente edítalo, 
+                  asegúrate de que el contenido está limpio, y guárdalo de nuevo. El sistema lo re-evaluará 
+                  automáticamente y quitará el filtro si ya no detecta contenido NSFW.
                 </p>
               </div>
             </div>
@@ -129,14 +180,14 @@ export default function NSFWRulesPage() {
           <div>
               <p className="font-medium text-gray-900">Dominios y URLs Conocidos</p>
                 <p className="text-sm text-gray-600 mb-1">Sitios como: pornhub.com, xvideos.com, redtube.com, etc.</p>
-                  <p className="text-xs text-gray-500">También patrones como "porn", "xxx", "adult" en URLs.</p>
+                  <p className="text-xs text-gray-500">También patrones como &quot;porn&quot;, &quot;xxx&quot;, &quot;adult&quot; en URLs.</p>
                   </div>
                 </div>
                 <div className="flex items-start gap-3">
                   <AlertTriangle className="w-5 h-5 text-yellow-500 flex-shrink-0 mt-0.5" />
                   <div>
                     <p className="font-medium text-gray-900">Contenido para Adultos</p>
-                    <p className="text-sm text-gray-600 mb-1">Menciones explícitas: "18+", "NSFW", "solo adultos", etc.</p>
+                    <p className="text-sm text-gray-600 mb-1">Menciones explícitas: &quot;18+&quot;, &quot;NSFW&quot;, &quot;solo adultos&quot;, etc.</p>
                     <p className="text-xs text-gray-500">Etiquetas y advertencias de contenido adulto.</p>
                   </div>
                 </div>
@@ -230,23 +281,20 @@ export default function NSFWRulesPage() {
           <CardBody className="p-6">
             <div className="space-y-4">
               <div className="flex items-start gap-3">
-              <AlertTriangle className="w-5 h-5 text-yellow-600 flex-shrink-0 mt-0.5" />
-              <div>
-              <p className="font-medium text-gray-900">Re-moderación Automática</p>
-              <p className="text-sm text-gray-700">
-              Los posts pueden ser re-moderados automáticamente cuando se editan, permitiendo
-              cambios en la clasificación NSFW según el contenido actualizado.
-              </p>
-              </div>
-              </div>
-              <div className="flex items-start gap-3">
                 <AlertTriangle className="w-5 h-5 text-yellow-600 flex-shrink-0 mt-0.5" />
                 <div>
                   <p className="font-medium text-gray-900">Falsos Positivos</p>
-                  <p className="text-sm text-gray-700">
-                    El sistema puede marcar contenido legítimo como NSFW. Los usuarios pueden ajustar sus
-                    preferencias personales para ver este contenido sin filtros.
+                  <p className="text-sm text-gray-700 mb-2">
+                    El sistema puede marcar contenido legítimo como NSFW si contiene palabras que coinciden con el filtro.
                   </p>
+                  <p className="text-sm text-gray-700 mb-1">
+                    <strong>Soluciones:</strong>
+                  </p>
+                  <ul className="text-sm text-gray-700 space-y-1 ml-4 list-disc">
+                    <li>Edita tu post y guárdalo - se re-moderará automáticamente</li>
+                    <li>Si el contenido es legítimo pero usa palabras sensibles, reformula el texto</li>
+                    <li>Los usuarios pueden desactivar los filtros NSFW en sus configuraciones personales</li>
+                  </ul>
                 </div>
               </div>
               <div className="flex items-start gap-3">
@@ -256,6 +304,16 @@ export default function NSFWRulesPage() {
                   <p className="text-sm text-gray-700">
                     Todo el análisis se hace localmente en el servidor. No se envían datos a servicios externos
                     ni se almacena contenido sensible.
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-start gap-3">
+                <Check className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                <div>
+                  <p className="font-medium text-gray-900">Transparencia</p>
+                  <p className="text-sm text-gray-700">
+                    El sistema es completamente automático y objetivo. No hay moderación manual ni decisiones arbitrarias.
+                    Los mismos criterios se aplican a todos los posts por igual.
                   </p>
                 </div>
               </div>
