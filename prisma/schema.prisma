@@ -26,6 +26,7 @@ model User {
   username            String    @unique(map: "users_username_unique") @db.VarChar(30)
   publicEmail         String?   @map("public_email") @db.VarChar(255)
   usernameLastChanged DateTime? @map("username_last_changed") @db.Timestamptz(6)
+  nsfwProtection      Boolean   @default(true) @map("nsfw_protection")
   following           Follow[]  @relation("UserFollowing")
   followers           Follow[]  @relation("UserFollowers")
   posts               Post[]
@@ -47,6 +48,8 @@ model Post {
   createdAt  DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
   updatedAt  DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
   isPinned   Boolean   @default(false) @map("is_pinned")
+  isNSFW     Boolean   @default(false) @map("is_nsfw")
+  nsfwCategories String[] @default([]) @map("nsfw_categories")
   author     User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
   category   Category? @relation(fields: [categoryId], references: [id])
 
@@ -54,6 +57,7 @@ model Post {
   @@index([categoryId])
   @@index([isPublic])
   @@index([slug])
+  @@index([isNSFW])
   @@map("posts")
 }
 

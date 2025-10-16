@@ -58,16 +58,38 @@ export default function CreatePostPage() {
     }
 
     try {
-      const res = await fetch('/api/posts', {
+      // Primero, verificar si el contenido es NSFW
+      const moderationRes = await fetch('/api/moderate/nsfw', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           title,
           content,
-          imageUrl: imageUrl || null,
-          videoUrl: videoUrl || null,
-          categoryId: categoryId || null,
-          isPublic,
+          images: imageUrl ? [imageUrl] : []
+        }),
+      })
+
+      let isNSFW = false
+      let nsfwCategories: string[] = []
+      if (moderationRes.ok) {
+        const moderationData = await moderationRes.json()
+        isNSFW = moderationData.isNSFW
+        nsfwCategories = moderationData.categories || []
+      }
+
+      // Crear el post con la información NSFW
+      const res = await fetch('/api/posts', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+        title,
+        content,
+        imageUrl: imageUrl || null,
+        videoUrl: videoUrl || null,
+        categoryId: categoryId || null,
+        isPublic,
+        isNSFW,
+          nsfwCategories,
         }),
       })
 

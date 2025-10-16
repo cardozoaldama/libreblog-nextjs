@@ -8,6 +8,7 @@ import PinButton from '@/components/post/PinButton'
 import DeletePostButton from '@/components/posts/DeletePostButton'
 import { Eye, Edit, Pin, Search, Heart } from 'lucide-react'
 import { formatRelativeDate, getAvatarUrl } from '@/lib/utils'
+import NSFWFilter, { NSFWWarning } from '@/components/ui/NSFWFilter'
 
 interface Post {
   id: string
@@ -16,6 +17,8 @@ interface Post {
   imageUrl: string | null
   isPinned: boolean
   isPublic: boolean
+  isNSFW: boolean
+  nsfwCategories: string[]
   createdAt: Date
   category: {
     id: string
@@ -40,6 +43,7 @@ interface PostsListProps {
     email: string
     displayName: string | null
     avatarUrl: string | null
+    nsfwProtection?: boolean
   }
 }
 
@@ -85,11 +89,19 @@ export default function PostsList({ posts, currentUser }: PostsListProps) {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredPosts.map((post) => {
             const authorInfo = getAuthorDisplay(post)
+            const shouldFilter = post.isNSFW && (currentUser?.nsfwProtection ?? true)
+            
             return (
-            <div
-              key={post.id}
-              className="bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow overflow-hidden"
-            >
+            <div key={post.id} className="bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow overflow-hidden">
+              {/* NSFW Warning */}
+              {post.isNSFW && <NSFWWarning isNSFW={true} categories={post.nsfwCategories} className="m-4 mb-0" />}
+              
+              <NSFWFilter
+              isNSFW={shouldFilter}
+              categories={post.nsfwCategories}
+              postId={post.id}
+                className=""
+              >
               {/* Image */}
               {post.imageUrl && (
                 <Link href={`/post/${post.slug}`}>
@@ -184,6 +196,7 @@ export default function PostsList({ posts, currentUser }: PostsListProps) {
                   <DeletePostButton postId={post.id} postTitle={post.title} />
                 </div>
               </div>
+              </NSFWFilter>
             </div>
             )
           })}

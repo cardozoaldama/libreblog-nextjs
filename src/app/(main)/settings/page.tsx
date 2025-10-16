@@ -13,6 +13,7 @@ import UsernameSection from '@/components/settings/UsernameSection'
 import PublicEmailSection from '@/components/settings/PublicEmailSection'
 import TwoFactorSection from '@/components/settings/TwoFactorSection'
 import ProfileSection from '@/components/settings/ProfileSection'
+import NSFWProtectionSection from '@/components/settings/NSFWProtectionSection'
 
 // Interfaz para los datos del usuario
 interface UserData {
@@ -31,6 +32,7 @@ interface UserData {
   xUrl: string | null
   tiktokUrl: string | null
   linkedinUrl: string | null
+  nsfwProtection: boolean
 }
 
 // Interfaz para seguidores y seguidos
@@ -62,6 +64,7 @@ export default function SettingsPage() {
   const [loadingFollowers, setLoadingFollowers] = useState(false)
   const [loadingFollowing, setLoadingFollowing] = useState(false)
   const [is2FAEnabled, setIs2FAEnabled] = useState(false)
+  const [nsfwProtection, setNsfwProtection] = useState(true)
 
   const [isSaving, setIsSaving] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
@@ -106,6 +109,7 @@ export default function SettingsPage() {
         setXUrl(userData.xUrl || '')
         setTiktokUrl(userData.tiktokUrl || '')
         setLinkedinUrl(userData.linkedinUrl || '')
+        setNsfwProtection(userData.nsfwProtection ?? true)
         
         // Verificar estado de 2FA
         const factors = await supabase.auth.mfa.listFactors()
@@ -206,6 +210,27 @@ export default function SettingsPage() {
     }
   }
 
+  // Función para manejar el toggle de protección NSFW
+  const handleNSFWToggle = async (enabled: boolean) => {
+    try {
+      const res = await fetch('/api/users/nsfw-protection', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ nsfwProtection: enabled }),
+      })
+
+      if (!res.ok) {
+        const errorData = await res.json()
+        throw new Error(errorData.error || 'Error al actualizar configuración')
+      }
+
+      setNsfwProtection(enabled)
+    } catch (error) {
+      console.error('Error actualizando protección NSFW:', error)
+      throw error
+    }
+  }
+
   if (!user) {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
@@ -283,6 +308,14 @@ export default function SettingsPage() {
                 text: is2FAEnabled ? '2FA desactivado' : '2FA activado correctamente' 
               })
             }}
+          />
+        </div>
+
+        {/* NSFW Protection Section */}
+        <div className="mb-6">
+          <NSFWProtectionSection
+            nsfwProtection={nsfwProtection}
+            onToggle={handleNSFWToggle}
           />
         </div>
 

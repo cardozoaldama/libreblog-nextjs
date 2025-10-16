@@ -158,7 +158,8 @@ export default async function DashboardPage() {
             id: user.id,
             email: user.email,
             displayName: user.displayName,
-            avatarUrl: user.avatarUrl
+            avatarUrl: user.avatarUrl,
+            nsfwProtection: user.nsfwProtection
           }}
         />
           )}
