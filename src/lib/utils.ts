@@ -71,13 +71,6 @@ export function extractExcerpt(markdown: string, maxLength: number = 200): strin
   return truncateText(plainText, maxLength)
 }
 
-// Extraer ID de video de YouTube desde URL (incluyendo Shorts)
-export function extractYouTubeId(url: string): string | null {
-  const regex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?|shorts)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/
-  const match = url.match(regex)
-  return match ? match[1] : null
-}
-
 // Detectar tipo de video y generar embed
 export function getVideoEmbed(url: string): { type: 'youtube' | 'tiktok' | 'facebook' | null; embedUrl: string | null } {
   // YouTube (videos normales, Shorts, listas, mixes)
@@ -104,6 +97,16 @@ export function getVideoEmbed(url: string): { type: 'youtube' | 'tiktok' | 'face
   return { type: null, embedUrl: null }
 }
 
+// Validar URL general
+export function isValidUrl(url: string): boolean {
+  try {
+    new URL(url)
+    return true
+  } catch {
+    return false
+  }
+}
+
 // Validar URL de imagen
 export function isValidImageUrl(url: string): boolean {
   try {
@@ -112,6 +115,13 @@ export function isValidImageUrl(url: string): boolean {
   } catch {
     return false
   }
+}
+
+// Extraer ID de video de YouTube desde URL (incluyendo Shorts)
+export function extractYouTubeId(url: string): string | null {
+  const regex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?|shorts)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/
+  const match = url.match(regex)
+  return match ? match[1] : null
 }
 
 // Combinar clases de Tailwind

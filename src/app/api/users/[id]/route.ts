@@ -7,13 +7,31 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { id } = await params
-    
+    let { id } = await params
+
     if (!id || id === 'undefined') {
       return NextResponse.json({ error: 'Invalid user ID' }, { status: 400 })
     }
 
     const supabase = await createClient()
+
+    // Si es 'me', obtener el usuario actual
+    if (id === 'me') {
+      const { data: { user: authUser } } = await supabase.auth.getUser()
+      if (!authUser) {
+        return NextResponse.json({ error: 'Not authenticated' }, { status: 401 })
+      }
+      id = authUser.id
+    }
+
+    // Obtener datos de Prisma (incluyendo nsfwProtection)
+    const prismaUser = await prisma.user.findUnique({
+      where: { id },
+      select: {
+        nsfwProtection: true
+      }
+    })
+
     const { data: user, error } = await supabase
       .from('users')
       .select('id, email, username, public_email, username_last_changed, display_name, bio, avatar_url, website_url, github_url, facebook_url, instagram_url, x_url, tiktok_url, linkedin_url, created_at')
@@ -41,6 +59,7 @@ export async function GET(
       tiktokUrl: user.tiktok_url,
       linkedinUrl: user.linkedin_url,
       createdAt: user.created_at,
+      nsfwProtection: prismaUser?.nsfwProtection ?? true, // Default true
     })
   } catch (error) {
     console.error('Error fetching user:', error)

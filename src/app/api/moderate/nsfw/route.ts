@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { ImageAnnotatorClient } from '@google-cloud/vision'
 
 // Lista de palabras clave NSFW (básica, se puede expandir)
 const NSFW_KEYWORDS = [
@@ -8,19 +7,41 @@ const NSFW_KEYWORDS = [
   'desnudo', 'desnuda', 'desnudos', 'desnudas', 'nude', 'nudes',
   'explicito', 'explicita', 'explicit', 'nsfw', 'erotico', 'erotica',
   'fetiche', 'fetish', 'bdsm', 'violencia', 'violento', 'sangre',
-  'drogas', 'drogas', 'marihuana', 'cocaína', 'heroína', 'alcohol',
+  'drogas', 'drogas', 'marihuana', 'cocaína', 'heroína',
   'suicidio', 'suicidarse', 'matar', 'muerte', 'asesinato',
+  'violar', 'violación', 'incesto', 'genocidio', 'tortura',
+  'follar', 'follado', 'folles', 'coger', 'cogido', 'cogiendo',
   // Palabras en inglés
   'sex', 'sexual', 'porn', 'pornography', 'adult', 'nude', 'naked',
   'explicit', 'erotic', 'fetish', 'violence', 'violent', 'blood',
-  'drugs', 'marijuana', 'cocaine', 'heroin', 'suicide', 'kill', 'death'
+  'drugs', 'marijuana', 'cocaine', 'heroin', 'suicide', 'kill', 'death',
+  'rape', 'incest', 'genocide', 'torture'
 ]
 
-// Dominios conocidos por contenido NSFW
-const NSFW_DOMAINS = [
+// Dominios conocidos por contenido NSFW (imágenes)
+const NSFW_IMAGE_DOMAINS = [
   'pornhub.com', 'xvideos.com', 'redtube.com', 'youporn.com',
   'xhamster.com', 'tube8.com', 'beeg.com', 'tnaflix.com',
-  'xtube.com', 'empflix.com', 'slutload.com', 'keezmovies.com'
+  'xtube.com', 'empflix.com', 'slutload.com', 'keezmovies.com',
+  'imgur.com', 'reddit.com', '4chan.org', '8kun.top',
+  'flickr.com', 'photobucket.com', 'imageshack.us', 'tinypic.com',
+  'postimg.org', 'imgbb.com', 'freeimage.host', 'imgbox.com',
+  // CDN domains
+  'phncdn.com', 'xvideos-cdn.com', 'xnxx-cdn.com', 'xhcdn.com',
+  // Additional NSFW sites
+  'erome.com', 'manyvids.com', 'clips4sale.com', 'tmohentai.com',
+  'perfectgirls.xxx', 'porndiff.com', 'xpaja.net', 'xgroovy.com',
+  'puritanas.com', 'pictoa.com', 'xxxshame.com', 'youx.xxx',
+  'hdroom.xxx', 'sexkomix2.com', 'hhpanel.org', 'ijuegosporno.com',
+  'comicsflix.com', 'comicsparaadultos.com', 'rule34.xxx'
+]
+
+// Patrones de URLs de imágenes NSFW
+const NSFW_IMAGE_PATTERNS = [
+  /porn/i, /xxx/i, /adult/i, /sex/i, /nude/i, /naked/i,
+  /fetish/i, /bdsm/i, /nsfw/i, /hentai/i, /anime/i,
+  /boobs/i, /tits/i, /ass/i, /pussy/i, /dick/i, /cock/i,
+  /cum/i, /fuck/i, /shit/i, /bitch/i, /whore/i
 ]
 
 // Patrones de URLs sospechosas
@@ -54,9 +75,9 @@ function analyzeText(text: string): { isNSFW: boolean; confidence: number; reaso
 
   // Categorías de palabras clave
   const keywordCategories: Record<string, string[]> = {
-    sexual: ['sexo', 'sexual', 'porn', 'pornografia', 'xxx', 'adulto', 'adultos', 'desnudo', 'desnuda', 'desnudos', 'desnudas', 'nude', 'nudes', 'explicito', 'explicita', 'explicit', 'nsfw', 'erotico', 'erotica', 'fetiche', 'fetish', 'bdsm', 'sex', 'porn', 'pornography', 'adult', 'nude', 'naked', 'explicit', 'erotic', 'fetish'],
-    violencia: ['violencia', 'violento', 'sangre', 'muerte', 'asesinato', 'matar', 'violence', 'violent', 'blood', 'death', 'kill', 'suicide', 'suicidarse'],
-    drogas: ['drogas', 'marihuana', 'cocaína', 'heroína', 'alcohol', 'drugs', 'marijuana', 'cocaine', 'heroin']
+    sexual: ['sexo', 'sexual', 'porn', 'pornografia', 'xxx', 'adulto', 'adultos', 'desnudo', 'desnuda', 'desnudos', 'desnudas', 'nude', 'nudes', 'explicito', 'explicita', 'explicit', 'nsfw', 'erotico', 'erotica', 'fetiche', 'fetish', 'bdsm', 'incesto', 'follar', 'follado', 'folles', 'coger', 'cogido', 'cogiendo', 'sex', 'porn', 'pornography', 'adult', 'nude', 'naked', 'explicit', 'erotic', 'fetish', 'incest'],
+    violencia: ['violencia', 'violento', 'sangre', 'muerte', 'asesinato', 'matar', 'violar', 'violación', 'genocidio', 'tortura', 'violence', 'violent', 'blood', 'death', 'kill', 'suicide', 'suicidarse', 'rape', 'genocide', 'torture'],
+    drogas: ['drogas', 'marihuana', 'cocaína', 'heroína', 'drugs', 'marijuana', 'cocaine', 'heroin']
   }
 
   // Buscar palabras clave
@@ -104,7 +125,7 @@ function analyzeText(text: string): { isNSFW: boolean; confidence: number; reaso
   }
 
   return {
-    isNSFW: confidence > 0.3,
+    isNSFW: confidence >= 0.3,
     confidence: Math.min(confidence, 1),
     reasons,
     detectedText,
@@ -130,7 +151,7 @@ function analyzeUrls(text: string): { isNSFW: boolean; confidence: number; reaso
       const domain = urlObj.hostname.toLowerCase()
 
       // Verificar dominios conocidos
-      if (NSFW_DOMAINS.some(nsfwDomain => domain.includes(nsfwDomain))) {
+      if (NSFW_IMAGE_DOMAINS.some(nsfwDomain => domain.includes(nsfwDomain))) {
         detectedUrls.push(url)
         confidence += 0.8
         reasons.push(`Dominio NSFW conocido: ${domain}`)
@@ -150,7 +171,7 @@ function analyzeUrls(text: string): { isNSFW: boolean; confidence: number; reaso
   }
 
   return {
-    isNSFW: confidence > 0.3,
+    isNSFW: confidence >= 0.3,
     confidence: Math.min(confidence, 1),
     reasons,
     detectedUrls,
@@ -159,7 +180,7 @@ function analyzeUrls(text: string): { isNSFW: boolean; confidence: number; reaso
 }
 
 /**
- * Analiza imágenes usando Google Vision API para detección de contenido NSFW
+ * Analiza imágenes usando detección básica gratuita (sin APIs externas)
  */
 async function analyzeImages(imageUrls: string[]): Promise<{ isNSFW: boolean; confidence: number; reasons: string[]; detectedImages: string[]; categories: string[] }> {
   const detectedImages: string[] = []
@@ -167,109 +188,54 @@ async function analyzeImages(imageUrls: string[]): Promise<{ isNSFW: boolean; co
   const categories: string[] = []
   let confidence = 0
 
-  // Si no hay API key, usar detección básica por URL
-  if (!process.env.GOOGLE_VISION_API_KEY) {
-    console.warn('GOOGLE_VISION_API_KEY no configurada, usando detección básica por URL')
+  // Detección agresiva por URL, dominios y patrones
+  for (const imageUrl of imageUrls) {
+    const lowerUrl = imageUrl.toLowerCase()
 
-    for (const imageUrl of imageUrls) {
-      if (SUSPICIOUS_PATTERNS.some(pattern => pattern.test(imageUrl))) {
+    // Verificar dominios conocidos por contenido NSFW
+    if (NSFW_IMAGE_DOMAINS.some(domain => lowerUrl.includes(domain))) {
+      detectedImages.push(imageUrl)
+      confidence += 0.9
+      reasons.push(`Imagen de dominio NSFW conocido: ${imageUrl}`)
+      if (!categories.includes('sexual')) categories.push('sexual')
+    }
+
+    // Verificar patrones NSFW en la URL completa
+    if (NSFW_IMAGE_PATTERNS.some(pattern => pattern.test(lowerUrl))) {
+      if (!detectedImages.includes(imageUrl)) {
         detectedImages.push(imageUrl)
-        confidence += 0.5
-        reasons.push(`URL de imagen sospechosa: ${imageUrl}`)
-        categories.push('sospechoso')
+        confidence += 0.8
+        reasons.push(`URL de imagen con contenido NSFW: ${imageUrl}`)
+        if (!categories.includes('sexual')) categories.push('sexual')
       }
     }
 
-    return {
-      isNSFW: confidence > 0.3,
-      confidence: Math.min(confidence, 1),
-      reasons,
-      detectedImages,
-      categories
-    }
-  }
-
-  try {
-    // Inicializar cliente de Google Vision
-    const client = new ImageAnnotatorClient({
-      apiKey: process.env.GOOGLE_VISION_API_KEY
-    })
-
-    for (const imageUrl of imageUrls) {
-      try {
-        // Analizar imagen con Google Vision
-        const [result] = await client.safeSearchDetection(imageUrl)
-        const safeSearch = result.safeSearchAnnotation
-
-        if (!safeSearch) continue
-
-        // Evaluar niveles de seguridad
-        const adultLikelihood = String(safeSearch.adult || 'UNKNOWN')
-        const violenceLikelihood = String(safeSearch.violence || 'UNKNOWN')
-        const racyLikelihood = String(safeSearch.racy || 'UNKNOWN')
-
-        // Mapeo de likelihood a valores numéricos
-        const likelihoodToScore: Record<string, number> = {
-          'UNKNOWN': 0,
-          'VERY_UNLIKELY': 0.1,
-          'UNLIKELY': 0.3,
-          'POSSIBLE': 0.6,
-          'LIKELY': 0.8,
-          'VERY_LIKELY': 0.9
-        }
-
-        const adultScore = likelihoodToScore[adultLikelihood] || 0
-        const violenceScore = likelihoodToScore[violenceLikelihood] || 0
-        const racyScore = likelihoodToScore[racyLikelihood] || 0
-
-        // Si algún score es alto, marcar como NSFW
-        const maxScore = Math.max(adultScore, violenceScore, racyScore)
-
-        if (maxScore >= 0.7) {
-          detectedImages.push(imageUrl)
-          confidence += maxScore
-
-          if (adultScore >= 0.7) {
-            reasons.push(`Contenido adulto detectado en imagen (${adultLikelihood.toLowerCase()})`)
-            categories.push('adulto')
-          }
-          if (violenceScore >= 0.7) {
-            reasons.push(`Contenido violento detectado en imagen (${violenceLikelihood.toLowerCase()})`)
-            categories.push('violencia')
-          }
-          if (racyScore >= 0.7) {
-            reasons.push(`Contenido sugerente detectado en imagen (${racyLikelihood.toLowerCase()})`)
-            categories.push('sugerente')
-          }
-        }
-      } catch (error) {
-        console.error(`Error analizando imagen ${imageUrl}:`, error)
-
-        // Fallback: verificar URL por patrones
-        if (SUSPICIOUS_PATTERNS.some(pattern => pattern.test(imageUrl))) {
-          detectedImages.push(imageUrl)
-          confidence += 0.4
-          reasons.push(`URL de imagen sospechosa (fallback): ${imageUrl}`)
-          categories.push('sospechoso')
-        }
+    // Verificar nombres de archivo muy sugerentes
+    const filename = imageUrl.split('/').pop()?.split('?')[0] || ''
+    const filenameSuggestivePatterns = [/nude/i, /porn/i, /sex/i, /xxx/i, /adult/i, /naked/i, /boobs/i, /tits/i, /ass/i, /pussy/i, /dick/i, /cock/i]
+    if (filenameSuggestivePatterns.some(pattern => pattern.test(filename))) {
+      if (!detectedImages.includes(imageUrl)) {
+        detectedImages.push(imageUrl)
+        confidence += 0.7
+        reasons.push(`Nombre de archivo NSFW: ${filename}`)
+        if (!categories.includes('sexual')) categories.push('sexual')
       }
     }
-  } catch (error) {
-    console.error('Error inicializando Google Vision API:', error)
 
-    // Fallback completo: detección básica por URL
-    for (const imageUrl of imageUrls) {
-      if (SUSPICIOUS_PATTERNS.some(pattern => pattern.test(imageUrl))) {
+    // Verificar patrones en path de la URL
+    const urlPath = imageUrl.split('?')[0] // quitar query params
+    if (NSFW_IMAGE_PATTERNS.some(pattern => pattern.test(urlPath))) {
+      if (!detectedImages.includes(imageUrl)) {
         detectedImages.push(imageUrl)
-        confidence += 0.4
-        reasons.push(`URL de imagen sospechosa (fallback completo): ${imageUrl}`)
-        categories.push('sospechoso')
+        confidence += 0.6
+        reasons.push(`Path de imagen con contenido NSFW: ${imageUrl}`)
+        if (!categories.includes('sospechoso')) categories.push('sospechoso')
       }
     }
   }
 
   return {
-    isNSFW: confidence > 0.3,
+    isNSFW: confidence >= 0.3,
     confidence: Math.min(confidence, 1),
     reasons,
     detectedImages,

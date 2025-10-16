@@ -55,8 +55,8 @@ export default function AboutPage() {
           </div>
 
           <Card variant="elevated">
-            <CardBody className="p-8">
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">Características Actuales</h2>
+          <CardBody className="p-8">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">Características Actuales <span className="text-sm font-normal text-gray-500">v1.2.0</span></h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-3">
                   <li className="flex items-start">
@@ -143,15 +143,15 @@ export default function AboutPage() {
           </Card>
 
           <Card variant="elevated">
-            <CardBody className="p-8">
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">Contacto</h2>
-              <p className="text-gray-700 mb-4">
-                ¿Tienes preguntas, sugerencias o quieres reportar un problema? Nos encantaría escucharte.
-              </p>
-              <p className="text-gray-700">
-                Email: <a href="mailto:contact@libreblog.com" className="text-blue-600 hover:text-blue-700">contact@libreblog.com</a>
-              </p>
-            </CardBody>
+          <CardBody className="p-8">
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">Repositorio</h2>
+          <p className="text-gray-700 mb-4">
+          LibreBlog es un proyecto open source. Contribuye, reporta issues o explora el código.
+          </p>
+          <p className="text-gray-700">
+          GitHub: <a href="https://github.com/IsmaNov12/libreblog-nextjs" target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:text-blue-700">https://github.com/IsmaNov12/libreblog-nextjs</a>
+          </p>
+          </CardBody>
           </Card>
         </div>
 

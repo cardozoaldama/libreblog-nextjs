@@ -34,6 +34,31 @@ export async function POST(request: NextRequest) {
       slug = makeSlugUnique(slug)
     }
 
+    // Moderar contenido NSFW automáticamente
+    let moderationResult = null
+    try {
+      const moderationRes = await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/moderate/nsfw`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title,
+          content,
+          images: imageUrl ? [imageUrl] : []
+        })
+      })
+
+      if (moderationRes.ok) {
+        moderationResult = await moderationRes.json()
+      }
+    } catch (error) {
+      console.error('Error during NSFW moderation:', error)
+      // Continuar con la creación sin moderación si falla
+    }
+
+    // Usar resultados de moderación o valores proporcionados por el cliente
+    const finalIsNSFW = moderationResult ? moderationResult.isNSFW : (isNSFW || false)
+    const finalNSFWCategories = moderationResult ? moderationResult.categories : (nsfwCategories || [])
+
     // Crear post
     const post = await prisma.post.create({
       data: {
@@ -43,8 +68,8 @@ export async function POST(request: NextRequest) {
         imageUrl,
         videoUrl,
         isPublic,
-        isNSFW: isNSFW || false,
-        nsfwCategories: nsfwCategories || [],
+        isNSFW: finalIsNSFW,
+        nsfwCategories: finalNSFWCategories,
         authorId: user.id,
         categoryId: categoryId || null,
       },
@@ -59,6 +84,80 @@ export async function POST(request: NextRequest) {
     console.error('Error creating post:', error)
     return NextResponse.json(
       { error: 'Failed to create post' },
+      { status: 500 }
+    )
+  }
+}
+
+// API para remoderar posts existentes (requiere admin/sudo)
+export async function PATCH(request: NextRequest) {
+  try {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    // Verificar que sea admin (por ahora, permitir solo al usuario específico)
+    // TODO: Implementar sistema de roles
+    const adminEmail = process.env.ADMIN_EMAIL
+    if (user.email !== adminEmail) {
+      return NextResponse.json({ error: 'Forbidden - Admin required' }, { status: 403 })
+    }
+
+    // Remoderar todos los posts (para testing)
+    const posts = await prisma.post.findMany({
+    select: { id: true, title: true, content: true, imageUrl: true, isNSFW: true }
+    })
+
+    let moderatedCount = 0
+
+    for (const post of posts) {
+      // Solo moderar posts que no han sido moderados aún (isNSFW es false por defecto)
+      if (post.isNSFW === false) {
+        try {
+          // Moderar el post
+          const moderationRes = await fetch(`http://localhost:3000/api/moderate/nsfw`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              title: post.title,
+              content: post.content,
+              images: post.imageUrl ? [post.imageUrl] : []
+            })
+          })
+
+          if (moderationRes.ok) {
+            const moderationData = await moderationRes.json()
+            const isNSFW = moderationData.isNSFW
+            const nsfwCategories = moderationData.categories || []
+
+            // Actualizar el post
+            await prisma.post.update({
+              where: { id: post.id },
+              data: {
+                isNSFW: isNSFW || false,
+                nsfwCategories: nsfwCategories
+              }
+            })
+
+            if (isNSFW) moderatedCount++
+          }
+        } catch (error) {
+          console.error(`Error moderating post ${post.id}:`, error)
+        }
+      }
+    }
+
+    return NextResponse.json({
+      message: `Moderated ${moderatedCount} posts`,
+      moderatedCount
+    })
+  } catch (error) {
+    console.error('Error in bulk moderation:', error)
+    return NextResponse.json(
+      { error: 'Failed to moderate posts' },
       { status: 500 }
     )
   }
@@ -103,32 +202,19 @@ export async function GET(request: NextRequest) {
           },
         },
         category: true,
+        _count: {
+          select: { likes: true }
+        }
       },
       orderBy: { createdAt: 'desc' },
       take: limit + 1,
       skip: offset,
     })
 
-    // Agregar conteo de likes manualmente
-    const postsWithLikes = await Promise.all(
-      posts.map(async (post) => {
-        let likeCount = 0
-        try {
-          likeCount = await prisma.like.count({
-            where: { postId: post.id },
-          })
-        } catch {
-          // Si la tabla likes no existe, usar 0
-        }
-        return {
-          ...post,
-          _count: { likes: likeCount },
-        }
-      })
-    )
+    // Los posts ya incluyen el conteo de likes
 
-    const hasMore = postsWithLikes.length > limit
-    const postsToReturn = hasMore ? postsWithLikes.slice(0, -1) : postsWithLikes
+    const hasMore = posts.length > limit
+    const postsToReturn = hasMore ? posts.slice(0, -1) : posts
 
     return NextResponse.json({
       posts: postsToReturn,

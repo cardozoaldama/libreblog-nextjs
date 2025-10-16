@@ -49,6 +49,37 @@ export async function PUT(
       }
     }
 
+    // Moderar contenido NSFW en CUALQUIER cambio del post
+    // Esto incluye: cambios en contenido, imagen, video, estado público, etc.
+    let nsfwResult = null
+    const hasAnyChanges =
+      title !== existingPost.title ||
+      content !== existingPost.content ||
+      imageUrl !== existingPost.imageUrl ||
+      videoUrl !== existingPost.videoUrl ||
+      isPublic !== existingPost.isPublic
+
+    if (hasAnyChanges) {
+      try {
+        const moderationResponse = await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/moderate/nsfw`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            title,
+            content,
+            images: imageUrl ? [imageUrl] : []
+          })
+        })
+
+        if (moderationResponse.ok) {
+          nsfwResult = await moderationResponse.json()
+        }
+      } catch (error) {
+        console.error('Error during NSFW moderation:', error)
+        // Continuar con la actualización sin moderación si falla
+      }
+    }
+
     // Actualizar post
     const post = await prisma.post.update({
       where: { id },
@@ -60,6 +91,11 @@ export async function PUT(
         videoUrl,
         isPublic,
         categoryId: categoryId || null,
+        // Actualizar flags NSFW si se realizó moderación
+        ...(nsfwResult && {
+          isNSFW: nsfwResult.isNSFW,
+          nsfwCategories: nsfwResult.categories
+        })
       },
       include: {
         author: true,
@@ -77,6 +113,74 @@ export async function PUT(
   }
 }
 
+// Endpoint para forzar re-moderación de un post (útil desde el editor)
+export async function POST(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const { id } = await params
+  try {
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+
+    if (!user) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    }
+
+    // Obtener el post actual
+    const post = await prisma.post.findUnique({
+      where: { id },
+    })
+
+    if (!post || post.authorId !== user.id) {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+    }
+
+    // Forzar re-moderación
+    let nsfwResult = null
+    try {
+      const moderationResponse = await fetch(`${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/api/moderate/nsfw`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          title: post.title,
+          content: post.content,
+          images: post.imageUrl ? [post.imageUrl] : []
+        })
+      })
+
+      if (moderationResponse.ok) {
+        nsfwResult = await moderationResponse.json()
+      }
+    } catch (error) {
+      console.error('Error during forced NSFW moderation:', error)
+    }
+
+    // Actualizar con resultados de moderación si se obtuvo
+    if (nsfwResult) {
+      await prisma.post.update({
+        where: { id },
+        data: {
+          isNSFW: nsfwResult.isNSFW,
+          nsfwCategories: nsfwResult.categories
+        }
+      })
+
+      return NextResponse.json({
+        success: true,
+        moderation: nsfwResult
+      })
+    }
+
+    return NextResponse.json({ success: false, message: 'Moderation failed' })
+  } catch (error) {
+    console.error('Error forcing post moderation:', error)
+    return NextResponse.json(
+      { error: 'Failed to moderate post' },
+      { status: 500 }
+    )
+  }
+}
 export async function DELETE(
   request: NextRequest,
   { params }: { params: Promise<{ id: string }> }

@@ -32,44 +32,44 @@ export async function GET(request: Request) {
     let posts: any[] = []
     if (followingIds.length > 0) {
       posts = await prisma.post.findMany({
-        where: {
-          isPublic: true,
-          authorId: { in: followingIds },
-          ...(search && {
-            OR: [
-              { title: { contains: search, mode: 'insensitive' } },
-              { content: { contains: search, mode: 'insensitive' } },
-            ],
-          }),
+      where: {
+      isPublic: true,
+      authorId: { in: followingIds },
+      ...(search && {
+      OR: [
+      { title: { contains: search, mode: 'insensitive' } },
+      { content: { contains: search, mode: 'insensitive' } },
+      ],
+      }),
+      },
+      select: {
+        id: true,
+        title: true,
+        content: true,
+        slug: true,
+        createdAt: true,
+        imageUrl: true,
+        isNSFW: true,
+        nsfwCategories: true,
+        author: {
+          select: {
+            id: true,
+            email: true,
+            displayName: true,
+            avatarUrl: true,
         },
-        include: {
-          author: {
-            select: {
-              id: true,
-              email: true,
-              displayName: true,
-              avatarUrl: true,
-            },
-          },
-          category: true,
-        },
-        orderBy: { createdAt: 'desc' },
-        take: limit + 1,
-        skip: offset,
+      },
+      category: true,
+      _count: {
+        select: { likes: true }
+      }
+      },
+      orderBy: { createdAt: 'desc' },
+      take: limit + 1,
+      skip: offset,
       })
 
-      // Agregar conteo de likes
-      posts = await Promise.all(
-        posts.map(async (post) => {
-          let likeCount = 0
-          try {
-            likeCount = await prisma.like.count({ where: { postId: post.id } })
-          } catch {
-            // Si la tabla likes no existe, usar 0
-          }
-          return { ...post, _count: { likes: likeCount } }
-        })
-      )
+      // Los posts ya incluyen el conteo de likes
     }
 
     const hasMore = posts.length > limit

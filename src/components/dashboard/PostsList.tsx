@@ -3,12 +3,14 @@
 import { useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
+import { useRouter } from 'next/navigation'
 import Button from '@/components/ui/Button'
+import { Card, CardBody } from '@/components/ui/Card'
 import PinButton from '@/components/post/PinButton'
 import DeletePostButton from '@/components/posts/DeletePostButton'
-import { Eye, Edit, Pin, Search, Heart } from 'lucide-react'
-import { formatRelativeDate, getAvatarUrl } from '@/lib/utils'
-import NSFWFilter, { NSFWWarning } from '@/components/ui/NSFWFilter'
+import { Eye, Edit, Pin, Search, Heart, AlertTriangle } from 'lucide-react'
+import { formatRelativeDate, getGravatarUrl } from '@/lib/utils'
+import NSFWFilter from '@/components/ui/NSFWFilter'
 
 interface Post {
   id: string
@@ -49,6 +51,7 @@ interface PostsListProps {
 
 export default function PostsList({ posts, currentUser }: PostsListProps) {
   const [searchQuery, setSearchQuery] = useState('')
+  const router = useRouter()
 
   const filteredPosts = posts.filter(post =>
     post.title.toLowerCase().includes(searchQuery.toLowerCase())
@@ -58,7 +61,7 @@ export default function PostsList({ posts, currentUser }: PostsListProps) {
     const author = post.author || currentUser
     return {
       name: author?.displayName || author?.email?.split('@')[0] || 'Autor desconocido',
-      avatar: getAvatarUrl(author?.email || '', author?.avatarUrl, 32)
+      avatar: author?.avatarUrl || getGravatarUrl(author?.email || '', 32)
     }
   }
 
@@ -92,111 +95,111 @@ export default function PostsList({ posts, currentUser }: PostsListProps) {
             const shouldFilter = post.isNSFW && (currentUser?.nsfwProtection ?? true)
             
             return (
-            <div key={post.id} className="bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow overflow-hidden">
-              {/* NSFW Warning */}
-              {post.isNSFW && <NSFWWarning isNSFW={true} categories={post.nsfwCategories} className="m-4 mb-0" />}
-              
+            <div key={post.id} className="block h-full">
               <NSFWFilter
               isNSFW={shouldFilter}
               categories={post.nsfwCategories}
-              postId={post.id}
-                className=""
-              >
-              {/* Image */}
-              {post.imageUrl && (
-                <Link href={`/post/${post.slug}`}>
-                  <div className="relative h-48 w-full bg-gray-200">
+            >
+              <Link href={`/post/${post.slug}`} className="block h-full">
+                <Card variant="hover" className="group animate-in fade-in slide-in-from-bottom duration-500 cursor-pointer h-full flex flex-col">
+                  <CardBody className="p-0 flex flex-col h-full">
+                  <div className="relative w-full h-48 flex-shrink-0">
+                  {post.imageUrl ? (
                     <Image
                       src={post.imageUrl}
-                      alt={post.title}
-                      fill
-                      className="object-cover"
-                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                      unoptimized
-                    />
-                  </div>
-                </Link>
-              )}
-
-              {/* Content */}
-              <div className="p-4">
-                {/* Author Info */}
-                <div className="flex items-center gap-2 mb-3">
-                  <div className="relative w-8 h-8 rounded-full overflow-hidden bg-gradient-to-br from-blue-500 to-purple-500">
-                    {authorInfo.avatar ? (
-                      <Image
-                        src={authorInfo.avatar}
-                        alt={authorInfo.name}
-                        fill
-                        className="object-cover"
-                        unoptimized
-                      />
-                    ) : (
-                      <div className="w-full h-full flex items-center justify-center text-white text-sm font-bold">
-                        {authorInfo.name.charAt(0).toUpperCase()}
-                      </div>
-                    )}
-                  </div>
-                  <span className="text-sm font-medium text-gray-700">{authorInfo.name}</span>
-                </div>
-                {/* Badges */}
-                <div className="flex flex-wrap items-center gap-2 mb-3">
-                  {post.category && (
-                    <span className="inline-block px-2.5 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
-                      {post.category.icon} {post.category.name}
-                    </span>
-                  )}
-                  {post.isPinned && (
-                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-xs font-medium bg-blue-500 text-white">
-                      <Pin className="w-3 h-3" /> Pineado
-                    </span>
-                  )}
-                  {post.isPublic ? (
-                    <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
-                      Público
-                    </span>
-                  ) : (
-                    <span className="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                      Borrador
-                    </span>
-                  )}
-                </div>
-
-                {/* Title */}
-                <Link href={`/post/${post.slug}`}>
-                  <h3 className="text-lg font-bold text-gray-900 mb-2 hover:text-blue-600 transition-colors line-clamp-2">
-                    {post.title}
-                  </h3>
-                </Link>
-
-                {/* Date & Likes */}
-                <div className="flex items-center gap-3 mb-4">
-                  <p className="text-xs text-gray-500">
-                    {formatRelativeDate(post.createdAt)}
-                  </p>
-                  <div className="flex items-center gap-1 text-xs text-gray-500">
-                    <Heart className="w-3 h-3" />
-                    <span>{post._count.likes}</span>
-                  </div>
-                </div>
-
-                {/* Actions */}
-                <div className="flex items-center gap-2 flex-wrap">
-                  <PinButton postId={post.id} initialIsPinned={post.isPinned} />
-                  <Link href={`/post/${post.slug}`}>
-                    <Button variant="ghost" size="sm">
-                      <Eye className="w-4 h-4" />
-                    </Button>
-                  </Link>
-                  <Link href={`/post/edit/${post.id}`}>
-                    <Button variant="ghost" size="sm">
-                      <Edit className="w-4 h-4" />
-                    </Button>
-                  </Link>
-                  <DeletePostButton postId={post.id} postTitle={post.title} />
-                </div>
+                    alt={post.title}
+                    fill
+                    sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                    className="object-cover rounded-t-xl"
+                    unoptimized
+                />
+              ) : (
+              <div className="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center rounded-t-xl">
+                  <span className="text-6xl text-gray-400">{post.category?.icon || '📝'}</span>
               </div>
-              </NSFWFilter>
+              )}
+                {post.isNSFW && (
+                        <div className="absolute top-2 left-2 bg-yellow-100 text-yellow-800 px-2 py-1 rounded border border-yellow-200 flex items-center gap-1 text-sm font-medium">
+                          <AlertTriangle className="w-4 h-4" />
+                          Contenido NSFW
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="p-6 flex-1 flex flex-col">
+                      {post.category && (
+                          <span className="inline-block px-3 py-1.5 rounded-full text-xs font-bold bg-gradient-to-r from-blue-100 to-purple-100 text-blue-800 mb-3 shadow-md">
+                          {post.category.icon} {post.category.name}
+                        </span>
+                      )}
+
+                    <h3 className="text-xl font-bold text-gray-900 mb-2 group-hover:text-transparent group-hover:bg-gradient-to-r group-hover:from-blue-600 group-hover:to-purple-600 group-hover:bg-clip-text transition-all relative z-10 line-clamp-2">
+                    {post.title}
+                </h3>
+
+              <div className="flex items-center gap-2 mb-3">
+                {post.isPinned && (
+                  <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs font-medium bg-blue-500 text-white">
+                    <Pin className="w-3 h-3" /> Pineado
+                    </span>
+                    )}
+                  {post.isPublic ? (
+                  <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                      Público
+                      </span>
+                      ) : (
+                        <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                            Borrador
+                          </span>
+                        )}
+                      </div>
+
+                      <div className="flex items-center gap-3 pt-4 border-t border-gray-200 mt-auto relative z-10">
+                        <div className="flex items-center gap-2">
+                          <div className="relative w-8 h-8 rounded-full overflow-hidden bg-gradient-to-br from-blue-500 to-purple-500">
+                            {authorInfo.avatar ? (
+                              <Image
+                                src={authorInfo.avatar}
+                                alt={authorInfo.name}
+                                fill
+                                className="object-cover"
+                                unoptimized
+                              />
+                            ) : (
+                              <div className="w-full h-full flex items-center justify-center text-white text-sm font-bold">
+                                {authorInfo.name.charAt(0).toUpperCase()}
+                              </div>
+                            )}
+                          </div>
+                          <span className="text-sm font-medium text-gray-700">{authorInfo.name}</span>
+                          </div>
+                        <div className="flex items-center gap-3">
+                          <p className="text-xs text-gray-500">
+                            {formatRelativeDate(post.createdAt)}
+                        </p>
+                          <div className="flex items-center gap-1 text-xs text-gray-500">
+                            <Heart className="w-3 h-3" />
+                              <span>{post._count.likes}</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* Actions */}
+                      <div className="flex items-center gap-2 flex-wrap mt-4">
+                        <PinButton postId={post.id} initialIsPinned={post.isPinned} />
+                        <Button variant="ghost" size="sm">
+                        <Eye className="w-4 h-4" />
+                        </Button>
+                        <Button variant="ghost" size="sm" onClick={() => router.push(`/post/edit/${post.id}`)}>
+                          <Edit className="w-4 h-4" />
+                        </Button>
+                        <DeletePostButton postId={post.id} postTitle={post.title} />
+                  </div>
+                  </div>
+                  </CardBody>
+                </Card>
+              </Link>
+            </NSFWFilter>
             </div>
             )
           })}

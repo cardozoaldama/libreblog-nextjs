@@ -4,13 +4,12 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Button from '@/components/ui/Button'
 import { Card, CardBody, CardHeader } from '@/components/ui/Card'
-import { ArrowLeft, Save, Eye, Image as ImageIcon, Video } from 'lucide-react'
+import { ArrowLeft, Save, Eye, Image as ImageIcon, Video, AlertTriangle } from 'lucide-react'
 import NextImage from 'next/image'
 import Link from 'next/link'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { use } from 'react'
-import { getVideoEmbed } from '@/lib/utils'
 
 interface Category {
   id: string
@@ -30,10 +29,53 @@ interface Post {
   isPublic: boolean
 }
 
+// Función auxiliar para validar URLs
+const isValidUrl = (url: string): boolean => {
+  try {
+    new URL(url)
+    return true
+  } catch {
+    return false
+  }
+}
+
+// Función auxiliar para extraer ID de video de YouTube
+const extractYouTubeId = (url: string): string | null => {
+  const regex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?|shorts)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/
+  const match = url.match(regex)
+  return match ? match[1] : null
+}
+
+// Función auxiliar para detectar tipo de video y generar embed
+const getVideoEmbed = (url: string): { type: 'youtube' | 'tiktok' | 'facebook' | null; embedUrl: string | null } => {
+  // YouTube (videos normales, Shorts, listas, mixes)
+  const youtubeId = extractYouTubeId(url)
+  if (youtubeId) {
+    // Extraer parámetros de lista si existen
+    const listMatch = url.match(/[?&]list=([^&]+)/)
+    const listParam = listMatch ? `?list=${listMatch[1]}` : ''
+    return { type: 'youtube', embedUrl: `https://www.youtube.com/embed/${youtubeId}${listParam}` }
+  }
+
+  // TikTok
+  const tiktokMatch = url.match(/tiktok\.com\/@[^\/]+\/video\/(\d+)/)
+  if (tiktokMatch) {
+    return { type: 'tiktok', embedUrl: `https://www.tiktok.com/embed/v2/${tiktokMatch[1]}` }
+  }
+
+  // Facebook Reels
+  const facebookMatch = url.match(/facebook\.com\/reel\/(\d+)/)
+  if (facebookMatch) {
+    return { type: 'facebook', embedUrl: `https://www.facebook.com/plugins/video.php?href=https://www.facebook.com/reel/${facebookMatch[1]}` }
+  }
+
+  return { type: null, embedUrl: null }
+}
+
 export default function EditPostPage({ params }: { params: Promise<{ id: string }> }) {
   // Unwrap params usando React.use()
   const { id } = use(params)
-  
+
   const router = useRouter()
   const [post, setPost] = useState<Post | null>(null)
   const [title, setTitle] = useState('')
@@ -47,6 +89,32 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
   const [isSaving, setIsSaving] = useState(false)
   const [showPreview, setShowPreview] = useState(false)
   const [error, setError] = useState('')
+  const [forceModeration, setForceModeration] = useState(false)
+
+  // Función para forzar re-moderación del post
+  const handleForceModeration = async () => {
+    try {
+      const response = await fetch(`/api/posts/${id}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      })
+
+      if (response.ok) {
+        const result = await response.json()
+        if (result.success) {
+          setForceModeration(true)
+          // Recargar el post para obtener los nuevos flags NSFW
+          const postResponse = await fetch(`/api/posts/single/${id}`)
+          if (postResponse.ok) {
+            const postData = await postResponse.json()
+            setPost(postData)
+          }
+        }
+      }
+    } catch (err) {
+      console.error('Error forcing moderation:', err)
+    }
+  }
 
   // Cargar post y categorías
   useEffect(() => {
@@ -71,6 +139,17 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
         setVideoUrl(postData.videoUrl || '')
         setCategoryId(postData.categoryId || '')
         setIsPublic(postData.isPublic)
+
+        // Forzar re-moderación automática al cargar la página de edición
+        try {
+          await fetch(`/api/posts/${id}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+          })
+          setForceModeration(true)
+        } catch (moderationError) {
+          console.error('Error during automatic moderation on edit load:', moderationError)
+        }
       } catch {
         console.error('Error loading data')
         setError('Error al cargar el post')
@@ -160,10 +239,30 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
         </div>
 
         {error && (
-          <div className="mb-6 bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg">
-            {error}
-          </div>
+        <div className="mb-6 bg-red-50 border border-red-200 text-red-800 px-4 py-3 rounded-lg">
+        {error}
+        </div>
         )}
+
+        {/* NSFW Warning */}
+        <div className="mb-6 bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+          <div className="flex items-start gap-3">
+            <AlertTriangle className="w-5 h-5 text-yellow-600 flex-shrink-0 mt-0.5" />
+            <div>
+              <h3 className="font-medium text-yellow-900 mb-1">Moderación de Contenido NSFW</h3>
+              <p className="text-sm text-yellow-800 mb-2">
+                Tu post será automáticamente moderado al guardar. Si contiene contenido censurable
+                (sexual explícito, violencia, drogas, etc.), será marcado como NSFW.
+              </p>
+              <p className="text-xs text-yellow-700 mb-2">
+                <strong>Palabras detectadas:</strong> follar, coger, violar, matar, drogas, URLs adultas, etc.
+              </p>
+              <Link href="/nsfw-rules" className="text-xs text-blue-600 hover:text-blue-700 underline">
+                Ver reglas completas de contenido NSFW →
+              </Link>
+            </div>
+          </div>
+        </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Editor */}
@@ -285,14 +384,23 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
 
                   {/* Botones */}
                   <div className="flex gap-3 pt-4">
-                    <Button
-                      type="submit"
-                      variant="primary"
-                      isLoading={isSaving}
-                      className="flex-1"
+                  <Button
+                  type="submit"
+                  variant="primary"
+                  isLoading={isSaving}
+                  className="flex-1"
+                  >
+                  <Save className="w-4 h-4 mr-2" />
+                  {isSaving ? 'Guardando...' : 'Guardar Cambios'}
+                  </Button>
+                  <Button
+                  type="button"
+                    variant="secondary"
+                      onClick={handleForceModeration}
+                      disabled={forceModeration}
+                      className="whitespace-nowrap"
                     >
-                      <Save className="w-4 h-4 mr-2" />
-                      {isSaving ? 'Guardando...' : 'Guardar Cambios'}
+                      🔍 {forceModeration ? 'Re-moderado' : 'Re-moderar'}
                     </Button>
                     <Link href="/dashboard">
                       <Button variant="outline">Cancelar</Button>
@@ -312,7 +420,7 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
               <CardBody>
                 <article className="prose max-w-none">
                   <h1>{title || 'Tu título aquí'}</h1>
-                  {imageUrl && (
+                  {imageUrl && isValidUrl(imageUrl) && (
                     <NextImage
                       src={imageUrl}
                       alt={title ? `Imagen del post: ${title}` : "Imagen de vista previa del post"}

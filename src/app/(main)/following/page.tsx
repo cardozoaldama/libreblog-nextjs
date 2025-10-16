@@ -6,7 +6,9 @@ import Image from 'next/image'
 import { Card, CardBody } from '@/components/ui/Card'
 import Button from '@/components/ui/Button'
 import { Search, ChevronLeft, ChevronRight, Heart } from 'lucide-react'
-import { formatRelativeDate, extractExcerpt, getGravatarUrl, getAvatarUrl } from '@/lib/utils'
+import { formatRelativeDate, extractExcerpt, getAvatarUrl } from '@/lib/utils'
+import NSFWFilter from '@/components/ui/NSFWFilter'
+import { createClient } from '@/lib/supabase/client'
 
 interface Author {
   id: string
@@ -24,7 +26,15 @@ interface Post {
   author: Author
   category: { id: string; name: string; icon: string | null } | null
   imageUrl: string | null
+  isNSFW: boolean
+  nsfwCategories: string[]
   _count: { likes: number }
+}
+
+interface CurrentUser {
+  id: string
+  email: string
+  nsfwProtection?: boolean
 }
 
 export default function FollowingPage() {
@@ -33,6 +43,30 @@ export default function FollowingPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [currentPage, setCurrentPage] = useState(1)
   const [hasMore, setHasMore] = useState(false)
+  const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null)
+
+  // Cargar usuario actual
+  useEffect(() => {
+    async function loadCurrentUser() {
+      try {
+        const supabase = createClient()
+        const { data: { user } } = await supabase.auth.getUser()
+        if (user) {
+          // Obtener preferencias NSFW del usuario
+          const res = await fetch('/api/users/me')
+          const userData = await res.json()
+          setCurrentUser({
+            id: user.id,
+            email: user.email!,
+            nsfwProtection: userData?.nsfwProtection ?? true
+          })
+        }
+      } catch (error) {
+        console.error('Error loading current user:', error)
+      }
+    }
+    loadCurrentUser()
+  }, [])
 
   const loadPosts = useCallback(async () => {
     setIsLoading(true)
@@ -43,7 +77,7 @@ export default function FollowingPage() {
 
       const res = await fetch(`/api/posts/following?${params.toString()}`)
       const data = await res.json()
-      
+
       setPosts(data.posts || [])
       setHasMore(data.hasMore || false)
     } catch (error) {
@@ -98,14 +132,20 @@ export default function FollowingPage() {
         {!isLoading && posts.length > 0 && (
           <>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-              {posts.map((post) => {
-                const authorAvatarUrl = getAvatarUrl(post.author.email, post.author.avatarUrl, 32)
-                const excerpt = extractExcerpt(post.content, 120)
+            {posts.map((post) => {
+            const authorAvatarUrl = getAvatarUrl(post.author.email, post.author.avatarUrl, 32)
+            const excerpt = extractExcerpt(post.content, 120)
+                const shouldFilter = post.isNSFW && (currentUser?.nsfwProtection ?? true)
 
-                return (
-                  <Link key={post.id} href={`/post/${post.slug}`} className="block h-full">
-                    <Card variant="hover" className="group animate-in fade-in slide-in-from-bottom duration-500 cursor-pointer h-full flex flex-col">
-                      <CardBody className="p-0 flex flex-col h-full">
+            return (
+            <div key={post.id} className="block h-full">
+            <NSFWFilter
+                    isNSFW={shouldFilter}
+                    categories={post.nsfwCategories}
+                  >
+                    <Link href={`/post/${post.slug}`} className="block h-full">
+                      <Card variant="hover" className="group animate-in fade-in slide-in-from-bottom duration-500 cursor-pointer h-full flex flex-col">
+                        <CardBody className="p-0 flex flex-col h-full">
                       <div className="relative w-full h-48 flex-shrink-0">
                         {post.imageUrl ? (
                           <Image
@@ -161,8 +201,10 @@ export default function FollowingPage() {
                         </div>
                       </div>
                       </CardBody>
-                    </Card>
-                  </Link>
+                      </Card>
+                      </Link>
+                      </NSFWFilter>
+                      </div>
                 )
               })}
             </div>

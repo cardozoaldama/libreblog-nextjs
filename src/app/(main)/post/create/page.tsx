@@ -4,7 +4,7 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Button from '@/components/ui/Button'
 import { Card, CardBody, CardHeader } from '@/components/ui/Card'
-import { ArrowLeft, Save, Eye, Image as ImageIcon, Video } from 'lucide-react'
+import { ArrowLeft, Save, Eye, Image as ImageIcon, Video, AlertTriangle } from 'lucide-react'
 import NextImage from 'next/image'
 import Link from 'next/link'
 import ReactMarkdown from 'react-markdown'
@@ -75,6 +75,9 @@ export default function CreatePostPage() {
         const moderationData = await moderationRes.json()
         isNSFW = moderationData.isNSFW
         nsfwCategories = moderationData.categories || []
+        console.log('Moderation result:', { isNSFW, nsfwCategories, moderationData })
+      } else {
+        console.error('Moderation API failed:', moderationRes.status, await moderationRes.text())
       }
 
       // Crear el post con la información NSFW
@@ -247,21 +250,43 @@ export default function CreatePostPage() {
                       className="w-full px-4 py-3 border-2 border-gray-300/50 rounded-xl bg-white/80 backdrop-blur-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 hover:border-gray-400/50 selectable"
                     />
                     <p className="text-xs text-gray-500 mt-1">Soporta: YouTube, Shorts, TikTok, Facebook Reels</p>
-                  </div>
+                    </div>
 
-                  {/* Público/Privado */}
-                  <div className="flex items-center gap-2">
+                    {/* Público/Privado */}
+                    <div className="flex items-center gap-2">
                     <input
-                      type="checkbox"
-                      id="isPublic"
-                      checked={isPublic}
-                      onChange={(e) => setIsPublic(e.target.checked)}
-                      className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+                    type="checkbox"
+                    id="isPublic"
+                    checked={isPublic}
+                    onChange={(e) => setIsPublic(e.target.checked)}
+                    className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
                     />
                     <label htmlFor="isPublic" className="text-sm font-medium text-gray-700">
-                      Hacer público (visible para todos)
+                    Hacer público (visible para todos)
                     </label>
-                  </div>
+                    </div>
+
+                   {/* Advertencia NSFW */}
+                   <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+                     <div className="flex items-start gap-3">
+                       <AlertTriangle className="w-5 h-5 text-yellow-600 flex-shrink-0 mt-0.5" />
+                       <div className="text-sm">
+                         <p className="font-medium text-yellow-800 mb-1">
+                            Contenido NSFW
+                         </p>
+                         <p className="text-yellow-700 mb-2">
+                         Si tu publicación contiene contenido NSFW (texto, imágenes o URLs),
+                         será automáticamente marcada como NSFW y aparecerá con filtros para otros usuarios.
+                         </p>
+                         <Link
+                           href="/nsfw-rules"
+                           className="inline-flex items-center gap-1 text-yellow-700 hover:text-yellow-800 font-medium underline"
+                         >
+                           📋 Leer reglas de contenido censurable
+                         </Link>
+                       </div>
+                     </div>
+                   </div>
 
                   {/* Botones */}
                   <div className="flex gap-3 pt-4">

@@ -5,10 +5,29 @@ import { Card, CardBody } from '@/components/ui/Card'
 import { PenSquare, Search, Users, Sparkles, TrendingUp, Shield, Heart, TrendingUpIcon } from 'lucide-react'
 import { prisma } from '@/lib/prisma'
 import { getAvatarUrl, extractExcerpt } from '@/lib/utils'
+import NSFWFilter from '@/components/ui/NSFWFilter'
+import { createClient } from '@/lib/supabase/server'
 
 export const revalidate = 60 // Revalidar cada 60 segundos
 
 export default async function Home() {
+  const supabase = await createClient()
+  const { data: { user: authUser } } = await supabase.auth.getUser()
+
+  // Obtener preferencias NSFW del usuario actual
+  let currentUserNSFWProtection = true // default
+  if (authUser) {
+    try {
+      const userPrefs = await prisma.user.findUnique({
+        where: { id: authUser.id },
+        select: { nsfwProtection: true }
+      })
+      currentUserNSFWProtection = userPrefs?.nsfwProtection ?? true
+    } catch (error) {
+      console.error('Error obteniendo preferencias NSFW:', error)
+    }
+  }
+
   // Obtener estadísticas
   const [totalPosts, totalUsers, totalCategories] = await Promise.all([
     prisma.post.count({ where: { isPublic: true } }),
@@ -16,27 +35,29 @@ export default async function Home() {
     prisma.category.count(),
   ])
 
-  // Obtener posts más populares
+  // Obtener posts más populares con conteo de likes en una sola query
   const allPosts = await prisma.post.findMany({
     where: { isPublic: true },
-    include: {
+    select: {
+      id: true,
+      title: true,
+      content: true,
+      slug: true,
+      imageUrl: true,
+      isNSFW: true,
+      nsfwCategories: true,
       author: true,
-      category: true
+      category: true,
+      _count: {
+        select: { likes: true }
+      }
     }
   })
 
-  // Obtener conteo de likes para cada post
-  const postsWithLikes = await Promise.all(
-    allPosts.map(async (post) => {
-      const likeCount = await prisma.like.count({
-        where: { postId: post.id }
-      })
-      return {
-        ...post,
-        _count: { likes: likeCount }
-      }
-    })
-  )
+  const postsWithLikes = allPosts.map(post => ({
+    ...post,
+    _count: { likes: post._count.likes }
+  }))
 
   const topPosts = postsWithLikes
     .sort((a, b) => b._count.likes - a._count.likes)
@@ -155,13 +176,19 @@ export default async function Home() {
             
             {/* Post #1 - Destacado estilo tarjeta Pokémon */}
             {topPosts[0] && (() => {
-              const post = topPosts[0]
-              const authorAvatarUrl = getAvatarUrl(post.author.email, post.author.avatarUrl, 40)
-              const excerpt = extractExcerpt(post.content, 120)
-              
-              return (
-                <Link href={`/post/${post.slug}`} className="block mb-10">
-                  <div className="relative max-w-sm mx-auto perspective-1000">
+            const post = topPosts[0]
+            const authorAvatarUrl = getAvatarUrl(post.author.email, post.author.avatarUrl, 40)
+            const excerpt = extractExcerpt(post.content, 120)
+            const shouldFilter = post.isNSFW && currentUserNSFWProtection
+
+            return (
+            <div className="block mb-10">
+                <NSFWFilter
+                  isNSFW={shouldFilter}
+                  categories={post.nsfwCategories}
+                >
+                  <Link href={`/post/${post.slug}`} className="block">
+                    <div className="relative max-w-sm mx-auto perspective-1000">
                     <div className="relative bg-gradient-to-br from-yellow-400 via-yellow-300 to-orange-400 p-1 rounded-3xl shadow-2xl hover:shadow-yellow-500/50 transition-all duration-300 hover:scale-105 group">
                       <div className="bg-gradient-to-br from-yellow-50 to-white rounded-3xl overflow-hidden">
                         {/* Borde decorativo superior */}
@@ -235,8 +262,10 @@ export default async function Home() {
                     </div>
                     {/* Efecto de brillo */}
                     <div className="absolute inset-0 rounded-3xl bg-gradient-to-tr from-white/0 via-white/20 to-white/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
-                  </div>
-                </Link>
+                    </div>
+                    </Link>
+                        </NSFWFilter>
+                </div>
               )
             })()}
 
@@ -248,16 +277,22 @@ export default async function Home() {
                   {topPosts.slice(1).map((post, index) => {
                   const authorAvatarUrl = getAvatarUrl(post.author.email, post.author.avatarUrl, 28)
                   const excerpt = extractExcerpt(post.content, 80)
+                  const shouldFilter = post.isNSFW && currentUserNSFWProtection
                   const medalColors = [
-                    'from-gray-400 to-gray-600',
-                    'from-orange-600 to-orange-800',
-                    'from-blue-500 to-blue-700',
-                    'from-purple-500 to-purple-700',
+                  'from-gray-400 to-gray-600',
+                  'from-orange-600 to-orange-800',
+                  'from-blue-500 to-blue-700',
+                  'from-purple-500 to-purple-700',
                     'from-green-500 to-green-700',
                   ]
-                  
-                    return (
-                      <Link key={post.id} href={`/post/${post.slug}`} className="flex-shrink-0 w-72 snap-start">
+
+                  return (
+                      <div key={post.id} className="flex-shrink-0 w-72 snap-start">
+                      <NSFWFilter
+                        isNSFW={shouldFilter}
+                        categories={post.nsfwCategories}
+                      >
+                        <Link href={`/post/${post.slug}`} className="block h-full">
                         <div className="relative perspective-1000 h-full">
                           <div className={`relative bg-gradient-to-br ${medalColors[index]} p-0.5 rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 hover:scale-105 group h-[420px] flex flex-col`}>
                             <div className="bg-white rounded-2xl overflow-hidden flex flex-col h-full">
@@ -334,8 +369,10 @@ export default async function Home() {
                           </div>
                           {/* Efecto de brillo */}
                           <div className="absolute inset-0 rounded-2xl bg-gradient-to-tr from-white/0 via-white/30 to-white/0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
-                        </div>
-                      </Link>
+                          </div>
+                          </Link>
+                              </NSFWFilter>
+                      </div>
                     )
                   })}
                 </div>
@@ -359,7 +396,7 @@ export default async function Home() {
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
             {/* Feature 1 */}
-            <div className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 border-2 border-transparent hover:border-blue-500">
+            <div className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-2xl hover:scale-105 transition-all duration-300 border-2 border-transparent hover:border-blue-500">
               <div className="w-14 h-14 bg-blue-100 rounded-xl flex items-center justify-center mb-6">
                 <PenSquare className="w-7 h-7 text-blue-600" />
               </div>
@@ -370,7 +407,7 @@ export default async function Home() {
             </div>
 
             {/* Feature 2 */}
-            <div className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 border-2 border-transparent hover:border-purple-500">
+            <div className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-2xl hover:scale-105 transition-all duration-300 border-2 border-transparent hover:border-purple-500">
               <div className="w-14 h-14 bg-purple-100 rounded-xl flex items-center justify-center mb-6">
                 <Search className="w-7 h-7 text-purple-600" />
               </div>
@@ -381,7 +418,7 @@ export default async function Home() {
             </div>
 
             {/* Feature 3 */}
-            <div className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 border-2 border-transparent hover:border-pink-500">
+            <div className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-2xl hover:scale-105 transition-all duration-300 border-2 border-transparent hover:border-pink-500">
               <div className="w-14 h-14 bg-pink-100 rounded-xl flex items-center justify-center mb-6">
                 <Users className="w-7 h-7 text-pink-600" />
               </div>
@@ -392,7 +429,7 @@ export default async function Home() {
             </div>
 
             {/* Feature 4 */}
-            <div className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 border-2 border-transparent hover:border-green-500">
+            <div className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-2xl hover:scale-105 transition-all duration-300 border-2 border-transparent hover:border-green-500">
               <div className="w-14 h-14 bg-green-100 rounded-xl flex items-center justify-center mb-6">
                 <TrendingUp className="w-7 h-7 text-green-600" />
               </div>
@@ -403,7 +440,7 @@ export default async function Home() {
             </div>
 
             {/* Feature 5 */}
-            <div className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 border-2 border-transparent hover:border-yellow-500">
+            <div className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-2xl hover:scale-105 transition-all duration-300 border-2 border-transparent hover:border-yellow-500">
               <div className="w-14 h-14 bg-yellow-100 rounded-xl flex items-center justify-center mb-6">
                 <Sparkles className="w-7 h-7 text-yellow-600" />
               </div>
@@ -414,7 +451,7 @@ export default async function Home() {
             </div>
 
             {/* Feature 6 */}
-            <div className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-2xl transition-all duration-300 border-2 border-transparent hover:border-red-500">
+            <div className="bg-white p-8 rounded-2xl shadow-lg hover:shadow-2xl hover:scale-105 transition-all duration-300 border-2 border-transparent hover:border-red-500">
               <div className="w-14 h-14 bg-red-100 rounded-xl flex items-center justify-center mb-6">
                 <Shield className="w-7 h-7 text-red-600" />
               </div>

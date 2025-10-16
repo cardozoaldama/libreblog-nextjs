@@ -99,12 +99,12 @@ export default function RegisterPage() {
         return
       }
 
-      // In non-production, simulate success to avoid sending emails
-      if (!isProductionEnv()) {
-        setSuccess(true)
-        setError('')
-        return
-      }
+      // In non-production, also send emails for testing
+      // if (!isProductionEnv()) {
+      //   setSuccess(true)
+      //   setError('')
+      //   return
+      // }
 
       const supabase = createClient()
       
