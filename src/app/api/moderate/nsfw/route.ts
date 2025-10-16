@@ -204,12 +204,12 @@ async function analyzeImages(imageUrls: string[]): Promise<{ isNSFW: boolean; co
         if (!safeSearch) continue
 
         // Evaluar niveles de seguridad
-        const adultLikelihood = safeSearch.adult || 'UNKNOWN'
-        const violenceLikelihood = safeSearch.violence || 'UNKNOWN'
-        const racyLikelihood = safeSearch.racy || 'UNKNOWN'
+        const adultLikelihood = String(safeSearch.adult || 'UNKNOWN')
+        const violenceLikelihood = String(safeSearch.violence || 'UNKNOWN')
+        const racyLikelihood = String(safeSearch.racy || 'UNKNOWN')
 
         // Mapeo de likelihood a valores numéricos
-        const likelihoodToScore = {
+        const likelihoodToScore: Record<string, number> = {
           'UNKNOWN': 0,
           'VERY_UNLIKELY': 0.1,
           'UNLIKELY': 0.3,
