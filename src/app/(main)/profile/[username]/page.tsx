@@ -93,7 +93,7 @@ export default async function ProfilePage({
     likeCounts.map(l => [l.postId, l._count.postId])
   )
 
-  const postsWithLikes = user.posts.map(post => ({
+  const postsWithLikes = user.posts.map((post: any) => ({
     ...post,
     _count: { likes: likeMap[post.id] || 0 }
   }))
