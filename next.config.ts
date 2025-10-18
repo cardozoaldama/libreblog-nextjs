@@ -8,6 +8,7 @@ const nextConfig: NextConfig = {
         hostname: '**',
       },
     ],
+    unoptimized: true,
   },
   // Ocultar información del servidor en producción
   poweredByHeader: false,

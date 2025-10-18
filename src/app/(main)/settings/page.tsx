@@ -233,10 +233,17 @@ export default function SettingsPage() {
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-gradient-to-br from-[#dedff1] via-[#dedff1] to-[#5f638f]/20 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Cargando...</p>
+          <Image
+            src="/loading.gif"
+            alt="Cargando"
+            width={48}
+            height={48}
+            className="mx-auto mb-4"
+            unoptimized
+          />
+          <p className="text-[#5f638f]">Cargando...</p>
         </div>
       </div>
     )
@@ -256,12 +263,12 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-[#dedff1] via-[#dedff1] to-[#5f638f]/20 py-8">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">Configuración</h1>
-          <p className="text-gray-600">Gestiona tu cuenta y preferencias</p>
+          <h1 className="text-4xl font-bold bg-gradient-to-r from-[#0c2b4d] to-[#5f638f] bg-clip-text text-transparent mb-2">Configuración</h1>
+          <p className="text-[#000022]/70">Gestiona tu cuenta y preferencias</p>
         </div>
 
         {/* Messages */}
@@ -282,8 +289,8 @@ export default function SettingsPage() {
           <CardBody className="p-6">
             <div className="flex items-center justify-between">
               <div>
-                <h3 className="font-semibold text-gray-900">Editar Perfil Público</h3>
-                <p className="text-sm text-gray-600 mt-1">
+                <h3 className="font-semibold text-[#000022]">Editar Perfil Público</h3>
+                <p className="text-sm text-[#5f638f] mt-1">
                   Personaliza tu nombre, username, bio y redes sociales
                 </p>
               </div>
@@ -323,31 +330,31 @@ export default function SettingsPage() {
         <Card variant="elevated" className="mb-6">
           <CardHeader>
             <div className="flex items-center gap-3">
-              <User className="w-6 h-6 text-blue-600" />
-              <h2 className="text-xl font-bold text-gray-900">Información de Cuenta</h2>
+              <User className="w-6 h-6 text-[#0c2b4d]" />
+              <h2 className="text-xl font-bold text-[#000022]">Información de Cuenta</h2>
             </div>
           </CardHeader>
           <CardBody>
             <div className="space-y-4">
-              <div className="flex items-center gap-4 p-4 bg-gray-50 rounded-lg">
+              <div className="flex items-center gap-4 p-4 bg-white/60 rounded-lg border border-[#5f638f]/20">
                 <Image
                   src={isValidUrl(avatarUrl) ? avatarUrl : gravatarUrl}
                   alt="Avatar"
                   width={64}
                   height={64}
-                  className="rounded-full border-2 border-gray-200"
+                  className="rounded-full border-2 border-[#5f638f]/30"
                   unoptimized
                 />
                 <div className="flex-1">
-                  <p className="text-sm font-medium text-gray-700">Username</p>
-                  <p className="text-lg font-semibold text-gray-900">@{user.username}</p>
+                  <p className="text-sm font-medium text-[#5f638f]">Username</p>
+                  <p className="text-lg font-semibold text-[#000022]">@{user.username}</p>
                 </div>
               </div>
 
-              <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-                <p className="text-sm font-medium text-blue-900 mb-1">Email de la cuenta</p>
-                <p className="text-base text-blue-800 font-mono">{user.email}</p>
-                <p className="text-xs text-blue-600 mt-2">
+              <div className="p-4 bg-[#dedff1]/50 border border-[#5f638f]/30 rounded-lg">
+                <p className="text-sm font-medium text-[#0c2b4d] mb-1">Email de la cuenta</p>
+                <p className="text-base text-[#000022] font-mono">{user.email}</p>
+                <p className="text-xs text-[#5f638f] mt-2">
                   Este es tu email de inicio de sesión. No se muestra públicamente.
                 </p>
               </div>
@@ -370,8 +377,8 @@ export default function SettingsPage() {
         <Card variant="elevated" className="mb-6">
           <CardHeader>
             <div className="flex items-center gap-3">
-              <User className="w-6 h-6 text-blue-600" />
-              <h2 className="text-xl font-bold text-gray-900">Seguidores</h2>
+              <User className="w-6 h-6 text-[#0c2b4d]" />
+              <h2 className="text-xl font-bold text-[#000022]">Seguidores</h2>
             </div>
           </CardHeader>
           <CardBody>
@@ -447,18 +454,25 @@ export default function SettingsPage() {
               </div>
 
               {showFollowers && (
-                <div className="border-2 border-gray-200 rounded-lg p-4">
-                  <h3 className="font-semibold text-gray-900 mb-3">Mis Seguidores</h3>
+                <div className="border-2 border-[#5f638f]/20 rounded-lg p-4">
+                  <h3 className="font-semibold text-[#000022] mb-3">Mis Seguidores</h3>
                   {loadingFollowers ? (
                     <div className="text-center py-4">
-                      <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600 mx-auto"></div>
+                      <Image
+                        src="/loading.gif"
+                        alt="Cargando"
+                        width={24}
+                        height={24}
+                        className="mx-auto"
+                        unoptimized
+                      />
                     </div>
                   ) : followers.length === 0 ? (
-                    <p className="text-gray-500 text-center py-4">No tienes seguidores aún</p>
+                    <p className="text-[#5f638f] text-center py-4">No tienes seguidores aún</p>
                   ) : (
                     <div className="space-y-3">
                       {followers.map((follower) => (
-                        <div key={follower.id} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                        <div key={follower.id} className="flex items-center gap-3 p-3 bg-white/60 rounded-lg border border-[#5f638f]/20">
                           <Image
                             src={follower.avatarUrl || getGravatarUrl(follower.email)}
                             alt={follower.displayName || follower.email}
@@ -468,10 +482,10 @@ export default function SettingsPage() {
                             unoptimized
                           />
                           <div className="flex-1">
-                            <p className="font-medium text-gray-900">
+                            <p className="font-medium text-[#000022]">
                               {follower.displayName || follower.email.split('@')[0]}
                             </p>
-                            <p className="text-sm text-gray-500">{follower.email}</p>
+                            <p className="text-sm text-[#5f638f]">{follower.email}</p>
                           </div>
                           <Link href={`/profile/${follower.email.split('@')[0]}`}>
                             <Button variant="outline" size="sm">
@@ -486,18 +500,25 @@ export default function SettingsPage() {
               )}
 
               {showFollowing && (
-                <div className="border-2 border-gray-200 rounded-lg p-4">
-                  <h3 className="font-semibold text-gray-900 mb-3">Siguiendo</h3>
+                <div className="border-2 border-[#5f638f]/20 rounded-lg p-4">
+                  <h3 className="font-semibold text-[#000022] mb-3">Siguiendo</h3>
                   {loadingFollowing ? (
                     <div className="text-center py-4">
-                      <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-blue-600 mx-auto"></div>
+                      <Image
+                        src="/loading.gif"
+                        alt="Cargando"
+                        width={24}
+                        height={24}
+                        className="mx-auto"
+                        unoptimized
+                      />
                     </div>
                   ) : following.length === 0 ? (
-                    <p className="text-gray-500 text-center py-4">No sigues a nadie aún</p>
+                    <p className="text-[#5f638f] text-center py-4">No sigues a nadie aún</p>
                   ) : (
                     <div className="space-y-3">
                       {following.map((followedUser) => (
-                        <div key={followedUser.id} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
+                        <div key={followedUser.id} className="flex items-center gap-3 p-3 bg-white/60 rounded-lg border border-[#5f638f]/20">
                           <Image
                             src={followedUser.avatarUrl || getGravatarUrl(followedUser.email)}
                             alt={followedUser.displayName || followedUser.email}
@@ -507,10 +528,10 @@ export default function SettingsPage() {
                             unoptimized
                           />
                           <div className="flex-1">
-                            <p className="font-medium text-gray-900">
+                            <p className="font-medium text-[#000022]">
                               {followedUser.displayName || followedUser.email.split('@')[0]}
                             </p>
-                            <p className="text-sm text-gray-500">{followedUser.email}</p>
+                            <p className="text-sm text-[#5f638f]">{followedUser.email}</p>
                           </div>
                           <Link href={`/profile/${followedUser.email.split('@')[0]}`}>
                             <Button variant="outline" size="sm">
@@ -546,13 +567,13 @@ export default function SettingsPage() {
           <CardBody>
             <div className="space-y-4">
               <div>
-                <h3 className="font-semibold text-gray-900 mb-1">
+                <h3 className="font-semibold text-[#000022] mb-1">
                   Eliminar Cuenta
                 </h3>
-                <p className="text-sm text-gray-600 mb-4">
+                <p className="text-sm text-[#5f638f] mb-4">
                   Esta acción es permanente y no se puede deshacer. Se eliminarán:
                 </p>
-                <ul className="text-sm text-gray-600 list-disc list-inside mb-4 space-y-1">
+                <ul className="text-sm text-[#5f638f] list-disc list-inside mb-4 space-y-1">
                   <li>Tu cuenta de usuario</li>
                   <li>Todos tus posts (públicos y borradores)</li>
                   <li>Tu información de perfil</li>
@@ -580,7 +601,7 @@ export default function SettingsPage() {
                     value={deleteConfirmText}
                     onChange={(e) => setDeleteConfirmText(e.target.value)}
                     placeholder="Escribe ELIMINAR"
-                    className="w-full px-4 py-2 border-2 border-red-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent"
+                    className="w-full px-4 py-2 border-2 border-red-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent bg-white"
                   />
                   <div className="flex gap-3">
                     <Button

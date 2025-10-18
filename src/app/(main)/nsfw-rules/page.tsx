@@ -41,63 +41,61 @@ export default function NSFWRulesPage() {
                 <h2 className="text-xl font-semibold text-gray-900 mb-2">¿Qué es contenido NSFW?</h2>
                 <p className="text-gray-700 mb-4">
                 NSFW significa &quot;Not Safe For Work&quot; (No apto para el trabajo) y se refiere a contenido que puede ser
-                inapropiado en entornos profesionales. En LibreBlog, aplicamos filtros automáticos
-                a este tipo de contenido para respetar las preferencias de nuestra comunidad.
+                inapropiado en entornos profesionales o que algunos usuarios prefieren no ver.
                 </p>
                 <p className="text-gray-700">
-                  Los usuarios pueden elegir si quieren ver este contenido con filtros o sin ellos en sus configuraciones personales.
+                  En LibreBlog, los creadores marcan manualmente su contenido como NSFW. Los usuarios pueden ver este contenido cuando lo deseen.
                 </p>
               </div>
             </div>
           </CardBody>
         </Card>
 
-        {/* Dynamic Re-moderation Feature */}
-        <Card variant="elevated" className="mb-6 border-2 border-green-200 bg-green-50/50">
-          <CardHeader className="bg-green-100">
+        {/* Manual System Feature */}
+        <Card variant="elevated" className="mb-6 border-2 border-blue-200 bg-blue-50/50">
+          <CardHeader className="bg-blue-100">
             <div className="flex items-center gap-3">
-              <Check className="w-6 h-6 text-green-600" />
-              <h3 className="text-lg font-semibold text-green-900">✨ Re-moderación Dinámica Automática</h3>
+              <Shield className="w-6 h-6 text-blue-600" />
+              <h3 className="text-lg font-semibold text-blue-900">✨ Sistema Manual de Moderación</h3>
             </div>
           </CardHeader>
           <CardBody className="p-6">
             <div className="space-y-4">
               <div>
                 <p className="text-gray-900 font-medium mb-2">
-                  🔄 <strong>¡Cada vez que editas un post, se re-modera automáticamente!</strong>
+                  🎯 <strong>Control Total del Usuario</strong>
                 </p>
                 <p className="text-sm text-gray-700 mb-3">
-                  Esto resuelve el problema de los posts que permanecen marcados como NSFW incluso después de eliminar el contenido problemático.
+                  LibreBlog te da control completo sobre tu contenido. Tú decides qué marcar como NSFW.
                 </p>
               </div>
 
-              <div className="bg-white rounded-lg p-4 border border-green-200">
+              <div className="bg-white rounded-lg p-4 border border-blue-200">
                 <h4 className="font-semibold text-gray-900 mb-2">¿Cómo funciona?</h4>
                 <ul className="text-sm text-gray-700 space-y-2">
                   <li className="flex items-start gap-2">
-                    <Check className="w-4 h-4 text-green-600 flex-shrink-0 mt-0.5" />
-                    <span><strong>Si eliminas contenido NSFW:</strong> El filtro se quitará automáticamente al guardar</span>
+                    <Check className="w-4 h-4 text-blue-600 flex-shrink-0 mt-0.5" />
+                    <span><strong>Checkbox simple:</strong> Marca tu post como NSFW con un solo click</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <Check className="w-4 h-4 text-green-600 flex-shrink-0 mt-0.5" />
-                    <span><strong>Si agregas contenido NSFW:</strong> El filtro se aplicará automáticamente</span>
+                    <Check className="w-4 h-4 text-blue-600 flex-shrink-0 mt-0.5" />
+                    <span><strong>Sin detección automática:</strong> No hay análisis ni sugerencias, tú decides</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <Check className="w-4 h-4 text-green-600 flex-shrink-0 mt-0.5" />
-                    <span><strong>Cambios detectados:</strong> Título, contenido, imágenes y videos activan la re-moderación</span>
+                    <Check className="w-4 h-4 text-blue-600 flex-shrink-0 mt-0.5" />
+                    <span><strong>Responsabilidad:</strong> Marca apropiadamente tu contenido para respetar a la comunidad</span>
                   </li>
                   <li className="flex items-start gap-2">
-                    <Check className="w-4 h-4 text-green-600 flex-shrink-0 mt-0.5" />
-                    <span><strong>100% automático:</strong> No necesitas hacer nada especial, funciona transparentemente</span>
+                    <Check className="w-4 h-4 text-blue-600 flex-shrink-0 mt-0.5" />
+                    <span><strong>Censura personal:</strong> Puedes censurar usuarios específicos desde sus perfiles</span>
                   </li>
                 </ul>
               </div>
 
-              <div className="bg-blue-50 rounded-lg p-4 border border-blue-200">
-                <p className="text-sm text-blue-900">
-                  <strong>💡 Tip:</strong> Si tu post fue marcado como NSFW por error, simplemente edítalo, 
-                  asegúrate de que el contenido está limpio, y guárdalo de nuevo. El sistema lo re-evaluará 
-                  automáticamente y quitará el filtro si ya no detecta contenido NSFW.
+              <div className="bg-yellow-50 rounded-lg p-4 border border-yellow-200">
+                <p className="text-sm text-yellow-900">
+                  <strong>💡 Tip:</strong> Si tu contenido incluye material adulto, violencia explícita o temas sensibles, 
+                  márcalo como NSFW para que otros usuarios puedan decidir si quieren verlo.
                 </p>
               </div>
             </div>
@@ -146,7 +144,7 @@ export default function NSFWRulesPage() {
           <CardHeader className="bg-yellow-50">
           <div className="flex items-center gap-3">
           <AlertTriangle className="w-6 h-6 text-yellow-600" />
-          <h3 className="text-lg font-semibold text-yellow-900">Contenido Marcado como NSFW</h3>
+          <h3 className="text-lg font-semibold text-yellow-900">¿Qué debería marcarse como NSFW?</h3>
           </div>
           </CardHeader>
           <CardBody className="p-6">
@@ -155,40 +153,28 @@ export default function NSFWRulesPage() {
           <AlertTriangle className="w-5 h-5 text-yellow-500 flex-shrink-0 mt-0.5" />
           <div>
           <p className="font-medium text-gray-900">Contenido Sexual Explícito</p>
-          <p className="text-sm text-gray-600 mb-1">Palabras como: follar, follado, folles, coger, cogido, cogiendo, sexo, pornografía, desnudo, etc.</p>
-            <p className="text-xs text-gray-500">También incluye términos en inglés: fuck, sex, porn, etc.</p>
+          <p className="text-sm text-gray-600">Desnudos, contenido pornográfico o referencias sexuales explícitas</p>
             </div>
           </div>
           <div className="flex items-start gap-3">
           <AlertTriangle className="w-5 h-5 text-yellow-500 flex-shrink-0 mt-0.5" />
           <div>
-          <p className="font-medium text-gray-900">Violencia y Crímenes Graves</p>
-            <p className="text-sm text-gray-600 mb-1">Términos como: violar, violación, matar, asesinato, tortura, genocidio, etc.</p>
-              <p className="text-xs text-gray-500">Incluye violencia, sangre, muerte, suicidio y crímenes graves.</p>
+          <p className="font-medium text-gray-900">Violencia Gráfica</p>
+            <p className="text-sm text-gray-600">Imágenes o descripciones detalladas de violencia, sangre o gore</p>
             </div>
           </div>
           <div className="flex items-start gap-3">
           <AlertTriangle className="w-5 h-5 text-yellow-500 flex-shrink-0 mt-0.5" />
           <div>
-            <p className="font-medium text-gray-900">Drogas y Sustancias</p>
-              <p className="text-sm text-gray-600 mb-1">Menciones de: marihuana, cocaína, heroína, drogas, etc.</p>
-              <p className="text-xs text-gray-500">Sin incluir alcohol en la detección actual.</p>
+            <p className="font-medium text-gray-900">Temas Sensibles</p>
+              <p className="text-sm text-gray-600">Drogas, autolesiones, o contenido perturbador</p>
           </div>
           </div>
           <div className="flex items-start gap-3">
           <AlertTriangle className="w-5 h-5 text-yellow-500 flex-shrink-0 mt-0.5" />
           <div>
-              <p className="font-medium text-gray-900">Dominios y URLs Conocidos</p>
-                <p className="text-sm text-gray-600 mb-1">Sitios como: pornhub.com, xvideos.com, redtube.com, etc.</p>
-                  <p className="text-xs text-gray-500">También patrones como &quot;porn&quot;, &quot;xxx&quot;, &quot;adult&quot; en URLs.</p>
-                  </div>
-                </div>
-                <div className="flex items-start gap-3">
-                  <AlertTriangle className="w-5 h-5 text-yellow-500 flex-shrink-0 mt-0.5" />
-                  <div>
-                    <p className="font-medium text-gray-900">Contenido para Adultos</p>
-                    <p className="text-sm text-gray-600 mb-1">Menciones explícitas: &quot;18+&quot;, &quot;NSFW&quot;, &quot;solo adultos&quot;, etc.</p>
-                    <p className="text-xs text-gray-500">Etiquetas y advertencias de contenido adulto.</p>
+              <p className="font-medium text-gray-900">Lenguaje Ofensivo</p>
+                <p className="text-sm text-gray-600">Uso excesivo de lenguaje vulgar o insultos</p>
                   </div>
                 </div>
               </div>
@@ -196,40 +182,36 @@ export default function NSFWRulesPage() {
           </Card>
         </div>
 
-        {/* Detection Methods */}
+        {/* User Censorship System */}
         <Card variant="elevated" className="mb-6">
           <CardHeader>
-            <h3 className="text-xl font-semibold text-gray-900">Cómo se Detecta el Contenido NSFW</h3>
+            <h3 className="text-xl font-semibold text-gray-900">Sistema de Censura Personal</h3>
           </CardHeader>
           <CardBody className="p-6">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="text-center">
-                <div className="w-12 h-12 bg-blue-100 rounded-lg flex items-center justify-center mx-auto mb-3">
-                  <span className="text-2xl">📝</span>
+                <div className="w-12 h-12 bg-red-100 rounded-lg flex items-center justify-center mx-auto mb-3">
+                  <span className="text-2xl">🚫</span>
                 </div>
-                <h4 className="font-semibold text-gray-900 mb-2">Análisis de Texto</h4>
+                <h4 className="font-semibold text-gray-900 mb-2">Censurar Usuarios</h4>
                 <p className="text-sm text-gray-600">
-                  Detecta palabras clave, frases explícitas y menciones de contenido adulto en títulos y contenido.
+                  Desde el perfil de cualquier usuario, puedes censurarlo para aplicar blur a todo su contenido.
                 </p>
               </div>
               <div className="text-center">
                 <div className="w-12 h-12 bg-green-100 rounded-lg flex items-center justify-center mx-auto mb-3">
-                  <span className="text-2xl">🖼️</span>
+                  <span className="text-2xl">✅</span>
                 </div>
-                <h4 className="font-semibold text-gray-900 mb-2">Análisis de Imágenes</h4>
+                <h4 className="font-semibold text-gray-900 mb-2">Quitar Censura</h4>
                 <p className="text-sm text-gray-600">
-                  Revisa URLs de imágenes en busca de dominios conocidos y patrones sospechosos.
+                  Puedes desbloquear usuarios en cualquier momento desde su perfil o desde configuración.
                 </p>
               </div>
-              <div className="text-center">
-                <div className="w-12 h-12 bg-purple-100 rounded-lg flex items-center justify-center mx-auto mb-3">
-                  <span className="text-2xl">🔗</span>
-                </div>
-                <h4 className="font-semibold text-gray-900 mb-2">Verificación de URLs</h4>
-                <p className="text-sm text-gray-600">
-                  Identifica enlaces a sitios conocidos por contenido adulto o inapropiado.
-                </p>
-              </div>
+            </div>
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mt-4">
+              <p className="text-sm text-blue-800">
+                <strong>Nota:</strong> La censura es personal y solo afecta tu experiencia. Otros usuarios no ven tus bloqueos.
+              </p>
             </div>
           </CardBody>
         </Card>
@@ -248,7 +230,7 @@ export default function NSFWRulesPage() {
                 </div>
                 <p className="text-sm text-gray-600 mb-4">
                   Los posts marcados como NSFW aparecen con filtros borrosos y advertencias.
-                  Debes confirmar que eres mayor de edad para ver el contenido.
+                  Puedes hacer click para ver el contenido cuando lo desees.
                 </p>
               </div>
               <div>
@@ -283,37 +265,30 @@ export default function NSFWRulesPage() {
               <div className="flex items-start gap-3">
                 <AlertTriangle className="w-5 h-5 text-yellow-600 flex-shrink-0 mt-0.5" />
                 <div>
-                  <p className="font-medium text-gray-900">Falsos Positivos</p>
-                  <p className="text-sm text-gray-700 mb-2">
-                    El sistema puede marcar contenido legítimo como NSFW si contiene palabras que coinciden con el filtro.
-                  </p>
-                  <p className="text-sm text-gray-700 mb-1">
-                    <strong>Soluciones:</strong>
-                  </p>
-                  <ul className="text-sm text-gray-700 space-y-1 ml-4 list-disc">
-                    <li>Edita tu post y guárdalo - se re-moderará automáticamente</li>
-                    <li>Si el contenido es legítimo pero usa palabras sensibles, reformula el texto</li>
-                    <li>Los usuarios pueden desactivar los filtros NSFW en sus configuraciones personales</li>
-                  </ul>
-                </div>
-              </div>
-              <div className="flex items-start gap-3">
-                <Check className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-                <div>
-                  <p className="font-medium text-gray-900">Privacidad y Seguridad</p>
+                  <p className="font-medium text-gray-900">Responsabilidad del Creador</p>
                   <p className="text-sm text-gray-700">
-                    Todo el análisis se hace localmente en el servidor. No se envían datos a servicios externos
-                    ni se almacena contenido sensible.
+                    Es tu responsabilidad marcar apropiadamente tu contenido. Marca como NSFW cualquier contenido
+                    que pueda ser inapropiado para algunos usuarios.
                   </p>
                 </div>
               </div>
               <div className="flex items-start gap-3">
                 <Check className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
                 <div>
-                  <p className="font-medium text-gray-900">Transparencia</p>
+                  <p className="font-medium text-gray-900">Control Personal</p>
                   <p className="text-sm text-gray-700">
-                    El sistema es completamente automático y objetivo. No hay moderación manual ni decisiones arbitrarias.
-                    Los mismos criterios se aplican a todos los posts por igual.
+                    Cada usuario decide qué quiere ver. Los filtros NSFW se pueden desactivar en configuración,
+                    y puedes censurar usuarios específicos desde sus perfiles.
+                  </p>
+                </div>
+              </div>
+              <div className="flex items-start gap-3">
+                <Check className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
+                <div>
+                  <p className="font-medium text-gray-900">Respeto a la Comunidad</p>
+                  <p className="text-sm text-gray-700">
+                    Marcar correctamente tu contenido ayuda a crear un ambiente respetuoso donde todos
+                    pueden disfrutar de la plataforma según sus preferencias.
                   </p>
                 </div>
               </div>

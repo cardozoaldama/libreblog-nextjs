@@ -7,18 +7,21 @@ import Button from './Button'
 interface NSFWFilterProps {
   children: React.ReactNode
   isNSFW: boolean
-  categories?: string[]
   className?: string
+  authorId?: string
+  blockedUsers?: string[]
 }
 
-export default function NSFWFilter({ children, isNSFW, categories = [], className = '' }: NSFWFilterProps) {
+export default function NSFWFilter({ children, isNSFW, className = '', authorId, blockedUsers = [] }: NSFWFilterProps) {
+  const isAuthorBlocked = authorId && blockedUsers.includes(authorId)
+  const shouldFilter = isNSFW || isAuthorBlocked
   const [isRevealed, setIsRevealed] = useState(false)
 
   const handleReveal = () => {
     setIsRevealed(true)
   }
 
-  if (!isNSFW || isRevealed) {
+  if (!shouldFilter || isRevealed) {
     return <div className={`${className} h-full`}>{children}</div>
   }
 
@@ -39,19 +42,17 @@ export default function NSFWFilter({ children, isNSFW, categories = [], classNam
             </div>
             
             <h3 className="text-xl font-bold text-white mb-2">
-              Contenido NSFW Detectado
+              {isAuthorBlocked && isNSFW ? 'Usuario Censurado + NSFW' : isAuthorBlocked ? 'Usuario Censurado' : 'Contenido NSFW'}
             </h3>
             
             <p className="text-gray-300 mb-4 text-sm">
-            Este contenido ha sido marcado como NSFW (Not Safe For Work).
-            {categories.length > 0 && (
-                <span className="block mt-2 text-xs text-yellow-300">
-                  Categorías: {categories.join(', ')}
-                </span>
-              )}
+              {isAuthorBlocked && isNSFW
+                ? 'Has censurado a este usuario y además su contenido está marcado como NSFW.'
+                : isAuthorBlocked 
+                ? 'Has censurado a este usuario. Su contenido aparece filtrado.'
+                : 'Este contenido está marcado como NSFW (Not Safe For Work).'}
             </p>
             
-            <div className="space-y-3">
             <Button
               onClick={handleReveal}
               variant="primary"
@@ -60,11 +61,6 @@ export default function NSFWFilter({ children, isNSFW, categories = [], classNam
               <Eye className="w-4 h-4 mr-2" />
               Ver de todos modos
             </Button>
-
-            <p className="text-xs text-gray-400 mt-3 text-center">
-              Al continuar, confirmas que eres mayor de 18 años
-            </p>
-            </div>
           </div>
         </div>
       </div>
@@ -73,7 +69,7 @@ export default function NSFWFilter({ children, isNSFW, categories = [], classNam
 }
 
 // Componente para mostrar advertencia en posts
-export function NSFWWarning({ isNSFW, categories = [], className = '' }: { isNSFW: boolean; categories?: string[]; className?: string }) {
+export function NSFWWarning({ isNSFW, className = '' }: { isNSFW: boolean; className?: string }) {
   if (!isNSFW) return null
 
   return (
@@ -87,3 +83,4 @@ export function NSFWWarning({ isNSFW, categories = [], className = '' }: { isNSF
     </div>
   )
 }
+

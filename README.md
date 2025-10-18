@@ -159,7 +159,7 @@ src/
 
 ## 🛡️ Sistema de Moderación NSFW
 
-LibreBlog incluye un sistema avanzado de moderación de contenido NSFW (Not Safe For Work) que protege a los usuarios del contenido inapropiado mediante detección automática inteligente.
+LibreBlog incluye un sistema de moderación de contenido NSFW (Not Safe For Work) basado en marcado manual por el usuario.
 
 ### ✨ Características de Moderación
 
@@ -371,24 +371,53 @@ En Vercel Dashboard → Project → Environment Variables:
 
 Este proyecto está bajo la Licencia MIT. Ver `LICENSE` para más detalles.
 
+## 🔄 Changelog
+
+### v2.0.0 (2025)
+- 🎨 Rediseño completo con nueva paleta de colores
+- 🖋️ Logo cambiado a pluma antigua
+- 🎭 Sistema de temas de perfil con 6 opciones
+- 🖼️ 16 decoraciones de avatar personalizables
+- 🌊 Waves decorativas entre secciones
+- 🔄 Moderación NSFW cambiada a manual
+- 🚫 Sistema de blocklist personal
+- 📄 Paginación optimizada a 20 posts
+- ✨ Animaciones mejoradas en toda la UI
+- 🎯 Mejoras visuales en todas las páginas
+
 ## 👥 Equipo
 
-- **Guillermo Martinez** - Developer 
-- **Alejandro Alonso** - Developer 
+- **Guillermo Martinez** - Full Stack Developer 
+- **Alejandro Alonso** - Full Stack Developer 
 
-## 🎨 Diseño y Branding
+## 🎨 Diseño y Branding (v2.0.0)
 
-### Logo Personalizado
-- **SVG Animado** - Logo único con gradientes y efectos
+### Nueva Paleta de Colores
+- **#000022** - Negro profundo (fondos oscuros)
+- **#0c2b4d** - Azul oscuro (primario)
+- **#36234e** - Púrpura oscuro (secundario)
+- **#5f638f** - Púrpura claro (acentos)
+- **#dedff1** - Blanco perla (texto claro)
+
+### Logo Rediseñado
+- **Pluma Antigua (Quill Pen)** - Símbolo de escritura clásica
+- **SVG con Gradientes** - Colores de la nueva paleta
 - **Responsive** - Adaptable a navbar, home y favicon
-- **Animaciones** - Efectos hover, pulse y glow
-- **Identidad Visual** - Representa creatividad y comunidad
+- **Animaciones** - Efectos hover y transiciones suaves
+- **Identidad Visual** - Representa la esencia de la escritura
+
+### Sistema de Temas de Perfil
+- **6 Temas Personalizables** - Halloween, Christmas, Cyberpunk, Aurora, Minimal, Vaporwave
+- **16 Decoraciones** - Avatares personalizables con GIFs animados
+- **Biografía Personalizada** - Colores adaptados a cada tema
+- **Estadísticas Temáticas** - Cards con estilos únicos por tema
 
 ### Elementos Visuales
-- **Gradientes Modernos** - Azul, púrpura, rosa y amarillo
-- **Efectos de Profundidad** - Sombras, blur y backdrop-blur
-- **Animaciones Fluidas** - Transiciones suaves en toda la UI
-- **Favicon Personalizado** - SVG optimizado para navegadores
+- **Gradientes Cohesivos** - Paleta unificada en toda la aplicación
+- **Efectos de Profundidad** - Sombras con colores de la paleta
+- **Animaciones Fluidas** - Fade-in, slide-in, scale en componentes
+- **Waves Decorativas** - Transiciones suaves entre secciones
+- **Favicon Personalizado** - Pluma antigua con nueva paleta
 
 ## 🚀 Características Técnicas
 
@@ -404,10 +433,61 @@ Este proyecto está bajo la Licencia MIT. Ver `LICENSE` para más detalles.
 - **Rate Limiting** - Control de solicitudes por usuario
 - **Confirmación de Email** - Solo usuarios verificados en BD
 - **Contraseñas Seguras** - Verificación con HaveIBeenPwned
-- **Moderación NSFW** - Protección automática de contenido inapropiado
+- **Moderación NSFW Manual** - Sistema de checkbox para marcar contenido
+- **Blocklist Personal** - Usuarios pueden censurar contenido de otros
 
 ### Control de Entorno
 - **Desarrollo** - Simulación de emails, sin envíos reales
 - **Producción** - Emails reales de Supabase
 - **Configuración Flexible** - Flags para habilitar/deshabilitar funcionalidades
+
+### Funcionalidades de Usuario
+- **Censura Personal** - Blur de contenido de usuarios bloqueados
+- **Protección para No Registrados** - Todas las imágenes con blur como incentivo
+- **Paginación Optimizada** - 20 posts por página en explore/following
+- **Filtros de Dashboard** - Todos/Públicos/Borradores
+- **Botón de Bloqueo Mejorado** - Gradientes y animaciones modernas
+
+## 📦 Versión 2.0.0
+
+### Cambios Principales
+
+#### Diseño Visual Completo
+- Nueva paleta de colores aplicada en toda la aplicación
+- Logo rediseñado de blog circular a pluma antigua
+- Sistema de temas de perfil con 6 opciones
+- 16 decoraciones de avatar disponibles
+- Waves decorativas entre secciones
+- Animaciones mejoradas en todos los componentes
+
+#### Páginas Rediseñadas
+- **Home**: Hero con gradiente oscuro, waves, posts destacados estilo Pokémon
+- **Explore**: Nueva paleta, filtros mejorados, cards actualizadas
+- **Dashboard**: Estadísticas coloridas, filtros de posts
+- **Following**: Diseño coherente con nueva paleta
+- **Post View**: Hero con gradiente, imagen destacada mejorada
+- **Create Post**: Inputs y preview con nuevos colores
+- **Settings**: Cards y secciones con nueva paleta
+- **Login/Register**: Diseño moderno con gradientes y animaciones
+- **Forgot Password**: Interfaz mejorada con nueva paleta
+- **Easter Egg**: Developers con cards expandibles y confeti instantáneo
+
+#### Componentes Mejorados
+- **Navbar**: Pluma antigua, colores actualizados
+- **Footer**: Gradiente oscuro, versión 2.0.0
+- **Button**: Gradientes de la nueva paleta
+- **Card**: Bordes y sombras con nuevos colores
+- **BlockUserButton**: Gradientes modernos con efectos hover
+
+#### Sistema de Moderación
+- Cambio de automático a manual (checkbox)
+- Eliminado campo `nsfwCategories` de base de datos
+- Blur solo en cover images
+- Sistema de blocklist personal por usuario
+
+#### Optimizaciones
+- Paginación reducida a 20 posts
+- Filtros de dashboard mejorados
+- Z-index corregido en botones de acción
+- Waves sin superposición de contenido
 

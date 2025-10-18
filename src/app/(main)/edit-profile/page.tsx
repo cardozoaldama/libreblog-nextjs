@@ -121,7 +121,14 @@ export default function EditProfilePage() {
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <Image
+            src="/loading.gif"
+            alt="Cargando"
+            width={48}
+            height={48}
+            className="mx-auto mb-4"
+            unoptimized
+          />
           <p className="text-gray-600">Cargando...</p>
         </div>
       </div>
@@ -270,7 +277,7 @@ export default function EditProfilePage() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Biografía (soporta Markdown)
+                  Biografía
                 </label>
                 <textarea
                   value={bio}
@@ -278,7 +285,7 @@ export default function EditProfilePage() {
                   placeholder="Cuéntanos sobre ti..."
                   rows={4}
                   maxLength={500}
-                  className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono text-sm"
+                  className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 />
                 <p className="text-xs text-gray-500 mt-1">
                   {bio.length}/500 caracteres

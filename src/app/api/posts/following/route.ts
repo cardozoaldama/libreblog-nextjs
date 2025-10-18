@@ -14,7 +14,7 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url)
     const page = parseInt(searchParams.get('page') || '1')
     const search = searchParams.get('search') || ''
-    const limit = 50
+    const limit = 20
     const offset = (page - 1) * limit
 
     // Obtener IDs de usuarios seguidos
@@ -42,15 +42,7 @@ export async function GET(request: Request) {
       ],
       }),
       },
-      select: {
-        id: true,
-        title: true,
-        content: true,
-        slug: true,
-        createdAt: true,
-        imageUrl: true,
-        isNSFW: true,
-        nsfwCategories: true,
+      include: {
         author: {
           select: {
             id: true,
@@ -59,17 +51,29 @@ export async function GET(request: Request) {
             avatarUrl: true,
         },
       },
-      category: true,
-      _count: {
-        select: { likes: true }
-      }
+      category: true
       },
       orderBy: { createdAt: 'desc' },
       take: limit + 1,
       skip: offset,
       })
 
-      // Los posts ya incluyen el conteo de likes
+      // Contar likes para los posts
+      const postIds = posts.map(p => p.id)
+      const likeCounts = postIds.length > 0 ? await prisma.like.groupBy({
+        by: ['postId'],
+        where: { postId: { in: postIds } },
+        _count: { postId: true }
+      }) : []
+
+      const likeMap = Object.fromEntries(
+        likeCounts.map(l => [l.postId, l._count.postId])
+      )
+
+      posts = posts.map(post => ({
+        ...post,
+        _count: { likes: likeMap[post.id] || 0 }
+      }))
     }
 
     const hasMore = posts.length > limit

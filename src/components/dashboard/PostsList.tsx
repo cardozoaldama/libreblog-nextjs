@@ -20,7 +20,6 @@ interface Post {
   isPinned: boolean
   isPublic: boolean
   isNSFW: boolean
-  nsfwCategories: string[]
   createdAt: Date
   category: {
     id: string
@@ -51,11 +50,16 @@ interface PostsListProps {
 
 export default function PostsList({ posts, currentUser }: PostsListProps) {
   const [searchQuery, setSearchQuery] = useState('')
+  const [statusFilter, setStatusFilter] = useState<'all' | 'public' | 'draft'>('all')
   const router = useRouter()
 
-  const filteredPosts = posts.filter(post =>
-    post.title.toLowerCase().includes(searchQuery.toLowerCase())
-  )
+  const filteredPosts = posts.filter(post => {
+    const matchesSearch = post.title.toLowerCase().includes(searchQuery.toLowerCase())
+    const matchesStatus = statusFilter === 'all' || 
+                         (statusFilter === 'public' && post.isPublic) || 
+                         (statusFilter === 'draft' && !post.isPublic)
+    return matchesSearch && matchesStatus
+  })
 
   const getAuthorDisplay = (post: Post) => {
     const author = post.author || currentUser
@@ -68,7 +72,7 @@ export default function PostsList({ posts, currentUser }: PostsListProps) {
   return (
     <>
       {/* Search Bar */}
-      <div className="mb-6">
+      <div className="mb-6 space-y-3">
         <div className="relative">
           <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-gray-400" />
           <input
@@ -78,6 +82,38 @@ export default function PostsList({ posts, currentUser }: PostsListProps) {
             onChange={(e) => setSearchQuery(e.target.value)}
             className="w-full pl-10 pr-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
           />
+        </div>
+        <div className="flex gap-2">
+          <button
+            onClick={() => setStatusFilter('all')}
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+              statusFilter === 'all'
+                ? 'bg-blue-600 text-white'
+                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+            }`}
+          >
+            Todos ({posts.length})
+          </button>
+          <button
+            onClick={() => setStatusFilter('public')}
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+              statusFilter === 'public'
+                ? 'bg-green-600 text-white'
+                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+            }`}
+          >
+            Públicos ({posts.filter(p => p.isPublic).length})
+          </button>
+          <button
+            onClick={() => setStatusFilter('draft')}
+            className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+              statusFilter === 'draft'
+                ? 'bg-yellow-600 text-white'
+                : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+            }`}
+          >
+            Borradores ({posts.filter(p => !p.isPublic).length})
+          </button>
         </div>
       </div>
 
@@ -98,7 +134,6 @@ export default function PostsList({ posts, currentUser }: PostsListProps) {
             <div key={post.id} className="block h-full">
               <NSFWFilter
               isNSFW={shouldFilter}
-              categories={post.nsfwCategories}
             >
               <Link href={`/post/${post.slug}`} className="block h-full">
                 <Card variant="hover" className="group animate-in fade-in slide-in-from-bottom duration-500 cursor-pointer h-full flex flex-col">
@@ -185,15 +220,14 @@ export default function PostsList({ posts, currentUser }: PostsListProps) {
                       </div>
 
                       {/* Actions */}
-                      <div className="flex items-center gap-2 flex-wrap mt-4">
-                        <PinButton postId={post.id} initialIsPinned={post.isPinned} />
-                        <Button variant="ghost" size="sm">
-                        <Eye className="w-4 h-4" />
-                        </Button>
-                        <Button variant="ghost" size="sm" onClick={() => router.push(`/post/edit/${post.id}`)}>
-                          <Edit className="w-4 h-4" />
-                        </Button>
-                        <DeletePostButton postId={post.id} postTitle={post.title} />
+                      <div className="flex items-center gap-2 flex-wrap mt-4 relative z-20">
+                        <div onClick={(e) => e.preventDefault()} className="contents">
+                          <PinButton postId={post.id} initialIsPinned={post.isPinned} />
+                          <Button variant="ghost" size="sm" onClick={(e) => { e.preventDefault(); router.push(`/post/edit/${post.id}`) }}>
+                            <Edit className="w-4 h-4" />
+                          </Button>
+                          <DeletePostButton postId={post.id} postTitle={post.title} />
+                        </div>
                   </div>
                   </div>
                   </CardBody>

@@ -28,7 +28,6 @@ interface Post {
   categoryId: string | null
   isPublic: boolean
   isNSFW: boolean
-  nsfwCategories: string[]
 }
 
 // Función auxiliar para validar URLs
@@ -86,55 +85,12 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
   const [videoUrl, setVideoUrl] = useState('')
   const [categoryId, setCategoryId] = useState('')
   const [isPublic, setIsPublic] = useState(false)
+  const [isNSFW, setIsNSFW] = useState(false)
   const [categories, setCategories] = useState<Category[]>([])
   const [isLoading, setIsLoading] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
   const [showPreview, setShowPreview] = useState(false)
   const [error, setError] = useState('')
-  const [forceModeration, setForceModeration] = useState(false)
-  const [isNSFW, setIsNSFW] = useState(false)
-  const [nsfwCategories, setNsfwCategories] = useState<string[]>([])
-  const [isRecheckingNSFW, setIsRecheckingNSFW] = useState(false)
-  const [recheckSuccess, setRecheckSuccess] = useState(false)
-  const [saveSuccess, setSaveSuccess] = useState(false)
-
-  // Función para forzar re-moderación del post
-  const handleForceModeration = async () => {
-    setIsRecheckingNSFW(true)
-    setRecheckSuccess(false)
-    try {
-      const response = await fetch(`/api/posts/${id}`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-      })
-
-      if (response.ok) {
-        const result = await response.json()
-        if (result.success) {
-          setForceModeration(true)
-          // Actualizar el estado NSFW local
-          if (result.moderation) {
-            setIsNSFW(result.moderation.isNSFW)
-            setNsfwCategories(result.moderation.categories || [])
-          }
-          // Recargar el post para obtener los nuevos flags NSFW
-          const postResponse = await fetch(`/api/posts/single/${id}`)
-          if (postResponse.ok) {
-            const postData = await postResponse.json()
-            setPost(postData)
-            setIsNSFW(postData.isNSFW)
-            setNsfwCategories(postData.nsfwCategories || [])
-          }
-          setRecheckSuccess(true)
-          setTimeout(() => setRecheckSuccess(false), 3000)
-        }
-      }
-    } catch (err) {
-      console.error('Error forcing moderation:', err)
-    } finally {
-      setIsRecheckingNSFW(false)
-    }
-  }
 
   // Cargar post y categorías
   useEffect(() => {
@@ -160,18 +116,6 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
         setCategoryId(postData.categoryId || '')
         setIsPublic(postData.isPublic)
         setIsNSFW(postData.isNSFW || false)
-        setNsfwCategories(postData.nsfwCategories || [])
-
-        // Forzar re-moderación automática al cargar la página de edición
-        try {
-          await fetch(`/api/posts/${id}`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-          })
-          setForceModeration(true)
-        } catch (moderationError) {
-          console.error('Error during automatic moderation on edit load:', moderationError)
-        }
       } catch {
         console.error('Error loading data')
         setError('Error al cargar el post')
@@ -185,7 +129,6 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
-    setSaveSuccess(false)
     setIsSaving(true)
 
     if (!title.trim() || !content.trim()) {
@@ -195,6 +138,7 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
     }
 
     try {
+
       const res = await fetch(`/api/posts/${id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
@@ -205,6 +149,7 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
           videoUrl: videoUrl || null,
           categoryId: categoryId || null,
           isPublic,
+          isNSFW,
         }),
       })
 
@@ -214,16 +159,7 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
       }
 
       const { post: updatedPost } = await res.json()
-      
-      // Actualizar estado NSFW local con los datos del post actualizado
-      setIsNSFW(updatedPost.isNSFW || false)
-      setNsfwCategories(updatedPost.nsfwCategories || [])
-      setSaveSuccess(true)
-      
-      // Redirigir después de un breve delay para mostrar el mensaje de éxito
-      setTimeout(() => {
-        router.push(`/post/${updatedPost.slug}`)
-      }, 1500)
+      router.push(`/post/${updatedPost.slug}`)
     } catch (err: unknown) {
       if (err instanceof Error) {
         setError(err.message)
@@ -239,7 +175,14 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
     return (
       <div className="min-h-screen bg-gray-50 flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <NextImage
+            src="/loading.gif"
+            alt="Cargando"
+            width={48}
+            height={48}
+            className="mx-auto mb-4"
+            unoptimized
+          />
           <p className="text-gray-600">Cargando post...</p>
         </div>
       </div>
@@ -276,109 +219,7 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
         </div>
         )}
 
-        {saveSuccess && (
-          <div className="mb-6 bg-green-50 border-2 border-green-200 rounded-lg p-4">
-            <div className="flex items-start gap-3">
-              <AlertTriangle className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-              <div>
-                <h3 className="font-medium text-green-900 mb-1">✅ Post guardado exitosamente</h3>
-                <p className="text-sm text-green-800">
-                  {isNSFW 
-                    ? '⚠️ El contenido ha sido marcado como NSFW y tendrá filtros aplicados.'
-                    : '✅ El contenido está limpio y no tiene filtros NSFW aplicados.'}
-                </p>
-                <p className="text-xs text-green-700 mt-1">Redirigiendo...</p>
-              </div>
-            </div>
-          </div>
-        )}
 
-        {/* NSFW Status and Warning */}
-        <div className="mb-6 space-y-4">
-          {/* Current NSFW Status */}
-          {isNSFW ? (
-            <div className="bg-red-50 border-2 border-red-200 rounded-lg p-4">
-              <div className="flex items-start justify-between gap-3">
-                <div className="flex items-start gap-3">
-                  <AlertTriangle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
-                  <div>
-                    <h3 className="font-medium text-red-900 mb-1">⚠️ Este post está marcado como NSFW</h3>
-                    <p className="text-sm text-red-800 mb-2">
-                      El contenido actual ha sido detectado como censurable y tiene filtros aplicados.
-                    </p>
-                    {nsfwCategories.length > 0 && (
-                      <div className="text-xs text-red-700 mb-2">
-                        <strong>Categorías detectadas:</strong> {nsfwCategories.join(', ')}
-                      </div>
-                    )}
-                    <p className="text-xs text-red-700">
-                      💡 <strong>Para quitar el filtro:</strong> Edita el contenido eliminando las palabras o imágenes problemáticas y guarda el post. Se re-moderará automáticamente.
-                    </p>
-                  </div>
-                </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={handleForceModeration}
-                  disabled={isRecheckingNSFW}
-                  className="flex-shrink-0"
-                >
-                  {isRecheckingNSFW ? 'Verificando...' : 'Re-verificar ahora'}
-                </Button>
-              </div>
-            </div>
-          ) : (
-            <div className="bg-green-50 border-2 border-green-200 rounded-lg p-4">
-              <div className="flex items-start justify-between gap-3">
-                <div className="flex items-start gap-3">
-                  <AlertTriangle className="w-5 h-5 text-green-600 flex-shrink-0 mt-0.5" />
-                  <div>
-                    <h3 className="font-medium text-green-900 mb-1">✅ Este post NO está marcado como NSFW</h3>
-                    <p className="text-sm text-green-800">
-                      El contenido actual no contiene palabras o imágenes censuradas detectadas.
-                    </p>
-                  </div>
-                </div>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={handleForceModeration}
-                  disabled={isRecheckingNSFW}
-                  className="flex-shrink-0"
-                >
-                  {isRecheckingNSFW ? 'Verificando...' : 'Verificar'}
-                </Button>
-              </div>
-            </div>
-          )}
-
-          {recheckSuccess && (
-            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
-              <p className="text-sm text-blue-800">
-                ✅ Re-verificación completada. Estado NSFW actualizado.
-              </p>
-            </div>
-          )}
-
-          {/* Auto Re-moderation Info */}
-          <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-            <div className="flex items-start gap-3">
-              <AlertTriangle className="w-5 h-5 text-yellow-600 flex-shrink-0 mt-0.5" />
-              <div>
-                <h3 className="font-medium text-yellow-900 mb-1">🔄 Re-moderación Automática al Guardar</h3>
-                <p className="text-sm text-yellow-800 mb-2">
-                  Cuando guardes este post, se analizará automáticamente el contenido. Los filtros NSFW se aplicarán o quitarán según corresponda.
-                </p>
-                <p className="text-xs text-yellow-700 mb-2">
-                  <strong>Palabras detectadas:</strong> follar, coger, violar, matar, drogas, URLs adultas, etc.
-                </p>
-                <Link href="/nsfw-rules" className="text-xs text-blue-600 hover:text-blue-700 underline">
-                  Ver reglas completas de contenido NSFW →
-                </Link>
-              </div>
-            </div>
-          </div>
-        </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Editor */}
@@ -498,25 +339,52 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
                     </label>
                   </div>
 
+                  {/* Contenido NSFW */}
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      id="isNSFW"
+                      checked={isNSFW}
+                      onChange={(e) => setIsNSFW(e.target.checked)}
+                      className="w-4 h-4 text-red-600 border-gray-300 rounded focus:ring-red-500"
+                    />
+                    <label htmlFor="isNSFW" className="text-sm font-medium text-gray-700">
+                      🔞 Marcar como contenido NSFW (18+)
+                    </label>
+                  </div>
+
+                  {isNSFW && (
+                    <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                      <div className="flex items-start gap-3">
+                        <AlertTriangle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+                        <div className="text-sm">
+                          <p className="font-medium text-red-800 mb-1">
+                            Contenido para adultos
+                          </p>
+                          <p className="text-red-700 mb-2">
+                            Este contenido está marcado como NSFW y aparecerá con filtros de protección para otros usuarios.
+                          </p>
+                          <Link
+                            href="/nsfw-rules"
+                            className="inline-flex items-center gap-1 text-red-700 hover:text-red-800 font-medium underline"
+                          >
+                            📋 Leer reglas de contenido NSFW
+                          </Link>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
                   {/* Botones */}
                   <div className="flex gap-3 pt-4">
-                  <Button
-                  type="submit"
-                  variant="primary"
-                  isLoading={isSaving}
-                  className="flex-1"
-                  >
-                  <Save className="w-4 h-4 mr-2" />
-                  {isSaving ? 'Guardando...' : 'Guardar Cambios'}
-                  </Button>
-                  <Button
-                  type="button"
-                    variant="secondary"
-                      onClick={handleForceModeration}
-                      disabled={forceModeration}
-                      className="whitespace-nowrap"
+                    <Button
+                      type="submit"
+                      variant="primary"
+                      isLoading={isSaving}
+                      className="flex-1"
                     >
-                      🔍 {forceModeration ? 'Re-moderado' : 'Re-moderar'}
+                      <Save className="w-4 h-4 mr-2" />
+                      {isSaving ? 'Guardando...' : 'Guardar Cambios'}
                     </Button>
                     <Link href="/dashboard">
                       <Button variant="outline">Cancelar</Button>

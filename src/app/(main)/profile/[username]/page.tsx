@@ -39,7 +39,22 @@ export default async function ProfilePage({
         { email: { startsWith: username } },
       ],
     },
-    include: {
+    select: {
+      id: true,
+      email: true,
+      displayName: true,
+      username: true,
+      bio: true,
+      avatarUrl: true,
+      createdAt: true,
+      websiteUrl: true,
+      githubUrl: true,
+      publicEmail: true,
+      facebookUrl: true,
+      instagramUrl: true,
+      linkedinUrl: true,
+      profileTheme: true,
+      profileDecoration: true,
       posts: {
         where: { isPublic: true },
         orderBy: [
@@ -47,14 +62,11 @@ export default async function ProfilePage({
           { createdAt: 'desc' },
         ],
         include: {
-          category: true,
-          _count: {
-            select: { likes: true }
-          }
+          category: true
         },
       },
     },
-  }) as UserWithSocials | null
+  }) as any
 
   if (!user) {
     notFound()
@@ -69,9 +81,21 @@ export default async function ProfilePage({
     // Si la tabla follow no existe, usar 0
   }
 
+  // Contar likes para los posts del usuario
+  const postIds = user.posts.map(p => p.id)
+  const likeCounts = postIds.length > 0 ? await prisma.like.groupBy({
+    by: ['postId'],
+    where: { postId: { in: postIds } },
+    _count: { postId: true }
+  }) : []
+
+  const likeMap = Object.fromEntries(
+    likeCounts.map(l => [l.postId, l._count.postId])
+  )
+
   const postsWithLikes = user.posts.map(post => ({
     ...post,
-    _count: { likes: post._count.likes }
+    _count: { likes: likeMap[post.id] || 0 }
   }))
 
   const supabase = await createClient()

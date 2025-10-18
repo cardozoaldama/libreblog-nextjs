@@ -157,15 +157,15 @@ export default function RegisterPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-purple-50 to-pink-50 px-4 py-12">
-      <div className="w-full max-w-md">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#dedff1] via-[#dedff1] to-[#5f638f]/20 px-4 py-12">
+      <div className="w-full max-w-md animate-in fade-in slide-in-from-bottom duration-700">
         {/* Logo/Header */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-purple-600 to-pink-600 rounded-2xl shadow-lg mb-4">
-            <UserPlus className="w-8 h-8 text-white" />
+          <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-[#36234e] to-[#5f638f] rounded-3xl shadow-2xl mb-6 animate-pulse">
+            <UserPlus className="w-10 h-10 text-[#dedff1]" />
           </div>
-          <h1 className="text-3xl font-bold text-gray-900">Crear Cuenta</h1>
-          <p className="text-gray-600 mt-2">Únete a la comunidad de LibreBlog</p>
+          <h1 className="text-4xl font-black bg-gradient-to-r from-[#36234e] to-[#5f638f] bg-clip-text text-transparent">Crear Cuenta</h1>
+          <p className="text-[#5f638f] mt-3 text-lg">Únete a la comunidad de LibreBlog</p>
         </div>
 
         {/* Card de Registro */}
@@ -406,17 +406,17 @@ export default function RegisterPage() {
 
         {/* Login Link */}
         <div className="mt-6 text-center">
-          <p className="text-gray-600">
+          <p className="text-[#000022]">
             ¿Ya tienes cuenta?{' '}
-            <Link href="/login" className="text-purple-600 font-semibold hover:text-purple-700 transition-colors">
+            <Link href="/login" className="text-[#36234e] font-bold hover:text-[#5f638f] transition-colors underline">
               Inicia sesión aquí
             </Link>
           </p>
         </div>
 
         {/* Back to Home */}
-        <div className="mt-4 text-center">
-          <Link href="/" className="text-sm text-gray-500 hover:text-gray-700 transition-colors">
+        <div className="mt-6 text-center">
+          <Link href="/" className="text-sm text-[#5f638f] hover:text-[#0c2b4d] transition-colors font-medium">
             ← Volver al inicio
           </Link>
         </div>

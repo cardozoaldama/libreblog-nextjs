@@ -26,6 +26,7 @@ export default function CreatePostPage() {
   const [videoUrl, setVideoUrl] = useState('')
   const [categoryId, setCategoryId] = useState('')
   const [isPublic, setIsPublic] = useState(false)
+  const [isNSFW, setIsNSFW] = useState(false)
   const [categories, setCategories] = useState<Category[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [showPreview, setShowPreview] = useState(false)
@@ -46,6 +47,8 @@ export default function CreatePostPage() {
     loadCategories()
   }, [])
 
+
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
@@ -58,41 +61,18 @@ export default function CreatePostPage() {
     }
 
     try {
-      // Primero, verificar si el contenido es NSFW
-      const moderationRes = await fetch('/api/moderate/nsfw', {
+
+      const res = await fetch('/api/posts', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           title,
           content,
-          images: imageUrl ? [imageUrl] : []
-        }),
-      })
-
-      let isNSFW = false
-      let nsfwCategories: string[] = []
-      if (moderationRes.ok) {
-        const moderationData = await moderationRes.json()
-        isNSFW = moderationData.isNSFW
-        nsfwCategories = moderationData.categories || []
-        console.log('Moderation result:', { isNSFW, nsfwCategories, moderationData })
-      } else {
-        console.error('Moderation API failed:', moderationRes.status, await moderationRes.text())
-      }
-
-      // Crear el post con la información NSFW
-      const res = await fetch('/api/posts', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-        title,
-        content,
-        imageUrl: imageUrl || null,
-        videoUrl: videoUrl || null,
-        categoryId: categoryId || null,
-        isPublic,
-        isNSFW,
-          nsfwCategories,
+          imageUrl: imageUrl || null,
+          videoUrl: videoUrl || null,
+          categoryId: categoryId || null,
+          isPublic,
+          isNSFW,
         }),
       })
 
@@ -112,7 +92,7 @@ export default function CreatePostPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/30 to-purple-50/30 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-[#dedff1] via-[#dedff1] to-[#5f638f]/20 py-8">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8 animate-in fade-in slide-in-from-top duration-500">
@@ -135,15 +115,15 @@ export default function CreatePostPage() {
             </Button>
           </div>
           <div className="text-center">
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent mb-2">
+            <h1 className="text-4xl font-bold bg-gradient-to-r from-[#0c2b4d] via-[#36234e] to-[#5f638f] bg-clip-text text-transparent mb-2">
               Crear Nuevo Post
             </h1>
-            <p className="text-gray-600 text-lg">Comparte tus ideas con el mundo</p>
+            <p className="text-[#000022]/70 text-lg">Comparte tus ideas con el mundo</p>
           </div>
         </div>
 
         {error && (
-          <div className="mb-6 bg-red-50/80 backdrop-blur-sm border border-red-200/50 text-red-800 px-6 py-4 rounded-2xl shadow-lg animate-in slide-in-from-top duration-300">
+          <div className="mb-6 bg-red-50 border border-red-200 text-red-800 px-6 py-4 rounded-2xl shadow-lg animate-in slide-in-from-top duration-300">
             {error}
           </div>
         )}
@@ -153,13 +133,13 @@ export default function CreatePostPage() {
           <div className={`${showPreview ? 'hidden lg:block' : ''} animate-in fade-in slide-in-from-left duration-500 delay-200`}>
             <Card variant="hover">
               <CardHeader>
-                <h2 className="text-xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">✍️ Editor</h2>
+                <h2 className="text-xl font-bold bg-gradient-to-r from-[#0c2b4d] to-[#5f638f] bg-clip-text text-transparent">✍️ Editor</h2>
               </CardHeader>
               <CardBody>
                 <form onSubmit={handleSubmit} className="space-y-4">
                   {/* Título */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-[#000022] mb-2">
                       Título *
                     </label>
                     <input
@@ -168,19 +148,19 @@ export default function CreatePostPage() {
                       onChange={(e) => setTitle(e.target.value)}
                       placeholder="Un título atractivo para tu post..."
                       required
-                      className="w-full px-4 py-3 border-2 border-gray-300/50 rounded-xl bg-white/80 backdrop-blur-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 hover:border-gray-400/50 selectable"
+                      className="w-full px-4 py-3 border-2 border-[#5f638f]/30 rounded-xl bg-white/80 focus:ring-2 focus:ring-[#0c2b4d] focus:border-transparent transition-all duration-300 hover:border-[#5f638f]/50 selectable"
                     />
                   </div>
 
                   {/* Categoría */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-[#000022] mb-2">
                       Categoría
                     </label>
                     <select
                       value={categoryId}
                       onChange={(e) => setCategoryId(e.target.value)}
-                      className="w-full px-4 py-3 border-2 border-gray-300/50 rounded-xl bg-white/80 backdrop-blur-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 hover:border-gray-400/50"
+                      className="w-full px-4 py-3 border-2 border-[#5f638f]/30 rounded-xl bg-white/80 focus:ring-2 focus:ring-[#0c2b4d] focus:border-transparent transition-all duration-300 hover:border-[#5f638f]/50"
                     >
                       <option value="">Sin categoría</option>
                       {categories.map((cat) => (
@@ -193,7 +173,7 @@ export default function CreatePostPage() {
 
                   {/* Contenido Markdown */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-[#000022] mb-2">
                       Contenido (Markdown) *
                     </label>
                     <textarea
@@ -202,13 +182,13 @@ export default function CreatePostPage() {
                       placeholder="Escribe tu contenido en Markdown...&#10;&#10;**Negrita**, *cursiva*, # Títulos&#10;&#10;- Lista&#10;- De items&#10;&#10;```javascript&#10;// Código&#10;```"
                       required
                       rows={15}
-                      className="w-full px-4 py-3 border-2 border-gray-300/50 rounded-xl bg-white/80 backdrop-blur-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono text-sm transition-all duration-300 hover:border-gray-400/50 selectable"
+                      className="w-full px-4 py-3 border-2 border-[#5f638f]/30 rounded-xl bg-white/80 focus:ring-2 focus:ring-[#0c2b4d] focus:border-transparent font-mono text-sm transition-all duration-300 hover:border-[#5f638f]/50 selectable"
                     />
                     <details className="mt-2">
-                      <summary className="text-xs text-blue-600 cursor-pointer hover:text-blue-700 font-medium">
+                      <summary className="text-xs text-[#0c2b4d] cursor-pointer hover:text-[#36234e] font-medium">
                         📖 Ver guía de Markdown
                       </summary>
-                      <div className="mt-2 p-4 bg-white/60 backdrop-blur-sm rounded-xl border border-gray-200/50 text-xs space-y-2">
+                      <div className="mt-2 p-4 bg-white/80 rounded-xl border border-[#5f638f]/20 text-xs space-y-2">
                         <div><strong>Texto:</strong> **negrita** *cursiva* ~~tachado~~</div>
                         <div><strong>Títulos:</strong> # H1, ## H2, ### H3</div>
                         <div><strong>Listas:</strong> - item o 1. item</div>
@@ -223,7 +203,7 @@ export default function CreatePostPage() {
 
                   {/* URL de Imagen */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-[#000022] mb-2">
                       <ImageIcon className="w-4 h-4 inline mr-1" aria-hidden="true" />
                       Imagen de Portada (opcional)
                     </label>
@@ -232,14 +212,14 @@ export default function CreatePostPage() {
                       value={imageUrl}
                       onChange={(e) => setImageUrl(e.target.value)}
                       placeholder="https://ejemplo.com/imagen.jpg"
-                      className="w-full px-4 py-3 border-2 border-gray-300/50 rounded-xl bg-white/80 backdrop-blur-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 hover:border-gray-400/50 selectable"
+                      className="w-full px-4 py-3 border-2 border-[#5f638f]/30 rounded-xl bg-white/80 focus:ring-2 focus:ring-[#0c2b4d] focus:border-transparent transition-all duration-300 hover:border-[#5f638f]/50 selectable"
                     />
-                    <p className="text-xs text-gray-500 mt-1">Imagen principal que aparecerá en la cabecera del post</p>
+                    <p className="text-xs text-[#5f638f] mt-1">Imagen principal que aparecerá en la cabecera del post</p>
                   </div>
 
                   {/* URL de Video */}
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                    <label className="block text-sm font-medium text-[#000022] mb-2">
                       <Video className="w-4 h-4 inline mr-1" />
                       Video Embebido (opcional)
                     </label>
@@ -247,46 +227,61 @@ export default function CreatePostPage() {
                       type="url"
                       value={videoUrl}
                       onChange={(e) => setVideoUrl(e.target.value)}
-                      className="w-full px-4 py-3 border-2 border-gray-300/50 rounded-xl bg-white/80 backdrop-blur-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all duration-300 hover:border-gray-400/50 selectable"
+                      className="w-full px-4 py-3 border-2 border-[#5f638f]/30 rounded-xl bg-white/80 focus:ring-2 focus:ring-[#0c2b4d] focus:border-transparent transition-all duration-300 hover:border-[#5f638f]/50 selectable"
                     />
-                    <p className="text-xs text-gray-500 mt-1">Soporta: YouTube, Shorts, TikTok, Facebook Reels</p>
+                    <p className="text-xs text-[#5f638f] mt-1">Soporta: YouTube, Shorts, TikTok, Facebook Reels</p>
                     </div>
 
                     {/* Público/Privado */}
                     <div className="flex items-center gap-2">
-                    <input
-                    type="checkbox"
-                    id="isPublic"
-                    checked={isPublic}
-                    onChange={(e) => setIsPublic(e.target.checked)}
-                    className="w-4 h-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
-                    />
-                    <label htmlFor="isPublic" className="text-sm font-medium text-gray-700">
-                    Hacer público (visible para todos)
-                    </label>
+                      <input
+                        type="checkbox"
+                        id="isPublic"
+                        checked={isPublic}
+                        onChange={(e) => setIsPublic(e.target.checked)}
+                        className="w-4 h-4 text-[#0c2b4d] border-[#5f638f]/30 rounded focus:ring-[#0c2b4d]"
+                      />
+                      <label htmlFor="isPublic" className="text-sm font-medium text-[#000022]">
+                        Hacer público (visible para todos)
+                      </label>
                     </div>
 
-                   {/* Advertencia NSFW */}
-                   <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
-                     <div className="flex items-start gap-3">
-                       <AlertTriangle className="w-5 h-5 text-yellow-600 flex-shrink-0 mt-0.5" />
-                       <div className="text-sm">
-                         <p className="font-medium text-yellow-800 mb-1">
-                            Contenido NSFW
-                         </p>
-                         <p className="text-yellow-700 mb-2">
-                         Si tu publicación contiene contenido NSFW (texto, imágenes o URLs),
-                         será automáticamente marcada como NSFW y aparecerá con filtros para otros usuarios.
-                         </p>
-                         <Link
-                           href="/nsfw-rules"
-                           className="inline-flex items-center gap-1 text-yellow-700 hover:text-yellow-800 font-medium underline"
-                         >
-                           📋 Leer reglas de contenido censurable
-                         </Link>
-                       </div>
-                     </div>
-                   </div>
+                    {/* Contenido NSFW */}
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        id="isNSFW"
+                        checked={isNSFW}
+                        onChange={(e) => setIsNSFW(e.target.checked)}
+                        className="w-4 h-4 text-red-600 border-[#5f638f]/30 rounded focus:ring-red-500"
+                      />
+                      <label htmlFor="isNSFW" className="text-sm font-medium text-[#000022]">
+                        🔞 Marcar como contenido NSFW (18+)
+                      </label>
+                    </div>
+
+                    {/* Advertencia si está marcado como NSFW */}
+                    {isNSFW && (
+                      <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+                        <div className="flex items-start gap-3">
+                          <AlertTriangle className="w-5 h-5 text-red-600 flex-shrink-0 mt-0.5" />
+                          <div className="text-sm">
+                            <p className="font-medium text-red-800 mb-1">
+                              Contenido para adultos
+                            </p>
+                            <p className="text-red-700 mb-2">
+                              Este contenido está marcado como NSFW y aparecerá con filtros de protección para otros usuarios.
+                            </p>
+                            <Link
+                              href="/nsfw-rules"
+                              className="inline-flex items-center gap-1 text-red-700 hover:text-red-800 font-medium underline"
+                            >
+                              📋 Leer reglas de contenido NSFW
+                            </Link>
+                          </div>
+                        </div>
+                      </div>
+                    )}
 
                   {/* Botones */}
                   <div className="flex gap-3 pt-4">
@@ -312,7 +307,7 @@ export default function CreatePostPage() {
           <div className={`${!showPreview ? 'hidden lg:block' : ''} animate-in fade-in slide-in-from-right duration-500 delay-300`}>
             <Card variant="hover">
               <CardHeader>
-                <h2 className="text-xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">👁️ Vista Previa</h2>
+                <h2 className="text-xl font-bold bg-gradient-to-r from-[#0c2b4d] to-[#5f638f] bg-clip-text text-transparent">👁️ Vista Previa</h2>
               </CardHeader>
               <CardBody>
                 <article className="prose max-w-none">

@@ -1,4 +1,5 @@
 import { ButtonHTMLAttributes, forwardRef } from 'react'
+import Image from 'next/image'
 import { cn } from '@/lib/utils'
 
 // Interfaz para las propiedades del componente Button
@@ -19,10 +20,10 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 
     // Variantes de estilo para diferentes tipos de botón
     const variants = {
-      primary: 'bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700 focus:ring-blue-500 shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-purple-500/40',
-      secondary: 'bg-gradient-to-r from-gray-600 to-gray-700 text-white hover:from-gray-700 hover:to-gray-800 focus:ring-gray-500 shadow-lg shadow-gray-500/30',
-      outline: 'border-2 border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-gray-400 focus:ring-gray-500 hover:shadow-md',
-      ghost: 'text-gray-700 hover:bg-gray-100/80 hover:text-gray-900 focus:ring-gray-500 backdrop-blur-sm',
+      primary: 'bg-gradient-to-r from-[#0c2b4d] to-[#36234e] text-white hover:from-[#36234e] hover:to-[#5f638f] focus:ring-[#0c2b4d] shadow-lg shadow-[#0c2b4d]/30 hover:shadow-xl hover:shadow-[#36234e]/40',
+      secondary: 'bg-gradient-to-r from-[#5f638f] to-[#36234e] text-white hover:from-[#36234e] hover:to-[#0c2b4d] focus:ring-[#5f638f] shadow-lg shadow-[#5f638f]/30',
+      outline: 'border-2 border-[#5f638f] text-[#0c2b4d] hover:bg-[#dedff1]/50 hover:border-[#36234e] focus:ring-[#5f638f] hover:shadow-md',
+      ghost: 'text-[#36234e] hover:bg-[#dedff1]/50 hover:text-[#0c2b4d] focus:ring-[#5f638f] backdrop-blur-sm',
       danger: 'bg-gradient-to-r from-red-600 to-red-700 text-white hover:from-red-700 hover:to-red-800 focus:ring-red-500 shadow-lg shadow-red-500/30',
     }
 
@@ -40,18 +41,16 @@ const Button = forwardRef<HTMLButtonElement, ButtonProps>(
         disabled={disabled || isLoading}
         {...props}
       >
-        {/* Spinner de carga cuando isLoading es true */}
+        {/* GIF de carga cuando isLoading es true */}
         {isLoading && (
-          <svg
-            className="animate-spin -ml-1 mr-2 h-4 w-4"
-            xmlns="http://www.w3.org/2000/svg"
-            fill="none"
-            viewBox="0 0 24 24"
-            aria-hidden="true"
-          >
-            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-          </svg>
+          <Image
+            src="/loading.gif"
+            alt="Cargando"
+            width={16}
+            height={16}
+            className="-ml-1 mr-2"
+            unoptimized
+          />
         )}
         {children}
       </button>

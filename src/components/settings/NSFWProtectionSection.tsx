@@ -83,13 +83,13 @@ export default function NSFWProtectionSection({ nsfwProtection, onToggle }: NSFW
             <p className="text-sm text-gray-600 mb-3">
               {nsfwProtection ? (
                 <>
-                  El contenido NSFW será filtrado con un efecto borroso y requerirá confirmación para ver.
-                  Esto ayuda a proteger a los usuarios de contenido inapropiado.
+                  Los posts marcados como NSFW y los usuarios que censures aparecerán con efecto borroso.
+                  Podrás hacer clic para revelar el contenido cuando lo desees.
                 </>
               ) : (
                 <>
-                  Todo el contenido se mostrará sin filtros, incluyendo material NSFW.
-                  Ten cuidado al navegar por contenido que pueda ser inapropiado.
+                  Los posts marcados como NSFW se mostrarán sin filtro. Los usuarios censurados seguirán con blur.
+                  Puedes censurar usuarios desde sus perfiles para ocultar todo su contenido.
                 </>
               )}
             </p>
@@ -103,8 +103,8 @@ export default function NSFWProtectionSection({ nsfwProtection, onToggle }: NSFW
                   </p>
                   <p className="text-xs text-yellow-700 mt-1">
                     {nsfwProtection 
-                      ? 'Puedes desactivar la protección en cualquier momento si deseas ver todo el contenido.'
-                      : 'Recomendamos mantener la protección activada para una experiencia más segura.'
+                      ? 'Desactivar solo afecta posts NSFW. Los usuarios censurados siempre tendrán blur.'
+                      : 'Con protección desactivada, solo verás blur en usuarios que hayas censurado manualmente.'
                     }
                   </p>
                 </div>
@@ -124,17 +124,18 @@ export default function NSFWProtectionSection({ nsfwProtection, onToggle }: NSFW
 
         <div className="border-t pt-4">
           <h5 className="text-sm font-medium text-gray-900 mb-2">
-            ¿Qué hace la protección NSFW?
+            ¿Cómo funciona el sistema de filtros?
           </h5>
           <ul className="text-sm text-gray-600 space-y-1">
-            <li>• Detecta automáticamente contenido no apto para menores</li>
-            <li>• Aplica un filtro borroso sobre el contenido NSFW</li>
-            <li>• Muestra una advertencia antes de revelar el contenido</li>
-            <li>• Requiere confirmación de mayoría de edad</li>
-            <li>• Analiza texto, URLs e imágenes en tiempo real</li>
+            <li>• <strong>Posts NSFW:</strong> Los autores marcan su contenido como NSFW manualmente</li>
+            <li>• <strong>Protección activada:</strong> Posts NSFW aparecen con blur, clic para revelar</li>
+            <li>• <strong>Protección desactivada:</strong> Posts NSFW se muestran sin filtro</li>
+            <li>• <strong>Censura de usuarios:</strong> Bloquea todo el contenido de un usuario (siempre con blur)</li>
+            <li>• <strong>Gestión personal:</strong> Tú decides qué usuarios censurar desde sus perfiles</li>
           </ul>
         </div>
       </CardBody>
     </Card>
   )
 }
+

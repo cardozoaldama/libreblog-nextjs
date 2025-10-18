@@ -56,7 +56,7 @@ export default function AboutPage() {
 
           <Card variant="elevated">
           <CardBody className="p-8">
-          <h2 className="text-2xl font-bold text-gray-900 mb-4">Características Actuales <span className="text-sm font-normal text-gray-500">v1.2.0</span></h2>
+          <h2 className="text-2xl font-bold text-gray-900 mb-4">Características Actuales <span className="text-sm font-normal text-gray-500">v2.0.0</span></h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-3">
                   <li className="flex items-start">
@@ -65,7 +65,15 @@ export default function AboutPage() {
                   </li>
                   <li className="flex items-start">
                     <span className="text-blue-600 mr-2">✓</span>
-                    <span className="text-gray-700">Sistema de autenticación con Supabase</span>
+                    <span className="text-gray-700">Sistema de autenticación con Supabase + 2FA</span>
+                  </li>
+                  <li className="flex items-start">
+                    <span className="text-blue-600 mr-2">✓</span>
+                    <span className="text-gray-700">Verificación de contraseñas con HaveIBeenPwned</span>
+                  </li>
+                  <li className="flex items-start">
+                    <span className="text-blue-600 mr-2">✓</span>
+                    <span className="text-gray-700">Recuperación de cuenta por email</span>
                   </li>
                   <li className="flex items-start">
                     <span className="text-blue-600 mr-2">✓</span>
@@ -77,7 +85,7 @@ export default function AboutPage() {
                   </li>
                   <li className="flex items-start">
                     <span className="text-blue-600 mr-2">✓</span>
-                    <span className="text-gray-700">Perfiles personalizables con avatares</span>
+                    <span className="text-gray-700">Perfiles personalizables con temas y avatares</span>
                   </li>
                   <li className="flex items-start">
                     <span className="text-blue-600 mr-2">✓</span>
@@ -95,7 +103,7 @@ export default function AboutPage() {
                 <div className="space-y-3">
                   <li className="flex items-start">
                     <span className="text-blue-600 mr-2">✓</span>
-                    <span className="text-gray-700">Soporte para URLs de imágenes y videos de YouTube</span>
+                    <span className="text-gray-700">Soporte para imágenes y videos (YouTube, TikTok, Facebook)</span>
                   </li>
                   <li className="flex items-start">
                     <span className="text-blue-600 mr-2">✓</span>
@@ -103,7 +111,15 @@ export default function AboutPage() {
                   </li>
                   <li className="flex items-start">
                     <span className="text-blue-600 mr-2">✓</span>
-                    <span className="text-gray-700">Compartir posts mediante enlaces directos</span>
+                    <span className="text-gray-700">Marcado manual de contenido NSFW</span>
+                  </li>
+                  <li className="flex items-start">
+                    <span className="text-blue-600 mr-2">✓</span>
+                    <span className="text-gray-700">Sistema de censura personal de usuarios</span>
+                  </li>
+                  <li className="flex items-start">
+                    <span className="text-blue-600 mr-2">✓</span>
+                    <span className="text-gray-700">Filtros de protección NSFW personalizables</span>
                   </li>
                   <li className="flex items-start">
                     <span className="text-blue-600 mr-2">✓</span>
@@ -111,11 +127,11 @@ export default function AboutPage() {
                   </li>
                   <li className="flex items-start">
                     <span className="text-blue-600 mr-2">✓</span>
-                    <span className="text-gray-700">Dashboard personalizado para autores</span>
+                    <span className="text-gray-700">Dashboard con filtros (públicos/borradores)</span>
                   </li>
                   <li className="flex items-start">
                     <span className="text-blue-600 mr-2">✓</span>
-                    <span className="text-gray-700">Estadísticas de posts y seguidores</span>
+                    <span className="text-gray-700">Paginación optimizada (20 posts por página)</span>
                   </li>
                   <li className="flex items-start">
                     <span className="text-blue-600 mr-2">✓</span>

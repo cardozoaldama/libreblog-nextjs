@@ -1,12 +1,14 @@
-<svg width="32" height="32" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg">
+<svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <linearGradient id="faviconGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#3B82F6" />
-      <stop offset="50%" stop-color="#8B5CF6" />
-      <stop offset="100%" stop-color="#EC4899" />
+      <stop offset="0%" stop-color="#0c2b4d" />
+      <stop offset="50%" stop-color="#36234e" />
+      <stop offset="100%" stop-color="#5f638f" />
     </linearGradient>
   </defs>
-  <circle cx="16" cy="16" r="15" fill="url(#faviconGradient)" />
-  <path d="M8 11h16M8 16h12M8 21h8" stroke="white" stroke-width="2" stroke-linecap="round" />
-  <circle cx="26" cy="11" r="1.5" fill="white" />
+  <rect width="64" height="64" fill="#dedff1" rx="12"/>
+  <path d="M51.2 12.8 Q48 9.6 44.8 12.8 L19.2 44.8 Q16 48 12.8 51.2 L16 54.4 Q19.2 51.2 22.4 48 L54.4 16 Q57.6 12.8 54.4 9.6 Z" fill="url(#faviconGradient)"/>
+  <path d="M12.8 51.2 L9.6 60.8 L19.2 57.6 L16 54.4 Z" fill="#000022" opacity="0.6"/>
+  <path d="M44.8 12.8 L51.2 19.2" stroke="#dedff1" stroke-width="2.4" stroke-linecap="round" opacity="0.8"/>
+  <path d="M41.6 16 L48 22.4" stroke="#dedff1" stroke-width="1.6" stroke-linecap="round" opacity="0.5"/>
 </svg>

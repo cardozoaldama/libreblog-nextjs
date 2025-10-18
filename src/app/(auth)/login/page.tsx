@@ -71,15 +71,15 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-blue-50 to-purple-50 px-4 py-12">
-      <div className="w-full max-w-md">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-[#dedff1] via-[#dedff1] to-[#5f638f]/20 px-4 py-12">
+      <div className="w-full max-w-md animate-in fade-in slide-in-from-bottom duration-700">
         {/* Logo/Header */}
         <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-blue-600 to-purple-600 rounded-2xl shadow-lg mb-4">
-            <LogIn className="w-8 h-8 text-white" />
+          <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-[#0c2b4d] to-[#36234e] rounded-3xl shadow-2xl mb-6 animate-pulse">
+            <LogIn className="w-10 h-10 text-[#dedff1]" />
           </div>
-          <h1 className="text-3xl font-bold text-gray-900">Iniciar Sesión</h1>
-          <p className="text-gray-600 mt-2">Bienvenido de vuelta a LibreBlog</p>
+          <h1 className="text-4xl font-black bg-gradient-to-r from-[#0c2b4d] to-[#36234e] bg-clip-text text-transparent">Iniciar Sesión</h1>
+          <p className="text-[#5f638f] mt-3 text-lg">Bienvenido de vuelta a LibreBlog</p>
         </div>
 
         {/* Card de Login */}
@@ -116,7 +116,7 @@ export default function LoginPage() {
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="tu@email.com"
                     required
-                    className="w-full pl-10 pr-4 py-2.5 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    className="w-full pl-10 pr-4 py-3 border-2 border-[#5f638f]/30 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-[#0c2b4d] focus:border-transparent transition-all shadow-sm"
                   />
                 </div>
               </div>
@@ -134,7 +134,7 @@ export default function LoginPage() {
                     onChange={(e) => setPassword(e.target.value)}
                     placeholder="••••••••"
                     required
-                    className="w-full pl-10 pr-4 py-2.5 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
+                    className="w-full pl-10 pr-4 py-3 border-2 border-[#5f638f]/30 rounded-xl bg-white focus:outline-none focus:ring-2 focus:ring-[#0c2b4d] focus:border-transparent transition-all shadow-sm"
                   />
                 </div>
               </div>
@@ -161,24 +161,24 @@ export default function LoginPage() {
         </Card>
 
         {/* Register Link */}
-        <div className="mt-6 text-center space-y-2">
-          <p className="text-gray-600">
+        <div className="mt-6 text-center space-y-3">
+          <p className="text-[#000022]">
             ¿No tienes cuenta?{' '}
-            <Link href="/register" className="text-blue-600 font-semibold hover:text-blue-700 transition-colors">
+            <Link href="/register" className="text-[#0c2b4d] font-bold hover:text-[#36234e] transition-colors underline">
               Regístrate aquí
             </Link>
           </p>
-          <p className="text-gray-600">
+          <p className="text-[#000022]">
             ¿Olvidaste tu contraseña?{' '}
-            <Link href="/forgot-password" className="text-blue-600 font-semibold hover:text-blue-700 transition-colors">
+            <Link href="/forgot-password" className="text-[#0c2b4d] font-bold hover:text-[#36234e] transition-colors underline">
               Recupérala aquí
             </Link>
           </p>
         </div>
 
         {/* Back to Home */}
-        <div className="mt-4 text-center">
-          <Link href="/" className="text-sm text-gray-500 hover:text-gray-700 transition-colors">
+        <div className="mt-6 text-center">
+          <Link href="/" className="text-sm text-[#5f638f] hover:text-[#0c2b4d] transition-colors font-medium">
             ← Volver al inicio
           </Link>
         </div>

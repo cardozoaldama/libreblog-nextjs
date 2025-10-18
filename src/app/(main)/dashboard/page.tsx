@@ -27,10 +27,7 @@ export default async function DashboardPage() {
           { createdAt: 'desc' },
         ],
         include: {
-          category: true,
-          _count: {
-            select: { likes: true }
-          }
+          category: true
         },
       },
     },
@@ -52,32 +49,43 @@ export default async function DashboardPage() {
     redirect('/dashboard')
   }
 
-  // Los posts ya incluyen el conteo de likes
+  // Contar likes para los posts del usuario
+  const postIds = user.posts.map(p => p.id)
+  const likeCounts = postIds.length > 0 ? await prisma.like.groupBy({
+    by: ['postId'],
+    where: { postId: { in: postIds } },
+    _count: { postId: true }
+  }) : []
+
+  const likeMap = Object.fromEntries(
+    likeCounts.map(l => [l.postId, l._count.postId])
+  )
+
   const postsWithLikes = user.posts.map(post => ({
     ...post,
-    _count: { likes: post._count.likes }
+    _count: { likes: likeMap[post.id] || 0 }
   }))
 
   const totalPosts = user.posts.length
   const publicPosts = user.posts.filter((p) => p.isPublic).length
   const draftPosts = user.posts.filter((p) => !p.isPublic).length
-  const totalLikes = user.posts.reduce((sum, post) => sum + post._count.likes, 0)
+  const totalLikes = postsWithLikes.reduce((sum, post) => sum + post._count.likes, 0)
   const averageLikes = totalPosts > 0 ? Math.round(totalLikes / totalPosts) : 0
-  const mostLikedPost = user.posts.reduce((max, post) =>
+  const mostLikedPost = postsWithLikes.reduce((max, post) =>
     post._count.likes > max._count.likes ? post : max,
-    user.posts[0] || { _count: { likes: 0 } }
+    postsWithLikes[0] || { _count: { likes: 0 } }
   )
   const nsfwPosts = user.posts.filter((p) => p.isNSFW).length
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50/30 to-purple-50/30 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-[#dedff1] via-[#dedff1] to-[#5f638f]/20 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8 text-center animate-in fade-in slide-in-from-top duration-500">
-          <h1 className="text-5xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent mb-4">
+          <h1 className="text-5xl font-bold bg-gradient-to-r from-[#0c2b4d] via-[#36234e] to-[#5f638f] bg-clip-text text-transparent mb-4">
             ¡Hola, {user.displayName || user.email.split('@')[0]}! 👋
           </h1>
-          <p className="text-xl text-gray-600">Gestiona tus publicaciones desde aquí</p>
+          <p className="text-xl text-[#000022]/70">Gestiona tus publicaciones desde aquí</p>
         </div>
 
         {/* Stats Cards */}
@@ -86,12 +94,12 @@ export default async function DashboardPage() {
         <CardBody className="p-6">
         <div className="flex items-center justify-between">
         <div>
-        <p className="text-sm font-medium text-gray-600 uppercase tracking-wide">Total Posts</p>
-        <p className="text-4xl font-bold text-gray-900 mt-2">{totalPosts}</p>
-          <p className="text-xs text-gray-500 mt-1">Publicaciones creadas</p>
+        <p className="text-sm font-medium text-[#5f638f] uppercase tracking-wide">Total Posts</p>
+        <p className="text-4xl font-bold text-[#000022] mt-2">{totalPosts}</p>
+          <p className="text-xs text-[#5f638f]/70 mt-1">Publicaciones creadas</p>
         </div>
-        <div className="w-14 h-14 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center shadow-lg shadow-blue-500/30 group-hover:scale-110 transition-transform duration-300">
-          <FileText className="w-7 h-7 text-white" />
+        <div className="w-14 h-14 bg-gradient-to-br from-[#0c2b4d] to-[#36234e] rounded-2xl flex items-center justify-center shadow-lg shadow-[#0c2b4d]/30 group-hover:scale-110 transition-transform duration-300">
+          <FileText className="w-7 h-7 text-[#dedff1]" />
           </div>
           </div>
           </CardBody>
@@ -101,12 +109,12 @@ export default async function DashboardPage() {
         <CardBody className="p-6">
         <div className="flex items-center justify-between">
         <div>
-        <p className="text-sm font-medium text-gray-600 uppercase tracking-wide">Publicados</p>
+        <p className="text-sm font-medium text-[#5f638f] uppercase tracking-wide">Publicados</p>
           <p className="text-4xl font-bold text-green-600 mt-2">{publicPosts}</p>
-          <p className="text-xs text-gray-500 mt-1">Visibles para todos</p>
+          <p className="text-xs text-[#5f638f]/70 mt-1">Visibles para todos</p>
         </div>
         <div className="w-14 h-14 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl flex items-center justify-center shadow-lg shadow-green-500/30 group-hover:scale-110 transition-transform duration-300">
-            <Eye className="w-7 h-7 text-white" />
+            <Eye className="w-7 h-7 text-[#dedff1]" />
             </div>
             </div>
             </CardBody>
@@ -116,12 +124,12 @@ export default async function DashboardPage() {
         <CardBody className="p-6">
         <div className="flex items-center justify-between">
         <div>
-          <p className="text-sm font-medium text-gray-600 uppercase tracking-wide">Total Likes</p>
+          <p className="text-sm font-medium text-[#5f638f] uppercase tracking-wide">Total Likes</p>
           <p className="text-4xl font-bold text-pink-600 mt-2">{totalLikes}</p>
-        <p className="text-xs text-gray-500 mt-1">❤️ Promedio: {averageLikes}/post</p>
+        <p className="text-xs text-[#5f638f]/70 mt-1">❤️ Promedio: {averageLikes}/post</p>
         </div>
           <div className="w-14 h-14 bg-gradient-to-br from-pink-500 to-pink-600 rounded-2xl flex items-center justify-center shadow-lg shadow-pink-500/30 group-hover:scale-110 transition-transform duration-300">
-              <Heart className="w-7 h-7 text-white" />
+              <Heart className="w-7 h-7 text-[#dedff1]" />
               </div>
               </div>
             </CardBody>
@@ -131,12 +139,12 @@ export default async function DashboardPage() {
             <CardBody className="p-6">
               <div className="flex items-center justify-between">
                 <div>
-                  <p className="text-sm font-medium text-gray-600 uppercase tracking-wide">Contenido NSFW</p>
+                  <p className="text-sm font-medium text-[#5f638f] uppercase tracking-wide">Contenido NSFW</p>
                   <p className="text-4xl font-bold text-orange-600 mt-2">{nsfwPosts}</p>
-                  <p className="text-xs text-gray-500 mt-1">Posts moderados</p>
+                  <p className="text-xs text-[#5f638f]/70 mt-1">Posts moderados</p>
                 </div>
                 <div className="w-14 h-14 bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl flex items-center justify-center shadow-lg shadow-orange-500/30 group-hover:scale-110 transition-transform duration-300">
-                  <BarChart3 className="w-7 h-7 text-white" />
+                  <BarChart3 className="w-7 h-7 text-[#dedff1]" />
                 </div>
               </div>
             </CardBody>
@@ -150,12 +158,12 @@ export default async function DashboardPage() {
               <CardBody className="p-6">
                 <div className="flex items-center gap-3 mb-4">
                   <TrendingUp className="w-6 h-6 text-green-600" />
-                  <h3 className="text-lg font-semibold text-gray-900">Post Más Popular</h3>
+                  <h3 className="text-lg font-semibold text-[#000022]">Post Más Popular</h3>
                 </div>
                 {mostLikedPost && mostLikedPost._count.likes > 0 ? (
                   <div>
-                    <p className="font-medium text-gray-900 mb-1 line-clamp-1">{mostLikedPost.title}</p>
-                    <p className="text-sm text-gray-600 mb-2">{mostLikedPost._count.likes} ❤️ likes</p>
+                    <p className="font-medium text-[#000022] mb-1 line-clamp-1">{mostLikedPost.title}</p>
+                    <p className="text-sm text-[#5f638f] mb-2">{mostLikedPost._count.likes} ❤️ likes</p>
                     <Link href={`/post/${mostLikedPost.slug}`}>
                       <Button variant="outline" size="sm" className="text-xs">
                         Ver post
@@ -163,7 +171,7 @@ export default async function DashboardPage() {
                     </Link>
                   </div>
                 ) : (
-                  <p className="text-sm text-gray-600">Aún no tienes likes en tus posts</p>
+                  <p className="text-sm text-[#5f638f]">Aún no tienes likes en tus posts</p>
                 )}
               </CardBody>
             </Card>
@@ -171,24 +179,24 @@ export default async function DashboardPage() {
             <Card variant="elevated" className="animate-in fade-in slide-in-from-right duration-500 delay-700">
               <CardBody className="p-6">
                 <div className="flex items-center gap-3 mb-4">
-                  <Calendar className="w-6 h-6 text-blue-600" />
-                  <h3 className="text-lg font-semibold text-gray-900">Resumen de Actividad</h3>
+                  <Calendar className="w-6 h-6 text-[#0c2b4d]" />
+                  <h3 className="text-lg font-semibold text-[#000022]">Resumen de Actividad</h3>
                 </div>
                 <div className="space-y-2 text-sm">
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Posts públicos:</span>
+                    <span className="text-[#5f638f]">Posts públicos:</span>
                     <span className="font-medium text-green-600">{publicPosts}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Borradores:</span>
+                    <span className="text-[#5f638f]">Borradores:</span>
                     <span className="font-medium text-yellow-600">{draftPosts}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Likes totales:</span>
+                    <span className="text-[#5f638f]">Likes totales:</span>
                     <span className="font-medium text-pink-600">{totalLikes}</span>
                   </div>
                   <div className="flex justify-between">
-                    <span className="text-gray-600">Posts NSFW:</span>
+                    <span className="text-[#5f638f]">Posts NSFW:</span>
                     <span className="font-medium text-orange-600">{nsfwPosts}</span>
                   </div>
                 </div>
@@ -203,10 +211,10 @@ export default async function DashboardPage() {
         <div className="animate-in fade-in slide-in-from-bottom duration-500 delay-800">
         <div className="flex items-center justify-between mb-6">
         <div>
-        <h2 className="text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">
+        <h2 className="text-2xl font-bold bg-gradient-to-r from-[#0c2b4d] to-[#5f638f] bg-clip-text text-transparent">
         Mis Publicaciones
         </h2>
-        <p className="text-gray-600 mt-1">
+        <p className="text-[#5f638f] mt-1">
         {user.posts.length === 0
         ? "Aún no tienes publicaciones"
           : `${user.posts.length} publicación${user.posts.length !== 1 ? 'es' : ''} en total`
@@ -224,15 +232,15 @@ export default async function DashboardPage() {
         </div>
 
         {user.posts.length === 0 ? (
-        <Card variant="hover" className="border-2 border-dashed border-gray-300">
+        <Card variant="hover" className="border-2 border-dashed border-[#5f638f]/30">
           <CardBody className="p-16 text-center">
-            <div className="w-24 h-24 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center mx-auto mb-6 shadow-2xl animate-pulse">
-              <PenSquare className="w-12 h-12 text-white" />
+            <div className="w-24 h-24 bg-gradient-to-br from-[#0c2b4d] to-[#36234e] rounded-full flex items-center justify-center mx-auto mb-6 shadow-2xl animate-pulse">
+              <PenSquare className="w-12 h-12 text-[#dedff1]" />
             </div>
-              <h3 className="text-2xl font-bold bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent mb-4">
+              <h3 className="text-2xl font-bold bg-gradient-to-r from-[#0c2b4d] to-[#5f638f] bg-clip-text text-transparent mb-4">
                   ¡Es hora de crear tu primer post!
               </h3>
-                <p className="text-gray-600 mb-8 text-lg max-w-md mx-auto">
+                <p className="text-[#5f638f] mb-8 text-lg max-w-md mx-auto">
                   Comparte tus ideas, experiencias y conocimientos con la comunidad de LibreBlog
                 </p>
                 <Link href="/post/create">
@@ -246,7 +254,7 @@ export default async function DashboardPage() {
           ) : (
             <div className="space-y-4">
               {/* Quick Stats Bar */}
-              <Card variant="elevated" className="bg-gradient-to-r from-blue-50 to-purple-50 border-blue-200/50">
+              <Card variant="elevated" className="bg-gradient-to-r from-[#dedff1] to-[#5f638f]/10 border-[#5f638f]/20">
                 <CardBody className="p-4">
                   <div className="flex items-center justify-between text-sm">
                     <div className="flex items-center gap-4">
@@ -263,7 +271,7 @@ export default async function DashboardPage() {
                         <span className="font-medium text-pink-700">{totalLikes} likes totales</span>
                       </span>
                     </div>
-                    <Link href="/settings" className="text-blue-600 hover:text-blue-700 font-medium text-xs underline">
+                    <Link href="/settings" className="text-[#0c2b4d] hover:text-[#36234e] font-medium text-xs underline">
                       Gestionar preferencias →
                     </Link>
                   </div>

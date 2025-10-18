@@ -28,6 +28,7 @@ export default function EasterEggPage() {
   const [particles, setParticles] = useState<Particle[]>([])
   const [showConfetti, setShowConfetti] = useState(false)
   const [revealed, setRevealed] = useState(false)
+  const [expandedDev, setExpandedDev] = useState<string | null>(null)
 
   useEffect(() => {
     // Crear partículas flotantes
@@ -41,10 +42,9 @@ export default function EasterEggPage() {
   }, [])
 
   const handleMagicClick = () => {
-    playSound("magic");
     setShowConfetti(true);
     setRevealed(true);
-    // Hide confetti after animation completes
+    playSound("magic");
     setTimeout(() => setShowConfetti(false), 4000);
   };
 
@@ -173,7 +173,7 @@ return (
         }
       `}</style>
 
-    <div className="min-h-screen bg-gradient-to-br from-blue-900 via-purple-900 to-pink-900 relative overflow-hidden">
+    <div className="min-h-screen bg-gradient-to-br from-[#000022] via-[#0c2b4d] to-[#36234e] relative overflow-hidden">
       {/* Animated Background Particles */}
       {particles.map((particle) => (
         <div
@@ -241,10 +241,10 @@ return (
           </Link>
 
           <div className="mb-6 sm:mb-8">
-            <h1 className="text-4xl sm:text-6xl md:text-8xl font-bold bg-gradient-to-r from-yellow-400 via-pink-400 to-purple-400 bg-clip-text text-transparent mb-4 animate-pulse">
+            <h1 className="text-4xl sm:text-6xl md:text-8xl font-bold bg-gradient-to-r from-[#dedff1] via-[#5f638f] to-[#36234e] bg-clip-text text-transparent mb-4 animate-pulse">
               🎉 EASTER EGG 🎉
             </h1>
-            <p className="text-lg sm:text-2xl text-white/80 font-light px-4">
+            <p className="text-lg sm:text-2xl text-[#dedff1]/80 font-light px-4">
               ¡Has descubierto nuestro secreto mejor guardado!
             </p>
           </div>
@@ -253,7 +253,7 @@ return (
           {!revealed && (
             <button
               onClick={handleMagicClick}
-              className="mb-8 sm:mb-12 px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 rounded-full text-white font-bold text-lg sm:text-xl shadow-2xl hover:shadow-3xl transform hover:scale-110 transition-all duration-300 animate-bounce"
+              className="mb-8 sm:mb-12 px-6 sm:px-8 py-3 sm:py-4 bg-gradient-to-r from-[#0c2b4d] via-[#36234e] to-[#5f638f] rounded-full text-[#dedff1] font-bold text-lg sm:text-xl shadow-2xl hover:shadow-3xl transform hover:scale-110 transition-all duration-300 animate-bounce"
             >
               <Volume2 className="w-5 h-5 sm:w-6 sm:h-6 inline mr-2" />
               ¡Haz magia!
@@ -266,65 +266,121 @@ return (
         {revealed && (
           <div className="flex flex-col items-center space-y-8 sm:space-y-12 mb-12 sm:mb-16">
             <div className="text-center animate-in fade-in slide-in-from-bottom duration-1000 delay-500">
-              <h2 className="text-2xl sm:text-4xl font-bold text-white mb-4">
-                <Star className="w-6 h-6 sm:w-8 sm:h-8 inline mr-2 text-yellow-400" />
+              <h2 className="text-2xl sm:text-4xl font-bold text-[#dedff1] mb-4">
+                <Star className="w-6 h-6 sm:w-8 sm:h-8 inline mr-2 text-[#5f638f]" />
                 Equipo de Desarrollo
-                <Star className="w-6 h-6 sm:w-8 sm:h-8 inline ml-2 text-yellow-400" />
+                <Star className="w-6 h-6 sm:w-8 sm:h-8 inline ml-2 text-[#5f638f]" />
               </h2>
-              <p className="text-white/70 text-base sm:text-lg">
+              <p className="text-[#dedff1]/70 text-base sm:text-lg">
                 Los magos detrás de LibreBlog
               </p>
             </div>
 
             {/* Top Level - Developers */}
-            <div className="flex flex-col sm:flex-row justify-center items-center space-y-8 sm:space-y-0 sm:space-x-8 lg:space-x-16 animate-in fade-in slide-in-from-left duration-1000 delay-700">
-              <div className="text-center group">
-                <div className="relative">
-                  <div className="absolute -inset-4 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full blur opacity-75 group-hover:opacity-100 transition duration-500"></div>
-                  <div className="relative w-24 h-24 sm:w-32 sm:h-32 mb-4 sm:mb-6">
-                    <Image
-                      src="/images/guillermo-martinez.jpg"
-                      alt="Guillermo Martinez"
-                      fill
-                      sizes="(max-width: 640px) 96px, 128px"
-                      className="rounded-full shadow-2xl group-hover:scale-110 transition-transform duration-500 object-cover"
-                    />
+            <div className="flex flex-col sm:flex-row justify-center items-stretch space-y-6 sm:space-y-0 sm:space-x-6 lg:space-x-12 animate-in fade-in slide-in-from-left duration-1000 delay-700">
+              {/* Guillermo Martinez */}
+              <button
+                onClick={() => setExpandedDev(expandedDev === 'guillermo' ? null : 'guillermo')}
+                className="group relative bg-gradient-to-br from-[#0c2b4d]/30 to-[#36234e]/30 backdrop-blur-sm rounded-3xl p-6 border-2 border-cyan-400/30 hover:border-cyan-400 transition-all duration-500 hover:scale-105 cursor-pointer w-full sm:w-80"
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-cyan-500/0 via-cyan-500/10 to-cyan-500/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-3xl"></div>
+                
+                <div className="relative z-10">
+                  <div className="flex items-center justify-center mb-4">
+                    <div className="relative">
+                      <div className="absolute -inset-4 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-full blur-lg opacity-60 group-hover:opacity-100 transition duration-500 animate-pulse"></div>
+                      <div className="relative w-20 h-20 sm:w-24 sm:h-24">
+                        <Image
+                          src="/images/guillermo-martinez.jpg"
+                          alt="Guillermo Martinez"
+                          fill
+                          sizes="96px"
+                          className="rounded-full shadow-2xl group-hover:scale-110 transition-transform duration-500 object-cover border-4 border-cyan-400"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <h3 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-cyan-300 to-blue-400 bg-clip-text text-transparent mb-2">
+                    Guillermo Martinez
+                  </h3>
+                  
+                  <div className={`overflow-hidden transition-all duration-500 ${expandedDev === 'guillermo' ? 'max-h-40 opacity-100' : 'max-h-0 opacity-0'}`}>
+                    <p className="text-[#dedff1] text-sm sm:text-base mb-3 font-semibold">💻 Developer</p>
+                    <div className="flex justify-center space-x-3 mb-2">
+                      <div className="flex items-center gap-1 bg-cyan-500/20 px-3 py-1 rounded-full">
+                        <Rocket className="w-4 h-4 text-cyan-400" />
+                        <span className="text-xs text-cyan-300 font-medium">Frontend</span>
+                      </div>
+                      <div className="flex items-center gap-1 bg-blue-500/20 px-3 py-1 rounded-full">
+                        <Zap className="w-4 h-4 text-blue-400" />
+                        <span className="text-xs text-blue-300 font-medium">Backend</span>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-center gap-1 text-pink-400 text-sm">
+                      <Heart className="w-4 h-4 fill-current" />
+                      <span>No durmió casi durante el proceso.</span>
+                    </div>
+                  </div>
+                  
+                  <div className="mt-3 text-xs text-[#dedff1]/50 flex items-center justify-center gap-1">
+                    <span>{expandedDev === 'guillermo' ? '▲' : '▼'}</span>
+                    <span>Click para {expandedDev === 'guillermo' ? 'ocultar' : 'ver más'}</span>
                   </div>
                 </div>
-                <h3 className="text-lg sm:text-2xl font-bold text-blue-400 mb-2">
-                  Guillermo Martinez
-                </h3>
-                <p className="text-white/70 text-sm sm:text-lg mb-2">Developer</p>
-                <div className="flex justify-center space-x-2">
-                  <Rocket className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-400" />
-                  <Zap className="w-4 h-4 sm:w-5 sm:h-5 text-blue-400" />
-                  <Heart className="w-4 h-4 sm:w-5 sm:h-5 text-pink-400" />
-                </div>
-              </div>
+              </button>
 
-              <div className="text-center group">
-                <div className="relative">
-                  <div className="absolute -inset-4 bg-gradient-to-r from-purple-500 to-pink-500 rounded-full blur opacity-75 group-hover:opacity-100 transition duration-500"></div>
-                  <div className="relative w-24 h-24 sm:w-32 sm:h-32 mb-4 sm:mb-6">
-                    <Image
-                      src="/images/alejandro-alonso.jpg"
-                      alt="Alejandro Alonso"
-                      fill
-                      sizes="(max-width: 640px) 96px, 128px"
-                      className="rounded-full shadow-2xl group-hover:scale-110 transition-transform duration-500 object-cover"
-                    />
+              {/* Alejandro Alonso */}
+              <button
+                onClick={() => setExpandedDev(expandedDev === 'alejandro' ? null : 'alejandro')}
+                className="group relative bg-gradient-to-br from-[#36234e]/30 to-[#5f638f]/30 backdrop-blur-sm rounded-3xl p-6 border-2 border-purple-400/30 hover:border-purple-400 transition-all duration-500 hover:scale-105 cursor-pointer w-full sm:w-80"
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-purple-500/0 via-purple-500/10 to-purple-500/0 opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-3xl"></div>
+                
+                <div className="relative z-10">
+                  <div className="flex items-center justify-center mb-4">
+                    <div className="relative">
+                      <div className="absolute -inset-4 bg-gradient-to-r from-purple-400 to-pink-500 rounded-full blur-lg opacity-60 group-hover:opacity-100 transition duration-500 animate-pulse"></div>
+                      <div className="relative w-20 h-20 sm:w-24 sm:h-24">
+                        <Image
+                          src="/images/alejandro-alonso.jpg"
+                          alt="Alejandro Alonso"
+                          fill
+                          sizes="96px"
+                          className="rounded-full shadow-2xl group-hover:scale-110 transition-transform duration-500 object-cover border-4 border-purple-400"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  
+                  <h3 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-purple-300 to-pink-400 bg-clip-text text-transparent mb-2">
+                    Alejandro Alonso
+                  </h3>
+                  
+                  <div className={`overflow-hidden transition-all duration-500 ${expandedDev === 'alejandro' ? 'max-h-40 opacity-100' : 'max-h-0 opacity-0'}`}>
+                    <p className="text-[#dedff1] text-sm sm:text-base mb-3 font-semibold">💻 Developer</p>
+                    <div className="flex justify-center space-x-3 mb-2">
+                      <div className="flex items-center gap-1 bg-purple-500/20 px-3 py-1 rounded-full">
+                        <Star className="w-4 h-4 text-purple-400" />
+                        <span className="text-xs text-purple-300 font-medium">Frontend</span>
+                      </div>
+                      <div className="flex items-center gap-1 bg-pink-500/20 px-3 py-1 rounded-full">
+                        <Sparkles className="w-4 h-4 text-pink-400" />
+                        <span className="text-xs text-pink-300 font-medium">Backend</span>
+                      </div>
+                    </div>
+                    <div className="flex items-center justify-center gap-1 text-pink-400 text-sm">
+                      <Heart className="w-4 h-4 fill-current" />
+                      <span>Manejo de datos y registros.</span>
+                    </div>
+                  </div>
+                  
+                  <div className="mt-3 text-xs text-[#dedff1]/50 flex items-center justify-center gap-1">
+                    <span>{expandedDev === 'alejandro' ? '▲' : '▼'}</span>
+                    <span>Click para {expandedDev === 'alejandro' ? 'ocultar' : 'ver más'}</span>
                   </div>
                 </div>
-                <h3 className="text-lg sm:text-2xl font-bold text-purple-400 mb-2">
-                  Alejandro Alonso
-                </h3>
-                <p className="text-white/70 text-sm sm:text-lg mb-2">Developer</p>
-                <div className="flex justify-center space-x-2">
-                  <Star className="w-4 h-4 sm:w-5 sm:h-5 text-yellow-400" />
-                  <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 text-purple-400" />
-                  <Heart className="w-4 h-4 sm:w-5 sm:h-5 text-pink-400" />
-                </div>
-              </div>
+              </button>
             </div>
 
             {/* Bottom Level - Emotional Support */}
@@ -347,10 +403,10 @@ return (
                 <h4 className="text-lg sm:text-xl font-bold text-orange-400 mb-2">
                   Miguel
                 </h4>
-                <p className="text-white/70 font-medium mb-2 text-sm sm:text-base">
+                <p className="text-[#dedff1]/70 font-medium mb-2 text-sm sm:text-base">
                   Apoyo Emocional
                 </p>
-                <div className="flex items-center justify-center text-white/50">
+                <div className="flex items-center justify-center text-[#dedff1]/50">
                   <Volume2 className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
                   <span className="text-xs sm:text-sm">¡Hazme click!</span>
                 </div>
@@ -374,10 +430,10 @@ return (
                 <h4 className="text-lg sm:text-xl font-bold text-yellow-400 mb-2">
                   Terry
                 </h4>
-                <p className="text-white/70 font-medium mb-2 text-sm sm:text-base">
+                <p className="text-[#dedff1]/70 font-medium mb-2 text-sm sm:text-base">
                   Apoyo Emocional
                 </p>
-                <div className="flex items-center justify-center text-white/50">
+                <div className="flex items-center justify-center text-[#dedff1]/50">
                   <Volume2 className="w-3 h-3 sm:w-4 sm:h-4 mr-1" />
                   <span className="text-xs sm:text-sm">¡Hazme click!</span>
                 </div>
@@ -389,36 +445,36 @@ return (
         {/* Secret Messages */}
         {revealed && (
           <div className="space-y-6 sm:space-y-8 animate-in fade-in slide-in-from-bottom duration-1000 delay-1200">
-            <div className="text-center p-6 sm:p-8 bg-black/30 rounded-2xl sm:rounded-3xl border border-yellow-500/30 backdrop-blur-sm mx-4 sm:mx-0">
-              <p className="text-lg sm:text-2xl text-yellow-300 font-mono mb-4 px-2">
+            <div className="text-center p-6 sm:p-8 bg-[#000022]/50 rounded-2xl sm:rounded-3xl border border-[#5f638f]/30 backdrop-blur-sm mx-4 sm:mx-0">
+              <p className="text-lg sm:text-2xl text-[#5f638f] font-mono mb-4 px-2">
                 <span className="animate-pulse">💡</span>
                 El código es poesía, los bugs son... experiencias de aprendizaje
                 <span className="animate-pulse">💡</span>
               </p>
-              <p className="text-white/60 text-sm sm:text-base">
+              <p className="text-[#dedff1]/60 text-sm sm:text-base">
                 - Sabiduría ancestral de desarrolladores
               </p>
             </div>
 
-            <div className="text-center p-4 sm:p-6 bg-gradient-to-r from-purple-900/50 to-pink-900/50 rounded-2xl border border-purple-500/30 backdrop-blur-sm mx-4 sm:mx-0">
-              <p className="text-base sm:text-lg text-purple-300 mb-2 px-2">
+            <div className="text-center p-4 sm:p-6 bg-gradient-to-r from-[#36234e]/50 to-[#0c2b4d]/50 rounded-2xl border border-[#5f638f]/30 backdrop-blur-sm mx-4 sm:mx-0">
+              <p className="text-base sm:text-lg text-[#dedff1] mb-2 px-2">
                 <Rocket className="w-4 h-4 sm:w-5 sm:h-5 inline mr-2" />
                 Programar es como ser un mago, pero en lugar de varitas usamos
                 teclados
                 <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 inline ml-2" />
               </p>
-              <p className="text-white/50 text-xs sm:text-sm">
+              <p className="text-[#dedff1]/50 text-xs sm:text-sm">
                 - Filosofía del desarrollador moderno
               </p>
             </div>
 
-            <div className="text-center p-4 sm:p-6 bg-gradient-to-r from-blue-900/50 to-green-900/50 rounded-2xl border border-blue-500/30 backdrop-blur-sm mx-4 sm:mx-0">
-              <p className="text-base sm:text-lg text-blue-300 mb-2 px-2">
+            <div className="text-center p-4 sm:p-6 bg-gradient-to-r from-[#0c2b4d]/50 to-[#36234e]/50 rounded-2xl border border-[#5f638f]/30 backdrop-blur-sm mx-4 sm:mx-0">
+              <p className="text-base sm:text-lg text-[#dedff1] mb-2 px-2">
                 <Coffee className="w-4 h-4 sm:w-5 sm:h-5 inline mr-2" />
                 Café + Código = Magia Digital
                 <Heart className="w-4 h-4 sm:w-5 sm:h-5 inline ml-2 text-pink-400" />
               </p>
-              <p className="text-white/50 text-xs sm:text-sm">- La ecuación perfecta</p>
+              <p className="text-[#dedff1]/50 text-xs sm:text-sm">- La ecuación perfecta</p>
             </div>
           </div>
         )}
@@ -426,27 +482,27 @@ return (
         {/* Tech Stack Showcase */}
         {revealed && (
           <div className="mt-12 sm:mt-16 text-center animate-in fade-in slide-in-from-bottom duration-1000 delay-1500">
-            <h3 className="text-2xl sm:text-3xl font-bold text-white mb-6 sm:mb-8">
-              <Zap className="w-6 h-6 sm:w-8 sm:h-8 inline mr-2 text-yellow-400" />
+            <h3 className="text-2xl sm:text-3xl font-bold text-[#dedff1] mb-6 sm:mb-8">
+              <Zap className="w-6 h-6 sm:w-8 sm:h-8 inline mr-2 text-[#5f638f]" />
               Tecnologías Utilizadas
             </h3>
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4 sm:gap-6 px-4 sm:px-0">
               {[
-                { name: "Next.js 15", color: "from-gray-700 to-gray-900" },
-                { name: "React 18", color: "from-blue-500 to-blue-700" },
-                { name: "TypeScript", color: "from-blue-600 to-blue-800" },
-                { name: "Tailwind CSS", color: "from-cyan-500 to-blue-600" },
-                { name: "Prisma ORM", color: "from-purple-600 to-purple-800" },
-                { name: "Supabase", color: "from-green-500 to-green-700" },
-                { name: "Vercel", color: "from-gray-800 to-black" },
-                { name: "PostgreSQL", color: "from-blue-700 to-blue-900" },
+                { name: "Next.js 15", color: "from-[#000022] to-[#0c2b4d]" },
+                { name: "React 18", color: "from-[#0c2b4d] to-[#36234e]" },
+                { name: "TypeScript", color: "from-[#36234e] to-[#5f638f]" },
+                { name: "Tailwind CSS", color: "from-[#5f638f] to-[#0c2b4d]" },
+                { name: "Prisma ORM", color: "from-[#36234e] to-[#000022]" },
+                { name: "Supabase", color: "from-[#0c2b4d] to-[#5f638f]" },
+                { name: "Vercel", color: "from-[#000022] to-[#36234e]" },
+                { name: "PostgreSQL", color: "from-[#0c2b4d] to-[#000022]" },
               ].map((tech, index) => (
                 <div
                   key={tech.name}
                   className={`p-3 sm:p-4 bg-gradient-to-br ${tech.color} rounded-lg sm:rounded-xl shadow-lg hover:shadow-2xl transform hover:scale-105 transition-all duration-300`}
                   style={{ animationDelay: `${index * 100}ms` }}
                 >
-                  <p className="text-white font-semibold text-sm sm:text-base">{tech.name}</p>
+                  <p className="text-[#dedff1] font-semibold text-sm sm:text-base">{tech.name}</p>
                 </div>
               ))}
             </div>
@@ -456,16 +512,16 @@ return (
         {/* Final Message */}
         {revealed && (
           <div className="mt-12 sm:mt-16 text-center animate-in fade-in slide-in-from-bottom duration-1000 delay-2000">
-            <div className="p-6 sm:p-8 bg-gradient-to-r from-yellow-900/30 to-orange-900/30 rounded-2xl sm:rounded-3xl border border-yellow-500/50 backdrop-blur-sm mx-4 sm:mx-0">
-              <h3 className="text-xl sm:text-3xl font-bold text-yellow-400 mb-4 px-2">
+            <div className="p-6 sm:p-8 bg-gradient-to-r from-[#36234e]/50 to-[#0c2b4d]/50 rounded-2xl sm:rounded-3xl border border-[#5f638f]/50 backdrop-blur-sm mx-4 sm:mx-0">
+              <h3 className="text-xl sm:text-3xl font-bold text-[#5f638f] mb-4 px-2">
                 ¡Gracias por la atención brindada a nuestro proyecto LibreBlog! 🎊
               </h3>
-              <p className="text-white/80 text-base sm:text-lg mb-6 px-2">
+              <p className="text-[#dedff1]/80 text-base sm:text-lg mb-6 px-2">
                 Esperamos que disfrutes usando LibreBlog tanto como nosotros
                 sufrimos creándolo.
               </p>
               <Link href="/">
-                <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-bold py-3 px-6 sm:px-8 rounded-full shadow-2xl hover:shadow-3xl transform hover:scale-105 transition-all duration-300 text-sm sm:text-base">
+                <Button className="bg-gradient-to-r from-[#0c2b4d] to-[#36234e] hover:from-[#36234e] hover:to-[#5f638f] text-[#dedff1] font-bold py-3 px-6 sm:px-8 rounded-full shadow-2xl hover:shadow-3xl transform hover:scale-105 transition-all duration-300 text-sm sm:text-base">
                   <Heart className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
                   Volver a LibreBlog
                   <Sparkles className="w-4 h-4 sm:w-5 sm:h-5 ml-2" />

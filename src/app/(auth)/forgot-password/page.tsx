@@ -127,18 +127,20 @@ export default function ForgotPasswordPage() {
 
   if (isSuccess) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 flex items-center justify-center p-4">
-        <Card variant="elevated" className="w-full max-w-md">
+      <div className="min-h-screen bg-gradient-to-br from-[#dedff1] via-[#dedff1] to-[#5f638f]/20 flex items-center justify-center p-4">
+        <Card variant="elevated" className="w-full max-w-md animate-in fade-in slide-in-from-bottom duration-700">
           <CardBody className="p-8 text-center">
-            <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
-            <h1 className="text-2xl font-bold text-gray-900 mb-4">
+            <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-green-500 to-emerald-600 rounded-full shadow-2xl mb-6 animate-pulse">
+              <CheckCircle className="w-12 h-12 text-white" />
+            </div>
+            <h1 className="text-3xl font-black bg-gradient-to-r from-[#0c2b4d] to-[#36234e] bg-clip-text text-transparent mb-4">
               Email Enviado
             </h1>
-            <p className="text-gray-600 mb-6">
+            <p className="text-[#5f638f] mb-6 text-lg">
               Revisa tu bandeja de entrada y sigue las instrucciones para restablecer tu contraseña.
             </p>
             <Link href="/login">
-              <Button variant="primary" className="w-full">
+              <Button variant="primary" className="w-full shadow-xl">
                 Volver al Login
               </Button>
             </Link>
@@ -149,14 +151,17 @@ export default function ForgotPasswordPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 flex items-center justify-center p-4">
-      <Card variant="elevated" className="w-full max-w-md">
+    <div className="min-h-screen bg-gradient-to-br from-[#dedff1] via-[#dedff1] to-[#5f638f]/20 flex items-center justify-center p-4">
+      <Card variant="elevated" className="w-full max-w-md animate-in fade-in slide-in-from-bottom duration-700">
         <CardHeader className="text-center pb-4">
-          <h1 className="text-2xl font-bold text-gray-900">Recuperar Contraseña</h1>
-          <p className="text-gray-600 mt-2">
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-[#0c2b4d] to-[#36234e] rounded-2xl shadow-xl mb-4">
+            <Mail className="w-8 h-8 text-[#dedff1]" />
+          </div>
+          <h1 className="text-3xl font-black bg-gradient-to-r from-[#0c2b4d] to-[#36234e] bg-clip-text text-transparent">Recuperar Contraseña</h1>
+          <p className="text-[#5f638f] mt-3">
             Ingresa tu email para recibir un enlace de recuperación
           </p>
-          <p className="text-xs text-gray-500 mt-1">
+          <p className="text-xs text-[#5f638f]/70 mt-2">
             Si no recibes el email, revisa tu carpeta de spam
           </p>
         </CardHeader>
@@ -187,7 +192,7 @@ export default function ForgotPasswordPage() {
                   onChange={(e) => setEmail(e.target.value)}
                   placeholder="tu@email.com"
                   required
-                  className="w-full pl-10 pr-4 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full pl-10 pr-4 py-3 border-2 border-[#5f638f]/30 rounded-xl bg-white focus:ring-2 focus:ring-[#0c2b4d] focus:border-transparent shadow-sm"
                 />
               </div>
               {/* Real-time warning for disposable/invalid email */}
@@ -227,7 +232,7 @@ export default function ForgotPasswordPage() {
           <div className="mt-6 text-center">
             <Link
               href="/login"
-              className="inline-flex items-center text-sm text-blue-600 hover:text-blue-500"
+              className="inline-flex items-center text-sm text-[#0c2b4d] hover:text-[#36234e] font-medium transition-colors"
             >
               <ArrowLeft className="w-4 h-4 mr-1" />
               Volver al Login

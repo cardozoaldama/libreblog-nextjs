@@ -18,7 +18,7 @@ export default function Footer() {
   }
 
   return (
-    <footer className="bg-gradient-to-r from-gray-900 via-blue-900 to-purple-900 text-white">
+    <footer className="bg-gradient-to-r from-[#000022] via-[#0c2b4d] to-[#36234e] text-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         {/* Main Footer Content */}
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
@@ -29,10 +29,19 @@ export default function Footer() {
               onClick={handleLogoClick}
               title={`Haz click ${5 - clickCount} veces más para una sorpresa...`}
             >
-              <div className="bg-gradient-to-br from-blue-600 to-purple-600 p-2 rounded-xl shadow-lg group-hover:scale-110 transition-transform duration-300">
-                <Code className="w-6 h-6 text-white" />
-              </div>
-              <span className="text-2xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+              <svg width="32" height="32" viewBox="0 0 32 32" className="group-hover:scale-110 transition-transform duration-300">
+                <defs>
+                  <linearGradient id="footerLogoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                    <stop offset="0%" stopColor="#0c2b4d" />
+                    <stop offset="50%" stopColor="#36234e" />
+                    <stop offset="100%" stopColor="#5f638f" />
+                  </linearGradient>
+                </defs>
+                <path d="M25.6 6.4 Q24 4.8 22.4 6.4 L9.6 22.4 Q8 24 6.4 25.6 L8 27.2 Q9.6 25.6 11.2 24 L27.2 8 Q28.8 6.4 27.2 4.8 Z" fill="url(#footerLogoGradient)"/>
+                <path d="M6.4 25.6 L4.8 30.4 L9.6 28.8 L8 27.2 Z" fill="#dedff1" opacity="0.6"/>
+                <path d="M22.4 6.4 L25.6 9.6" stroke="#dedff1" strokeWidth="1.2" strokeLinecap="round" opacity="0.8"/>
+              </svg>
+              <span className="text-2xl font-bold bg-gradient-to-r from-[#dedff1] to-[#5f638f] bg-clip-text text-transparent">
                 LibreBlog
               </span>
               {clickCount > 0 && (
@@ -43,7 +52,7 @@ export default function Footer() {
                 </div>
               )}
             </div>
-            <p className="text-gray-300 text-sm leading-relaxed">
+            <p className="text-[#dedff1]/80 text-sm leading-relaxed">
               Una plataforma moderna para compartir ideas, historias y conocimiento.
               Construida con amor y las mejores tecnologías web.
             </p>
@@ -51,23 +60,23 @@ export default function Footer() {
 
           {/* Quick Links */}
           <div>
-            <h3 className="text-lg font-semibold mb-4 text-blue-400">Enlaces Rápidos</h3>
+            <h3 className="text-lg font-semibold mb-4 text-[#5f638f]">Enlaces Rápidos</h3>
             <ul className="space-y-2">
-              <li><Link href="/explore" className="text-gray-300 hover:text-white transition-colors">Explorar</Link></li>
-              <li><Link href="/dashboard" className="text-gray-300 hover:text-white transition-colors">Dashboard</Link></li>
-              <li><Link href="/post/create" className="text-gray-300 hover:text-white transition-colors">Crear Post</Link></li>
-              <li><Link href="https://github.com/IsmaNov12/libreblog-nextjs" className="text-gray-300 hover:text-white transition-colors">Repositorio</Link></li>
+              <li><Link href="/explore" className="text-[#dedff1]/80 hover:text-white transition-colors">Explorar</Link></li>
+              <li><Link href="/dashboard" className="text-[#dedff1]/80 hover:text-white transition-colors">Dashboard</Link></li>
+              <li><Link href="/post/create" className="text-[#dedff1]/80 hover:text-white transition-colors">Crear Post</Link></li>
+              <li><Link href="https://github.com/IsmaNov12/libreblog-nextjs" className="text-[#dedff1]/80 hover:text-white transition-colors">Repositorio</Link></li>
             </ul>
           </div>
 
           {/* About */}
           <div>
-            <h3 className="text-lg font-semibold mb-4 text-purple-400">Acerca de</h3>
+            <h3 className="text-lg font-semibold mb-4 text-[#5f638f]">Acerca de</h3>
             <ul className="space-y-2">
-              <li><Link href="/terms" className="text-gray-300 hover:text-white transition-colors">Términos y Condiciones</Link></li>
-              <li><Link href="/privacy" className="text-gray-300 hover:text-white transition-colors">Política de Privacidad</Link></li>
-              <li><Link href="/about" className="text-gray-300 hover:text-white transition-colors">Acerca de nosotros</Link></li>
-              <li><span className="text-gray-300">Versión 1.0.0</span></li>
+              <li><Link href="/terms" className="text-[#dedff1]/80 hover:text-white transition-colors">Términos y Condiciones</Link></li>
+              <li><Link href="/privacy" className="text-[#dedff1]/80 hover:text-white transition-colors">Política de Privacidad</Link></li>
+              <li><Link href="/about" className="text-[#dedff1]/80 hover:text-white transition-colors">Acerca de nosotros</Link></li>
+              <li><span className="text-[#dedff1]/80">Versión 2.0.0</span></li>
             </ul>
           </div>
         </div>
@@ -75,8 +84,8 @@ export default function Footer() {
 
 
         {/* Bottom Bar */}
-        <div className="border-t border-gray-700 pt-8 flex flex-col md:flex-row justify-between items-center">
-          <div className="flex items-center space-x-2 text-gray-400 text-sm">
+        <div className="border-t border-[#5f638f]/30 pt-8 flex flex-col md:flex-row justify-between items-center">
+          <div className="flex items-center space-x-2 text-[#dedff1]/70 text-sm">
             <span>© 2025 LibreBlog. Hecho con</span>
             <Heart className="w-4 h-4 text-red-500 animate-pulse" />
             <span>y mucho</span>
@@ -84,7 +93,7 @@ export default function Footer() {
           </div>
 
           <div className="flex items-center space-x-4 mt-4 md:mt-0">
-            <span className="text-xs text-gray-500">
+            <span className="text-xs text-[#5f638f]">
               {clickCount > 0 && `Clicks restantes: ${5 - clickCount}`}
             </span>
           </div>
