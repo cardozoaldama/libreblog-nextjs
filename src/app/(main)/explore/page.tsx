@@ -324,7 +324,7 @@ export default function ExplorePage() {
               {posts.map((post) => {
               const authorAvatarUrl = getAvatarUrl(post.author.email, post.author.avatarUrl, 32)
                 const excerpt = extractExcerpt(post.content, 120)
-              const shouldFilter = currentUser && post.isNSFW && currentUser.nsfwProtection
+              const shouldFilter = !!(currentUser && post.isNSFW && currentUser.nsfwProtection)
               const isBlocked = blockedUsers.includes(post.author.id)
 
                 return (
