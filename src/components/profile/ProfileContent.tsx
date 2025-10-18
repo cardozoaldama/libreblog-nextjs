@@ -284,7 +284,7 @@ export default function ProfileContent({ user, followersCount, followingCount, p
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {postsWithLikes.map((post) => {
               const excerpt = extractExcerpt(post.content, 100)
-              const shouldFilter = post.isNSFW && (authUser?.nsfwProtection ?? true)
+              const shouldFilter = !!(post.isNSFW && (authUser?.nsfwProtection ?? true))
               const isBlocked = blockedUsers.includes(post.authorId)
 
               return (

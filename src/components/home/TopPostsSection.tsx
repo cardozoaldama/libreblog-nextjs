@@ -68,7 +68,7 @@ export default function TopPostsSection({ posts, nsfwProtection }: { posts: Post
         </div>
 
         {posts.map((post, idx) => (
-          <NSFWFilter key={post.id} isNSFW={post.isNSFW && nsfwProtection} authorId={post.author.id} blockedUsers={blockedUsers}>
+          <NSFWFilter key={post.id} isNSFW={!!(post.isNSFW && nsfwProtection)} authorId={post.author.id} blockedUsers={blockedUsers}>
             <Link href={`/post/${post.slug}`}>
               {post.imageUrl && <Image src={post.imageUrl} alt={post.title} width={400} height={300} className="nsfw-image" unoptimized />}
               <h3>{post.title}</h3>

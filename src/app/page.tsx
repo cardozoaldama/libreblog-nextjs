@@ -180,7 +180,7 @@ export default async function Home() {
             const post = topPosts[0]
             const authorAvatarUrl = getAvatarUrl(post.author.email, post.author.avatarUrl, 40)
             const excerpt = extractExcerpt(post.content, 120)
-            const shouldFilter = authUser && post.isNSFW && currentUserNSFWProtection
+            const shouldFilter = !!(authUser && post.isNSFW && currentUserNSFWProtection)
             const isBlocked = authUser && blockedUsers.includes(post.author.id)
 
             return (
@@ -344,7 +344,7 @@ export default async function Home() {
                   {topPosts.slice(1).map((post, index) => {
                   const authorAvatarUrl = getAvatarUrl(post.author.email, post.author.avatarUrl, 28)
                   const excerpt = extractExcerpt(post.content, 80)
-                  const shouldFilter = authUser && post.isNSFW && currentUserNSFWProtection
+                  const shouldFilter = !!(authUser && post.isNSFW && currentUserNSFWProtection)
                   const isBlocked = authUser && blockedUsers.includes(post.author.id)
                   const medalColors = [
                   'from-gray-400 to-gray-600',

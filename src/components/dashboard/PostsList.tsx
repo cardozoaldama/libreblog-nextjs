@@ -128,7 +128,7 @@ export default function PostsList({ posts, currentUser }: PostsListProps) {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
           {filteredPosts.map((post) => {
             const authorInfo = getAuthorDisplay(post)
-            const shouldFilter = post.isNSFW && (currentUser?.nsfwProtection ?? true)
+            const shouldFilter = !!(post.isNSFW && (currentUser?.nsfwProtection ?? true))
             
             return (
             <div key={post.id} className="block h-full">
