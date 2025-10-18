@@ -82,7 +82,7 @@ export default async function ProfilePage({
   }
 
   // Contar likes para los posts del usuario
-  const postIds = user.posts.map(p => p.id)
+  const postIds = user.posts.map((p: { id: string }) => p.id)
   const likeCounts = postIds.length > 0 ? await prisma.like.groupBy({
     by: ['postId'],
     where: { postId: { in: postIds } },
