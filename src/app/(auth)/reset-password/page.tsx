@@ -29,48 +29,67 @@ export default function ResetPasswordPage() {
     const checkSession = async () => {
       const supabase = createClient()
       
-      // Buscar código en la URL (viene del email)
-      const hashParams = new URLSearchParams(window.location.hash.substring(1))
-      const queryParams = new URLSearchParams(window.location.search)
-      const code = hashParams.get('code') || queryParams.get('code')
-      const type = hashParams.get('type') || queryParams.get('type')
-      
-      // CRÍTICO: Solo permitir si viene del email de recuperación
-      if (!code || type !== 'recovery') {
-        setMessage({ 
-          type: 'error', 
-          text: 'Acceso denegado. Debes usar el enlace enviado a tu email.' 
-        })
+      try {
+        // Verificar si hay una sesión activa (viene del email de recovery)
+        const { data: { session }, error: sessionError } = await supabase.auth.getSession()
+        
+        if (sessionError) {
+          console.error('Session error:', sessionError)
+          setMessage({ type: 'error', text: 'Error al verificar la sesión' })
+          setHasValidToken(false)
+          setIsCheckingToken(false)
+          return
+        }
+        
+        // Si hay sesión, obtener el usuario
+        if (session?.user) {
+          setUserEmail(session.user.email || null)
+          setHasValidToken(true)
+          setIsCheckingToken(false)
+          return
+        }
+        
+        // Si no hay sesión, buscar token en la URL
+        const hashParams = new URLSearchParams(window.location.hash.substring(1))
+        const accessToken = hashParams.get('access_token')
+        const refreshToken = hashParams.get('refresh_token')
+        const type = hashParams.get('type')
+        
+        // Verificar que sea un token de recovery
+        if (type === 'recovery' && accessToken) {
+          // Establecer la sesión con los tokens
+          const { data, error } = await supabase.auth.setSession({
+            access_token: accessToken,
+            refresh_token: refreshToken || ''
+          })
+          
+          if (error) {
+            console.error('Error setting session:', error)
+            setMessage({ type: 'error', text: 'Enlace de recuperación inválido o expirado' })
+            setHasValidToken(false)
+          } else if (data.user) {
+            setUserEmail(data.user.email || null)
+            setHasValidToken(true)
+          }
+        } else {
+          // No hay token válido
+          setMessage({ 
+            type: 'error', 
+            text: 'Acceso denegado. Debes usar el enlace enviado a tu email.' 
+          })
+          setHasValidToken(false)
+        }
+      } catch (error) {
+        console.error('Unexpected error:', error)
+        setMessage({ type: 'error', text: 'Error inesperado al verificar el enlace' })
+        setHasValidToken(false)
+      } finally {
         setIsCheckingToken(false)
-        setHasValidToken(false)
-        return
       }
-      
-      // Intercambiar código por sesión
-      const { error } = await supabase.auth.exchangeCodeForSession(code)
-      if (error) {
-        console.error('Error exchanging code:', error)
-        setMessage({ type: 'error', text: 'Enlace de recuperación inválido o expirado' })
-        setIsCheckingToken(false)
-        setHasValidToken(false)
-        return
-      }
-      
-      // Obtener usuario después del intercambio exitoso
-      const { data: { user } } = await supabase.auth.getUser()
-      if (user?.email) {
-        setUserEmail(user.email)
-        setHasValidToken(true)
-      } else {
-        setMessage({ type: 'error', text: 'No se pudo verificar el usuario' })
-        setHasValidToken(false)
-      }
-      
-      setIsCheckingToken(false)
     }
     
     checkSession()
-  }, [router])
+  }, [])
 
   const checkPasswordSecurity = async (pwd: string) => {
     if (pwd.length < 6) return
