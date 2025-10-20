@@ -26,6 +26,38 @@ export default function RegisterPage() {
     isCompromised: boolean
     count: number
   } | null>(null)
+  const [lastAttemptAt, setLastAttemptAt] = useState<number | null>(null)
+  const [remainingSeconds, setRemainingSeconds] = useState<number>(0)
+
+  // Load last attempt from localStorage
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem('registerLastAttemptAt')
+      if (stored) {
+        const ts = parseInt(stored, 10)
+        if (!Number.isNaN(ts)) {
+          setLastAttemptAt(ts)
+        }
+      }
+    } catch {}
+  }, [])
+
+  // Cooldown timer
+  useEffect(() => {
+    const tick = () => {
+      if (!lastAttemptAt) {
+        setRemainingSeconds(0)
+        return
+      }
+      const elapsed = Math.floor((Date.now() - lastAttemptAt) / 1000)
+      const cooldown = 30 // 30 segundos entre intentos
+      const remaining = Math.max(0, cooldown - elapsed)
+      setRemainingSeconds(remaining)
+    }
+    tick()
+    const id = setInterval(tick, 1000)
+    return () => clearInterval(id)
+  }, [lastAttemptAt])
 
   useEffect(() => {
     const errorParam = searchParams.get('error')
@@ -75,6 +107,12 @@ export default function RegisterPage() {
     }
 
     try {
+      // Cooldown: 30s between registration attempts
+      if (remainingSeconds > 0) {
+        setError(`Espera ${remainingSeconds}s antes de volver a intentarlo.`)
+        return
+      }
+
       // Gate by feature flag
       if (!isEmailAuthEnabled()) {
         setError('El registro con email está deshabilitado. Usa OAuth (GitHub).')
@@ -85,6 +123,9 @@ export default function RegisterPage() {
       if (botTrap.trim().length > 0) {
         setSuccess(true)
         setError('')
+        const now = Date.now()
+        setLastAttemptAt(now)
+        try { localStorage.setItem('registerLastAttemptAt', String(now)) } catch {}
         return
       }
 
@@ -144,6 +185,11 @@ export default function RegisterPage() {
         
         setSuccess(true)
         setError('')
+        
+        // Save attempt timestamp
+        const now = Date.now()
+        setLastAttemptAt(now)
+        try { localStorage.setItem('registerLastAttemptAt', String(now)) } catch {}
         
         // No redirigir automáticamente, mostrar mensaje
         // El usuario debe confirmar su email primero
@@ -269,7 +315,7 @@ export default function RegisterPage() {
               {/* Email Input */}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Correo Electrónico
+                  Correo Electrónico *
                 </label>
                 <div className="relative">
                   <Mail className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
@@ -282,18 +328,20 @@ export default function RegisterPage() {
                     className="w-full pl-10 pr-4 py-2.5 border-2 border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all"
                   />
                 </div>
+                {/* Real-time warning for disposable/invalid email */}
+                {email && (
+                  <p className={`mt-2 text-xs ${!isValidEmailFormat(email.trim().toLowerCase()) || isDisposableEmail(email.trim().toLowerCase()) ? 'text-red-600' : 'text-gray-500'}`}>
+                    {!isValidEmailFormat(email.trim().toLowerCase())
+                      ? 'Ingresa un correo válido.'
+                      : isDisposableEmail(email.trim().toLowerCase())
+                        ? 'Este dominio parece desechable. Usa un correo permanente para evitar problemas.'
+                        : 'Usa un correo válido y activo para recibir el enlace de confirmación.'}
+                  </p>
+                )}
+                <p className="text-xs text-[#5f638f] mt-1">
+                  ⚠️ Asegúrate de que tu email sea correcto. Los emails inválidos pueden causar problemas de entrega.
+                </p>
               </div>
-
-            {/* Real-time warning for disposable/invalid email */}
-            {email && (
-              <p className={`mt-2 text-xs ${!isValidEmailFormat(email.trim().toLowerCase()) || isDisposableEmail(email.trim().toLowerCase()) ? 'text-red-600' : 'text-gray-500'}`}>
-                {!isValidEmailFormat(email.trim().toLowerCase())
-                  ? 'Ingresa un correo válido.'
-                  : isDisposableEmail(email.trim().toLowerCase())
-                    ? 'Este dominio parece desechable. Usa un correo permanente para evitar problemas.'
-                    : 'Usa un correo válido y activo para recibir el enlace de confirmación.'}
-              </p>
-            )}
 
             {/* Honeypot (hidden) */}
             <div className="hidden" aria-hidden>
@@ -383,10 +431,14 @@ export default function RegisterPage() {
                 variant="primary"
                 size="lg"
                 isLoading={isLoading}
-                disabled={success}
+                disabled={success || remainingSeconds > 0}
                 className="w-full"
               >
-                {isLoading ? 'Creando cuenta...' : 'Crear Cuenta Gratis'}
+                {remainingSeconds > 0 
+                  ? `Espera ${remainingSeconds}s` 
+                  : isLoading 
+                    ? 'Creando cuenta...' 
+                    : 'Crear Cuenta Gratis'}
               </Button>
 
               {/* Terms */}

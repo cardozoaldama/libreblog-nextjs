@@ -22,45 +22,51 @@ export default function ResetPasswordPage() {
     count: number
   } | null>(null)
   const [message, setMessage] = useState<{ type: 'success' | 'error'; text: string } | null>(null)
+  const [hasValidToken, setHasValidToken] = useState(false)
+  const [isCheckingToken, setIsCheckingToken] = useState(true)
 
   useEffect(() => {
     const checkSession = async () => {
       const supabase = createClient()
       
-      // Primero verificar si ya hay una sesión activa
-      const { data: { session } } = await supabase.auth.getSession()
+      // Buscar código en la URL (viene del email)
+      const hashParams = new URLSearchParams(window.location.hash.substring(1))
+      const queryParams = new URLSearchParams(window.location.search)
+      const code = hashParams.get('code') || queryParams.get('code')
+      const type = hashParams.get('type') || queryParams.get('type')
       
-      if (!session) {
-        // Si no hay sesión, buscar código en la URL
-        const hashParams = new URLSearchParams(window.location.hash.substring(1))
-        const queryParams = new URLSearchParams(window.location.search)
-        const code = hashParams.get('code') || queryParams.get('code')
-        
-        // Solo intentar intercambiar si hay un código
-        if (code) {
-          const { error } = await supabase.auth.exchangeCodeForSession(code)
-          if (error) {
-            console.error('Error exchanging code:', error)
-            setMessage({ type: 'error', text: 'Enlace de recuperación inválido o expirado' })
-            return
-          }
-          
-          // Obtener usuario después del intercambio exitoso
-          const { data: { user } } = await supabase.auth.getUser()
-          if (user?.email) {
-            setUserEmail(user.email)
-          }
-        } else {
-          // No hay código ni sesión
-          setMessage({ type: 'error', text: 'Enlace de recuperación no válido' })
-        }
-      } else {
-        // Ya hay sesión activa, obtener usuario
-        const { data: { user } } = await supabase.auth.getUser()
-        if (user?.email) {
-          setUserEmail(user.email)
-        }
+      // CRÍTICO: Solo permitir si viene del email de recuperación
+      if (!code || type !== 'recovery') {
+        setMessage({ 
+          type: 'error', 
+          text: 'Acceso denegado. Debes usar el enlace enviado a tu email.' 
+        })
+        setIsCheckingToken(false)
+        setHasValidToken(false)
+        return
       }
+      
+      // Intercambiar código por sesión
+      const { error } = await supabase.auth.exchangeCodeForSession(code)
+      if (error) {
+        console.error('Error exchanging code:', error)
+        setMessage({ type: 'error', text: 'Enlace de recuperación inválido o expirado' })
+        setIsCheckingToken(false)
+        setHasValidToken(false)
+        return
+      }
+      
+      // Obtener usuario después del intercambio exitoso
+      const { data: { user } } = await supabase.auth.getUser()
+      if (user?.email) {
+        setUserEmail(user.email)
+        setHasValidToken(true)
+      } else {
+        setMessage({ type: 'error', text: 'No se pudo verificar el usuario' })
+        setHasValidToken(false)
+      }
+      
+      setIsCheckingToken(false)
     }
     
     checkSession()
@@ -162,16 +168,61 @@ export default function ResetPasswordPage() {
     }
   }
 
+  // Mostrar loading mientras verifica el token
+  if (isCheckingToken) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-[#dedff1] via-[#dedff1] to-[#5f638f]/20 flex items-center justify-center p-4">
+        <Card variant="elevated" className="w-full max-w-md">
+          <CardBody className="p-8 text-center">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#0c2b4d] mx-auto mb-4"></div>
+            <p className="text-[#5f638f]">Verificando enlace de recuperación...</p>
+          </CardBody>
+        </Card>
+      </div>
+    )
+  }
+
+  // Mostrar error si no hay token válido
+  if (!hasValidToken) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-[#dedff1] via-[#dedff1] to-[#5f638f]/20 flex items-center justify-center p-4">
+        <Card variant="elevated" className="w-full max-w-md">
+          <CardBody className="p-8 text-center">
+            <AlertTriangle className="w-16 h-16 text-red-500 mx-auto mb-4" />
+            <h1 className="text-2xl font-bold text-[#000022] mb-4">
+              Acceso Denegado
+            </h1>
+            <p className="text-[#5f638f] mb-6">
+              {message?.text || 'Debes usar el enlace enviado a tu email para restablecer tu contraseña.'}
+            </p>
+            <div className="space-y-3">
+              <Link href="/forgot-password">
+                <Button variant="primary" className="w-full">
+                  Solicitar Nuevo Enlace
+                </Button>
+              </Link>
+              <Link href="/login">
+                <Button variant="outline" className="w-full">
+                  Volver al Login
+                </Button>
+              </Link>
+            </div>
+          </CardBody>
+        </Card>
+      </div>
+    )
+  }
+
   if (isSuccess) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-gradient-to-br from-[#dedff1] via-[#dedff1] to-[#5f638f]/20 flex items-center justify-center p-4">
         <Card variant="elevated" className="w-full max-w-md">
           <CardBody className="p-8 text-center">
             <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
-            <h1 className="text-2xl font-bold text-gray-900 mb-4">
+            <h1 className="text-2xl font-bold text-[#000022] mb-4">
               Contraseña Actualizada
             </h1>
-            <p className="text-gray-600 mb-6">
+            <p className="text-[#5f638f] mb-6">
               Tu contraseña ha sido cambiada exitosamente. Inicia sesión con tu nueva contraseña.
             </p>
             <Button 
@@ -190,17 +241,20 @@ export default function ResetPasswordPage() {
   const strength = getPasswordStrength()
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-purple-50 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-[#dedff1] via-[#dedff1] to-[#5f638f]/20 flex items-center justify-center p-4">
       <Card variant="elevated" className="w-full max-w-md">
         <CardHeader className="text-center pb-4">
-          <h1 className="text-2xl font-bold text-gray-900">Nueva Contraseña</h1>
+          <div className="inline-flex items-center justify-center w-16 h-16 bg-gradient-to-br from-[#0c2b4d] to-[#36234e] rounded-2xl shadow-xl mb-4">
+            <Lock className="w-8 h-8 text-[#dedff1]" />
+          </div>
+          <h1 className="text-3xl font-black bg-gradient-to-r from-[#0c2b4d] to-[#36234e] bg-clip-text text-transparent">Nueva Contraseña</h1>
           {userEmail && (
-            <div className="mt-3 p-3 bg-blue-50 border border-blue-200 rounded-lg">
-              <p className="text-sm text-blue-900 font-medium">Cuenta:</p>
-              <p className="text-base text-blue-800 font-mono">{userEmail}</p>
+            <div className="mt-3 p-3 bg-[#0c2b4d]/10 border border-[#5f638f]/30 rounded-lg">
+              <p className="text-sm text-[#5f638f] font-medium">Cuenta:</p>
+              <p className="text-base text-[#000022] font-mono">{userEmail}</p>
             </div>
           )}
-          <p className="text-gray-600 mt-2">
+          <p className="text-[#5f638f] mt-2">
             Crea una contraseña segura para tu cuenta
           </p>
         </CardHeader>
@@ -231,7 +285,7 @@ export default function ResetPasswordPage() {
                   onChange={handlePasswordChange}
                   placeholder="Mínimo 8 caracteres"
                   required
-                  className="w-full pl-10 pr-12 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full pl-10 pr-12 py-3 border-2 border-[#5f638f]/30 rounded-xl bg-white focus:ring-2 focus:ring-[#0c2b4d] focus:border-transparent shadow-sm"
                 />
                 <button
                   type="button"
@@ -278,7 +332,7 @@ export default function ResetPasswordPage() {
                   onChange={(e) => setConfirmPassword(e.target.value)}
                   placeholder="Repite tu contraseña"
                   required
-                  className="w-full pl-10 pr-12 py-3 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                  className="w-full pl-10 pr-12 py-3 border-2 border-[#5f638f]/30 rounded-xl bg-white focus:ring-2 focus:ring-[#0c2b4d] focus:border-transparent shadow-sm"
                 />
                 <button
                   type="button"
@@ -304,7 +358,7 @@ export default function ResetPasswordPage() {
           <div className="mt-6 text-center">
             <Link
               href="/login"
-              className="text-sm text-blue-600 hover:text-blue-500"
+              className="text-sm text-[#0c2b4d] hover:text-[#36234e] font-medium transition-colors"
             >
               Volver al Login
             </Link>
