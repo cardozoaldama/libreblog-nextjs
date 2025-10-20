@@ -155,17 +155,28 @@ export default function ResetPasswordPage() {
 
     try {
       const supabase = createClient()
+      
+      // Verificar que la sesión siga activa antes de actualizar
+      const { data: { session }, error: sessionError } = await supabase.auth.getSession()
+      
+      if (sessionError || !session) {
+        throw new Error('Tu sesión ha expirado. Solicita un nuevo enlace de recuperación.')
+      }
+      
       const { error } = await supabase.auth.updateUser({
         password: password
       })
 
       if (error) {
+        console.error('Supabase update error:', error)
         // Traducir mensajes de error comunes
         let errorMessage = error.message
         if (error.message.includes('New password should be different')) {
           errorMessage = 'La nueva contraseña debe ser diferente a la anterior'
         } else if (error.message.includes('Password should be at least')) {
           errorMessage = 'La contraseña debe tener al menos 8 caracteres'
+        } else if (error.message.includes('expired') || error.message.includes('invalid')) {
+          errorMessage = 'El enlace de recuperación ha expirado. Solicita uno nuevo.'
         }
         throw new Error(errorMessage)
       }
