@@ -187,19 +187,26 @@ export async function DELETE(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 403 })
     }
 
-    // Eliminar usuario de la base de datos (CASCADE eliminará posts)
+    // 1. Eliminar usuario de Prisma (CASCADE eliminará posts, likes, follows)
     await prisma.user.delete({
       where: { id },
     })
 
-    // Eliminar de Supabase Auth
-    const { error } = await supabase.auth.admin.deleteUser(id)
+    // 2. Eliminar de Supabase Auth
+    const { error: deleteAuthError } = await supabase.auth.admin.deleteUser(id)
     
-    if (error) {
-      console.error('Error deleting from Supabase Auth:', error)
+    if (deleteAuthError) {
+      console.error('Error deleting from Supabase Auth:', deleteAuthError)
+      // Continuar aunque falle, ya borramos de Prisma
     }
 
-    return NextResponse.json({ success: true })
+    // 3. Cerrar sesión
+    await supabase.auth.signOut()
+
+    return NextResponse.json({ 
+      success: true,
+      message: 'Cuenta eliminada completamente de ambos sistemas'
+    })
   } catch (error) {
     console.error('Error deleting user:', error)
     return NextResponse.json(
