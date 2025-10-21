@@ -124,7 +124,7 @@ export default function GeneratePDFButton({ postId }: { postId: string }) {
       
       // Configuración de html2pdf
       const opt = {
-        margin: [15, 15, 15, 15],
+        margin: [15, 15, 15, 15] as [number, number, number, number],
         filename: `${data.title.replace(/[^a-z0-9]/gi, '_')}.pdf`,
         image: { type: 'jpeg', quality: 0.98 },
         html2canvas: { 
