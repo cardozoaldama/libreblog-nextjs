@@ -14,8 +14,8 @@ export async function createNotification(
   userId: string,
   type: NotificationType,
   actorId: string,
-  postId?: string,
-  commentId?: string
+  postId?: string | null,
+  commentId?: string | null
 ) {
   // No notificar a uno mismo
   if (userId === actorId) return
@@ -28,8 +28,8 @@ export async function createNotification(
       userId_type_postId_commentId: {
         userId,
         type,
-        postId: postId as string | null,
-        commentId: commentId as string | null
+        postId: postId ?? null,
+        commentId: commentId ?? null
       }
     }
   })
