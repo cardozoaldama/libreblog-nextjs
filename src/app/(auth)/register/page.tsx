@@ -149,6 +149,24 @@ export default function RegisterPage() {
 
       const supabase = createClient()
       
+      // Verificar si el email ya existe ANTES de intentar registrar
+      try {
+        const checkRes = await fetch('/api/users/check-email', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email: normalizedEmail })
+        })
+        const checkData = await checkRes.json()
+        
+        if (!checkData.available) {
+          setError('Este correo ya está registrado. ¿Olvidaste tu contraseña?')
+          return
+        }
+      } catch (error) {
+        console.error('Error checking email:', error)
+        // Continuar con el registro si falla la verificación
+      }
+      
       // Cerrar sesión actual si existe (cambio de cuenta)
       const { data: currentUser } = await supabase.auth.getUser()
       if (currentUser.user) {
@@ -169,8 +187,8 @@ export default function RegisterPage() {
       })
 
       if (authError) {
-        if (authError.message.includes('already registered') || authError.message.includes('User already registered')) {
-          setError('Este correo ya está registrado. Intenta iniciar sesión.')
+        if (authError.message.includes('already registered') || authError.message.includes('User already registered') || authError.message.includes('already been registered')) {
+          setError('Este correo ya está registrado. ¿Olvidaste tu contraseña?')
         } else if (authError.message.includes('invalid email')) {
           setError('El correo electrónico no es válido')
         } else {

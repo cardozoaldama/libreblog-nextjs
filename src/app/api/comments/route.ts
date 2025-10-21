@@ -62,28 +62,34 @@ export async function POST(request: Request) {
       }
     })
 
-    if (parentId) {
-      const parentComment = await prisma.comment.findUnique({
-        where: { id: parentId },
-        select: { userId: true }
-      })
+    // Intentar crear notificaciones sin bloquear la respuesta
+    try {
+      if (parentId) {
+        const parentComment = await prisma.comment.findUnique({
+          where: { id: parentId },
+          select: { userId: true }
+        })
 
-      if (parentComment) {
+        if (parentComment && parentComment.userId !== user.id) {
+          await createNotification(
+            parentComment.userId,
+            'comment_reply',
+            user.id,
+            postId,
+            parentId
+          )
+        }
+      } else if (post.authorId !== user.id) {
         await createNotification(
-          parentComment.userId,
-          'comment_reply',
+          post.authorId,
+          'comment',
           user.id,
-          postId,
-          parentId
+          postId
         )
       }
-    } else {
-      await createNotification(
-        post.authorId,
-        'comment',
-        user.id,
-        postId
-      )
+    } catch (notifError) {
+      console.error('Error creating notification:', notifError)
+      // No fallar la creación del comentario por error en notificación
     }
 
     return NextResponse.json(comment, { status: 201 })

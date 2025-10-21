@@ -17,36 +17,53 @@ export async function createNotification(
   postId?: string,
   commentId?: string
 ) {
-  // No notificar a uno mismo
-  if (userId === actorId) return
+  try {
+    // No notificar a uno mismo
+    if (userId === actorId) return
 
-  const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) // 30 días
+    const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) // 30 días
 
-  // Buscar notificación existente para agregar
-  const whereClause: any = {
-    userId,
-    type,
-    postId: postId ?? null,
-    commentId: commentId ?? null
-  }
+    // Buscar notificación existente para agregar
+    const existing = await prisma.notification.findFirst({
+      where: {
+        userId,
+        type,
+        postId: postId ?? null,
+        commentId: commentId ?? null
+      }
+    })
 
-  const existing = await prisma.notification.findUnique({
-    where: {
-      userId_type_postId_commentId: whereClause
-    }
-  })
+    if (existing) {
+      // Actualizar existente (agregación)
+      if (!existing.actorIds.includes(actorId)) {
+        await prisma.notification.update({
+          where: { id: existing.id },
+          data: {
+            actorIds: { push: actorId },
+            count: { increment: 1 },
+            isRead: false,
+            updatedAt: new Date(),
+            expiresAt // Renovar TTL
+          }
+        })
 
-  if (existing) {
-    // Actualizar existente (agregación)
-    if (!existing.actorIds.includes(actorId)) {
-      await prisma.notification.update({
-        where: { id: existing.id },
+        // Incrementar contador
+        await prisma.user.update({
+          where: { id: userId },
+          data: { unreadNotifications: { increment: 1 } }
+        })
+      }
+    } else {
+      // Crear nueva
+      await prisma.notification.create({
         data: {
-          actorIds: { push: actorId },
-          count: { increment: 1 },
-          isRead: false,
-          updatedAt: new Date(),
-          expiresAt // Renovar TTL
+          userId,
+          type,
+          ...(postId && { postId }),
+          ...(commentId && { commentId }),
+          actorIds: [actorId],
+          count: 1,
+          expiresAt
         }
       })
 
@@ -56,25 +73,9 @@ export async function createNotification(
         data: { unreadNotifications: { increment: 1 } }
       })
     }
-  } else {
-    // Crear nueva
-    await prisma.notification.create({
-      data: {
-        userId,
-        type,
-        ...(postId && { postId }),
-        ...(commentId && { commentId }),
-        actorIds: [actorId],
-        count: 1,
-        expiresAt
-      }
-    })
-
-    // Incrementar contador
-    await prisma.user.update({
-      where: { id: userId },
-      data: { unreadNotifications: { increment: 1 } }
-    })
+  } catch (error) {
+    console.error('Error in createNotification:', error)
+    // No lanzar error para no bloquear la operación principal
   }
 }
 

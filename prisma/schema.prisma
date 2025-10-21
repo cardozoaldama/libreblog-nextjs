@@ -61,10 +61,11 @@ model Post {
   enablePagination Boolean @default(false) @map("enable_pagination")
   showTableOfContents Boolean @default(true) @map("show_table_of_contents")
   allowComments Boolean @default(true) @map("allow_comments")
-  author     User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
-  category   Category? @relation(fields: [categoryId], references: [id])
-  likes      Like[]
-  comments   Comment[]
+  author        User           @relation(fields: [authorId], references: [id], onDelete: Cascade)
+  category      Category?      @relation(fields: [categoryId], references: [id])
+  likes         Like[]
+  comments      Comment[]
+  notifications Notification[]
 
   @@index([authorId])
   @@index([categoryId])
@@ -147,10 +148,12 @@ model Notification {
   updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
   expiresAt DateTime @map("expires_at") @db.Timestamptz(6)
   
-  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+  post Post? @relation(fields: [postId], references: [id], onDelete: Cascade)
   
   @@unique([userId, type, postId, commentId])
   @@index([userId, isRead])
   @@index([expiresAt])
+  @@index([postId])
   @@map("notifications")
 }

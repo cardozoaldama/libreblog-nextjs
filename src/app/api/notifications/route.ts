@@ -23,7 +23,15 @@ export async function GET(request: Request) {
         { updatedAt: 'desc' }
       ],
       take: limit + 1,
-      skip: offset
+      skip: offset,
+      include: {
+        post: {
+          select: {
+            title: true,
+            slug: true
+          }
+        }
+      }
     })
 
     // Obtener información de los actores
@@ -45,7 +53,8 @@ export async function GET(request: Request) {
 
     const enrichedNotifications = notificationsToReturn.map(n => ({
       ...n,
-      actors: n.actorIds.map(id => actorMap[id]).filter(Boolean)
+      actors: n.actorIds.map(id => actorMap[id]).filter(Boolean),
+      post: n.post
     }))
 
     return NextResponse.json({

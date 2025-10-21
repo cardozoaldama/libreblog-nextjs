@@ -47,8 +47,9 @@ export default function CommentSection({ postId, postAuthorId, allowComments, cu
     }
   }
 
-  const handleCommentAdded = () => {
-    loadComments()
+  const handleCommentAdded = async (newComment?: any) => {
+    // Siempre recargar para asegurar consistencia
+    await loadComments()
   }
 
   if (!allowComments) {

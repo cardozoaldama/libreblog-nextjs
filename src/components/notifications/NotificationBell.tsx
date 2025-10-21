@@ -8,10 +8,11 @@ interface Notification {
   id: string
   type: 'follow' | 'comment' | 'like' | 'comment_reply'
   postId: string | null
+  commentId: string | null
   count: number
   isRead: boolean
   createdAt: string
-  actors: Array<{ displayName: string; avatarUrl: string | null }>
+  actors: Array<{ displayName: string; username: string; avatarUrl: string | null }>
   post?: { title: string; slug: string }
 }
 
@@ -23,6 +24,13 @@ export default function NotificationBell() {
 
   useEffect(() => {
     loadNotifications()
+    
+    // Polling cada 30 segundos para actualizar notificaciones
+    const interval = setInterval(() => {
+      loadNotifications()
+    }, 30000)
+    
+    return () => clearInterval(interval)
   }, [])
 
   const loadNotifications = async () => {
@@ -64,15 +72,36 @@ export default function NotificationBell() {
       case 'like':
         return `${actorName}${others} le gustó "${notif.post?.title}"`
       case 'comment_reply':
-        return `${actorName}${others} respondió tu comentario`
+        return `${actorName}${others} respondió tu comentario en "${notif.post?.title}"`
       default:
         return 'Nueva notificación'
     }
   }
 
   const getNotificationLink = (notif: Notification) => {
-    if (notif.type === 'follow') return '/profile'
-    if (notif.postId && notif.post?.slug) return `/post/${notif.post.slug}`
+    if (notif.type === 'follow') {
+      // Redirigir al perfil del primer actor que te siguió
+      const firstActor = notif.actors[0]
+      if (firstActor) {
+        return `/profile/${firstActor.username || firstActor.displayName}`
+      }
+      return '/notifications'
+    }
+    if (notif.type === 'comment' || notif.type === 'like') {
+      // Redirigir al post con anchor a comentarios
+      if (notif.post?.slug) {
+        return notif.type === 'comment' ? `/post/${notif.post.slug}#comments` : `/post/${notif.post.slug}`
+      }
+    }
+    if (notif.type === 'comment_reply') {
+      // Redirigir al post con anchor al comentario específico
+      if (notif.post?.slug && notif.commentId) {
+        return `/post/${notif.post.slug}#comment-${notif.commentId}`
+      }
+      if (notif.post?.slug) {
+        return `/post/${notif.post.slug}#comments`
+      }
+    }
     return '/notifications'
   }
 

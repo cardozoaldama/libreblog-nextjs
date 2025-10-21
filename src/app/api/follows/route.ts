@@ -23,6 +23,15 @@ export async function POST(request: Request) {
         followingId,
       },
     })
+
+    // Crear notificación de follow
+    const { createNotification } = await import('@/lib/notifications')
+    await createNotification(
+      followingId,
+      'follow',
+      user.id
+    )
+
     return NextResponse.json({ follow })
   } catch (error) {
     console.error('Error following user:', error)

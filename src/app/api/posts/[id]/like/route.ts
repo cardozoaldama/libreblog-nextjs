@@ -15,6 +15,16 @@ export async function POST(
   }
 
   try {
+    // Obtener el post para saber quién es el autor
+    const post = await prisma.post.findUnique({
+      where: { id },
+      select: { authorId: true, slug: true }
+    })
+
+    if (!post) {
+      return NextResponse.json({ error: 'Post no encontrado' }, { status: 404 })
+    }
+
     await prisma.like.create({
       data: {
         userId: user.id,
@@ -22,9 +32,21 @@ export async function POST(
       },
     })
 
+    // Crear notificación solo si no es el propio autor
+    if (post.authorId !== user.id) {
+      const { createNotification } = await import('@/lib/notifications')
+      await createNotification(
+        post.authorId,
+        'like',
+        user.id,
+        id
+      )
+    }
+
     const likeCount = await prisma.like.count({ where: { postId: id } })
     return NextResponse.json({ liked: true, likeCount })
-  } catch {
+  } catch (error) {
+    console.error('Error al dar like:', error)
     return NextResponse.json({ error: 'Error al dar like' }, { status: 500 })
   }
 }

@@ -38,12 +38,19 @@ export default function PostActions({ postId, isAuthor = false, initialIsPinned 
         setIsLoading(false)
         return
       }
-      if (!res.ok) throw new Error()
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}))
+        console.error('Error al dar like:', errorData)
+        alert('Error al dar like. Intenta de nuevo.')
+        setIsLoading(false)
+        return
+      }
       const data = await res.json()
       setIsLiked(data.liked)
       setLikeCount(data.likeCount)
     } catch (error) {
       console.error('Error al dar like:', error)
+      alert('Error al dar like. Intenta de nuevo.')
     }
     setIsLoading(false)
   }

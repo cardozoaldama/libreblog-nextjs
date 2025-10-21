@@ -9,7 +9,7 @@ interface CommentFormProps {
   postAuthorId: string
   currentUserId: string
   parentId?: string
-  onCommentAdded: () => void
+  onCommentAdded: (newComment?: any) => void
   onCancel?: () => void
 }
 
@@ -33,14 +33,14 @@ export default function CommentForm({ postId, postAuthorId, currentUserId, paren
         body: JSON.stringify({ postId, content: content.trim(), parentId })
       })
 
-      const data = await res.json()
-
       if (!res.ok) {
+        const data = await res.json()
         throw new Error(data.error || 'Error al crear comentario')
       }
 
+      const newComment = await res.json()
       setContent('')
-      onCommentAdded()
+      onCommentAdded(newComment)
       if (onCancel) onCancel()
     } catch (err: unknown) {
       setError(err instanceof Error ? err.message : 'Error desconocido')
