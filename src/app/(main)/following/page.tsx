@@ -47,14 +47,12 @@ export default function FollowingPage() {
   const [censoredUsers, setCensoredUsers] = useState<string[]>([])
   const [isUserLoaded, setIsUserLoaded] = useState(false)
 
-  // Cargar usuario actual
   useEffect(() => {
     async function loadCurrentUser() {
       try {
         const supabase = createClient()
         const { data: { user } } = await supabase.auth.getUser()
         if (user) {
-          // Cargar usuarios bloqueados y censurados
           const blockedRes = await fetch('/api/users/blocked')
           if (blockedRes.ok) {
             const blockedData = await blockedRes.json()
@@ -62,7 +60,6 @@ export default function FollowingPage() {
             setCensoredUsers(blockedData.censoredUsers || [])
           }
           
-          // Obtener preferencias NSFW del usuario
           const res = await fetch('/api/users/me')
           const userData = await res.json()
           setCurrentUser({
@@ -110,24 +107,28 @@ export default function FollowingPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#dedff1] via-[#dedff1] to-[#5f638f]/20 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-[#dedff1] via-[#dedff1]/50 to-[#dedff1]/30 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="mb-8">
-          <h1 className="text-4xl font-bold bg-gradient-to-r from-[#0c2b4d] to-[#5f638f] bg-clip-text text-transparent mb-2">Seguidos</h1>
-          <p className="text-[#000022]/70">Posts de usuarios que sigues</p>
+        <div className="mb-8 text-center">
+          <h1 className="text-5xl font-bold bg-gradient-to-r from-[#0c2b4d] via-[#36234e] to-[#5f638f] bg-clip-text text-transparent mb-4 animate-in slide-in-from-top duration-500">
+            Seguidos
+          </h1>
+          <p className="text-xl text-[#000022]/70 animate-in slide-in-from-top duration-700 delay-200">
+            Posts de usuarios que sigues
+          </p>
         </div>
 
         <Card variant="elevated" className="mb-8">
           <CardBody className="p-6">
             <form onSubmit={handleSearch}>
               <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-[#5f638f]/50" />
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                 <input
                   type="text"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Buscar en posts de seguidos..."
-                  className="w-full pl-10 pr-4 py-2.5 border-2 border-[#5f638f]/30 rounded-lg focus:ring-2 focus:ring-[#0c2b4d] focus:border-transparent bg-white/80"
+                  className="w-full pl-10 pr-4 py-3 border-2 border-[#5f638f]/30 rounded-xl bg-white/90 backdrop-blur-sm focus:ring-2 focus:ring-[#0c2b4d] focus:border-transparent transition-all duration-300 hover:border-[#5f638f]/50"
                 />
               </div>
             </form>
@@ -135,25 +136,25 @@ export default function FollowingPage() {
         </Card>
 
         {(isLoading || !isUserLoaded) && (
-          <div className="text-center py-12">
+          <div className="text-center py-16">
             <Image
               src="/loading.gif"
               alt="Cargando"
               width={120}
               height={120}
-              className="mx-auto mb-4"
+              className="mx-auto mb-6"
               unoptimized
             />
-            <p className="text-[#5f638f]">Cargando posts...</p>
+            <p className="text-xl text-[#000022]/70 font-medium">Cargando posts...</p>
           </div>
         )}
 
         {!isLoading && posts.length > 0 && (
           <>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
             {posts.map((post) => {
-            const authorAvatarUrl = getAvatarUrl(post.author.email, post.author.avatarUrl, 32)
-            const excerpt = extractExcerpt(post.content, 120)
+            const authorAvatarUrl = getAvatarUrl(post.author.email, post.author.avatarUrl, 40)
+            const excerpt = extractExcerpt(post.content, 150)
                 const shouldFilter = !!(currentUser && post.isNSFW && currentUser.nsfwProtection)
                 const isBlocked = blockedUsers.includes(post.author.id)
                 
@@ -168,56 +169,57 @@ export default function FollowingPage() {
                     censoredUsers={censoredUsers}
                   >
                     <Link href={`/post/${post.slug}`} className="block h-full">
-                      <Card variant="hover" className="group animate-in fade-in slide-in-from-bottom duration-500 cursor-pointer h-full flex flex-col">
+                      <Card variant="hover" className="group animate-in fade-in slide-in-from-bottom duration-500 cursor-pointer h-full flex flex-col overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300">
                         <CardBody className="p-0 flex flex-col h-full">
-                      <div className="relative w-full h-48 flex-shrink-0">
+                      <div className="relative w-full h-64 flex-shrink-0">
                         {post.imageUrl ? (
                           <Image
                             src={post.imageUrl}
                             alt={post.title}
                             fill
-                            sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                            className={`object-cover rounded-t-xl ${shouldFilter || isBlocked ? 'blur-xl' : ''}`}
+                            sizes="(max-width: 768px) 100vw, 50vw"
+                            className={`object-cover ${shouldFilter || isBlocked ? 'blur-xl' : ''}`}
                             unoptimized
                           />
                         ) : (
-                          <div className="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center rounded-t-xl">
-                            <span className="text-6xl text-gray-400">{post.category?.icon || '📝'}</span>
+                          <div className="w-full h-full bg-gradient-to-br from-[#0c2b4d]/10 to-[#36234e]/10 flex items-center justify-center">
+                            <span className="text-7xl">{post.category?.icon || '📝'}</span>
                           </div>
                         )}
                       </div>
 
-                      <div className="p-6 flex-1 flex flex-col">
+                      <div className="p-6 flex-1 flex flex-col bg-gradient-to-b from-white to-[#dedff1]/20">
                         {post.category && (
-                          <span className="inline-block px-3 py-1.5 rounded-full text-xs font-medium bg-gradient-to-r from-[#dedff1] to-[#5f638f]/20 text-[#0c2b4d] mb-3 transition-all duration-300 group-hover:from-[#5f638f]/20 group-hover:to-[#dedff1]">
+                          <span className="inline-block px-4 py-2 rounded-full text-xs font-bold bg-gradient-to-r from-[#0c2b4d] to-[#36234e] text-white mb-4 shadow-md w-fit">
                             {post.category.icon} {post.category.name}
                           </span>
                         )}
 
-                        <h3 className="text-xl font-bold text-[#000022] mb-2 group-hover:text-[#0c2b4d] transition-all duration-300 line-clamp-2 group-hover:scale-[1.02] min-h-[3.5rem]">
+                        <h3 className="text-2xl font-bold text-[#000022] mb-3 group-hover:text-[#0c2b4d] transition-all duration-300 line-clamp-2 leading-tight">
                           {post.title}
                         </h3>
 
-                        <p className="text-[#5f638f] text-sm mb-4 line-clamp-3 flex-1">{excerpt}</p>
+                        <p className="text-[#5f638f] text-base mb-4 line-clamp-4 flex-1 leading-relaxed">{excerpt}</p>
 
-                        <div className="flex items-center gap-3 pt-4 border-t border-gray-200 mt-auto">
+                        <div className="flex items-center gap-3 pt-4 border-t-2 border-[#5f638f]/10 mt-auto">
                           <Image
                             src={authorAvatarUrl}
                             alt={`Foto de perfil de ${post.author.displayName || post.author.email}`}
-                            width={32}
-                            height={32}
-                            className="rounded-full"
+                            width={40}
+                            height={40}
+                            className="rounded-full ring-2 ring-[#5f638f]/20"
+                            unoptimized
                           />
                           <div className="flex-1 min-w-0">
-                            <p className="text-sm font-medium text-[#000022] truncate">
+                            <p className="text-sm font-bold text-[#0c2b4d] truncate">
                               {post.author.displayName || post.author.email.split('@')[0]}
                             </p>
                             <div className="flex items-center gap-3">
-                              <p className="text-xs text-[#5f638f]">
+                              <p className="text-xs text-[#5f638f] font-medium">
                                 {formatRelativeDate(new Date(post.createdAt))}
                               </p>
-                              <div className="flex items-center gap-1 text-xs text-[#5f638f]">
-                                <Heart className="w-3 h-3" />
+                              <div className="flex items-center gap-1 text-xs text-[#5f638f] font-medium">
+                                <Heart className="w-3.5 h-3.5 fill-red-500 text-red-500" />
                                 <span>{post._count.likes}</span>
                               </div>
                             </div>

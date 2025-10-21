@@ -19,6 +19,10 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'El comentario no puede estar vacío' }, { status: 400 })
     }
 
+    if (content.trim().length > 600) {
+      return NextResponse.json({ error: 'El comentario no puede exceder 600 caracteres' }, { status: 400 })
+    }
+
     const post = await prisma.post.findUnique({
       where: { id: postId },
       select: { allowComments: true, authorId: true }

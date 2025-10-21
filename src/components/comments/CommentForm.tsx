@@ -17,6 +17,7 @@ export default function CommentForm({ postId, postAuthorId, currentUserId, paren
   const [content, setContent] = useState('')
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState('')
+  const MAX_LENGTH = 600
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -50,14 +51,22 @@ export default function CommentForm({ postId, postAuthorId, currentUserId, paren
 
   return (
     <form onSubmit={handleSubmit} className="space-y-3">
-      <textarea
-        value={content}
-        onChange={(e) => setContent(e.target.value)}
-        placeholder={parentId ? 'Escribe una respuesta...' : 'Escribe un comentario...'}
-        rows={3}
-        className="w-full px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base border-2 border-[#5f638f]/30 rounded-xl bg-white/80 focus:ring-2 focus:ring-[#0c2b4d] focus:border-transparent resize-none"
-        disabled={isSubmitting}
-      />
+      <div className="relative">
+        <textarea
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
+          placeholder={parentId ? 'Escribe una respuesta...' : 'Escribe un comentario...'}
+          rows={3}
+          maxLength={MAX_LENGTH}
+          className="w-full px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base border-2 border-[#5f638f]/30 rounded-xl bg-white/80 focus:ring-2 focus:ring-[#0c2b4d] focus:border-transparent resize-none"
+          disabled={isSubmitting}
+        />
+        <div className={`absolute bottom-2 right-2 text-xs font-medium ${
+          content.length > MAX_LENGTH * 0.9 ? 'text-red-600' : 'text-[#5f638f]/60'
+        }`}>
+          {content.length}/{MAX_LENGTH}
+        </div>
+      </div>
       {error && (
         <p className="text-sm text-red-600">{error}</p>
       )}

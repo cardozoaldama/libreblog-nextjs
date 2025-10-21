@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Reply, Edit2, Trash2, MoreVertical } from 'lucide-react'
+import { Reply, Edit2, Trash2, MoreVertical, AlertTriangle } from 'lucide-react'
 import Image from 'next/image'
 import { getGravatarUrl } from '@/lib/utils'
 import CommentForm from './CommentForm'
@@ -35,6 +35,7 @@ export default function CommentItem({ comment, postId, postAuthorId, currentUser
   const [editContent, setEditContent] = useState(comment.content)
   const [showMenu, setShowMenu] = useState(false)
   const [isDeleting, setIsDeleting] = useState(false)
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
 
   const isAuthor = currentUserId === comment.user.id
   const isPostAuthor = currentUserId === postAuthorId
@@ -58,8 +59,6 @@ export default function CommentItem({ comment, postId, postAuthorId, currentUser
   }
 
   const handleDelete = async () => {
-    if (!confirm('¿Eliminar este comentario?')) return
-
     setIsDeleting(true)
     try {
       const res = await fetch(`/api/comments/${comment.id}`, { method: 'DELETE' })
@@ -70,6 +69,7 @@ export default function CommentItem({ comment, postId, postAuthorId, currentUser
       console.error('Error deleting comment:', error)
     } finally {
       setIsDeleting(false)
+      setShowDeleteConfirm(false)
     }
   }
 
@@ -129,11 +129,10 @@ export default function CommentItem({ comment, postId, postAuthorId, currentUser
                       {canDelete && (
                         <button
                           onClick={() => {
-                            handleDelete()
+                            setShowDeleteConfirm(true)
                             setShowMenu(false)
                           }}
                           className="w-full px-3 py-2 text-left text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"
-                          disabled={isDeleting}
                         >
                           <Trash2 className="w-3 h-3" />
                           Eliminar
@@ -160,7 +159,34 @@ export default function CommentItem({ comment, postId, postAuthorId, currentUser
               </div>
             </div>
           ) : (
-            <p className="mt-2 text-sm sm:text-base text-[#000022] whitespace-pre-wrap break-words">{comment.content}</p>
+            <div className="mt-2 text-sm sm:text-base text-[#000022] whitespace-pre-wrap break-words">
+              {comment.content.split(/(https?:\/\/[^\s]+)/g).map((part, i) => {
+                if (part.match(/^https?:\/\//)) {
+                  const isImage = /\.(jpg|jpeg|png|gif|webp)$/i.test(part)
+                  if (isImage) {
+                    return (
+                      <div key={i} className="my-2">
+                        <Image
+                          src={part}
+                          alt="Imagen en comentario"
+                          width={300}
+                          height={200}
+                          className="rounded-lg max-w-full h-auto"
+                          style={{ maxHeight: '200px', width: 'auto' }}
+                          unoptimized
+                        />
+                      </div>
+                    )
+                  }
+                  return (
+                    <a key={i} href={part} target="_blank" rel="noopener noreferrer" className="text-[#0c2b4d] hover:underline break-all">
+                      {part}
+                    </a>
+                  )
+                }
+                return <span key={i}>{part}</span>
+              })}
+            </div>
           )}
 
           {currentUserId && !isReply && (
@@ -205,6 +231,41 @@ export default function CommentItem({ comment, postId, postAuthorId, currentUser
             />
           ))}
         </div>
+      )}
+
+      {showDeleteConfirm && (
+        <>
+          <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4" onClick={() => setShowDeleteConfirm(false)}>
+            <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 animate-in zoom-in duration-200" onClick={(e) => e.stopPropagation()}>
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-12 h-12 rounded-full bg-red-100 flex items-center justify-center">
+                  <AlertTriangle className="w-6 h-6 text-red-600" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold text-[#000022]">¿Eliminar comentario?</h3>
+                  <p className="text-sm text-[#5f638f]">Esta acción no se puede deshacer</p>
+                </div>
+              </div>
+              <div className="flex gap-3 mt-6">
+                <Button
+                  variant="ghost"
+                  onClick={() => setShowDeleteConfirm(false)}
+                  className="flex-1"
+                  disabled={isDeleting}
+                >
+                  Cancelar
+                </Button>
+                <Button
+                  onClick={handleDelete}
+                  className="flex-1 bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white"
+                  disabled={isDeleting}
+                >
+                  {isDeleting ? 'Eliminando...' : 'Eliminar'}
+                </Button>
+              </div>
+            </div>
+          </div>
+        </>
       )}
     </div>
   )
