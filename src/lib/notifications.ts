@@ -14,8 +14,8 @@ export async function createNotification(
   userId: string,
   type: NotificationType,
   actorId: string,
-  postId?: string | null,
-  commentId?: string | null
+  postId?: string,
+  commentId?: string
 ) {
   // No notificar a uno mismo
   if (userId === actorId) return
@@ -23,14 +23,16 @@ export async function createNotification(
   const expiresAt = new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) // 30 días
 
   // Buscar notificación existente para agregar
+  const whereClause: any = {
+    userId,
+    type,
+    postId: postId ?? null,
+    commentId: commentId ?? null
+  }
+
   const existing = await prisma.notification.findUnique({
     where: {
-      userId_type_postId_commentId: {
-        userId,
-        type,
-        postId: postId ?? null,
-        commentId: commentId ?? null
-      }
+      userId_type_postId_commentId: whereClause
     }
   })
 
