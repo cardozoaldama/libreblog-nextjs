@@ -28,8 +28,8 @@ export async function createNotification(
       userId_type_postId_commentId: {
         userId,
         type,
-        postId: postId || null,
-        commentId: commentId || null
+        postId: postId ?? null,
+        commentId: commentId ?? null
       }
     }
   })
@@ -60,8 +60,8 @@ export async function createNotification(
       data: {
         userId,
         type,
-        postId,
-        commentId,
+        postId: postId ?? null,
+        commentId: commentId ?? null,
         actorIds: [actorId],
         count: 1,
         expiresAt
