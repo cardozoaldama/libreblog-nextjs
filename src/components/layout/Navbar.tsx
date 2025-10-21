@@ -6,6 +6,7 @@ import { usePathname } from 'next/navigation'
 import { useState } from 'react'
 import { Menu, X, PenSquare, Search, User, LogOut, Settings, Heart } from 'lucide-react'
 import Button from '@/components/ui/Button'
+import NotificationBell from '@/components/notifications/NotificationBell'
 import { createClient } from '@/lib/supabase/client'
 import { useRouter } from 'next/navigation'
 import { getGravatarUrl } from '@/lib/utils'
@@ -106,7 +107,11 @@ export default function Navbar({ user }: NavbarProps) {
 
           <div className="hidden md:flex items-center space-x-3">
             {user ? (
-              <div className="relative">
+              <>
+                <div className="hidden md:block">
+                  <NotificationBell />
+                </div>
+                <div className="relative">
                 <button
                   onClick={() => setUserMenuOpen(!userMenuOpen)}
                   className="flex items-center space-x-3 px-4 py-2.5 rounded-xl hover:bg-[#dedff1]/50 transition-all duration-300 group"
@@ -164,7 +169,8 @@ export default function Navbar({ user }: NavbarProps) {
                     </div>
                   </>
                 )}
-              </div>
+                </div>
+              </>
             ) : (
               <div className="flex items-center space-x-3">
                 <Link href="/login">
@@ -177,16 +183,19 @@ export default function Navbar({ user }: NavbarProps) {
             )}
           </div>
 
-          <button
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden p-2.5 rounded-xl hover:bg-[#dedff1]/50 transition-all duration-300 group"
-          >
-            {mobileMenuOpen ? (
-              <X className="w-6 h-6 text-[#36234e] group-hover:text-[#0c2b4d] transition-colors duration-200" />
-            ) : (
-              <Menu className="w-6 h-6 text-[#36234e] group-hover:text-[#0c2b4d] transition-colors duration-200" />
-            )}
-          </button>
+          <div className="md:hidden flex items-center gap-2">
+            {user && <NotificationBell />}
+            <button
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="p-2.5 rounded-xl hover:bg-[#dedff1]/50 transition-all duration-300 group"
+            >
+              {mobileMenuOpen ? (
+                <X className="w-6 h-6 text-[#36234e] group-hover:text-[#0c2b4d] transition-colors duration-200" />
+              ) : (
+                <Menu className="w-6 h-6 text-[#36234e] group-hover:text-[#0c2b4d] transition-colors duration-200" />
+              )}
+            </button>
+          </div>
         </div>
 
         {mobileMenuOpen && (

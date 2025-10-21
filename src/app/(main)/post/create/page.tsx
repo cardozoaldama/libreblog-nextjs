@@ -10,6 +10,7 @@ import Link from 'next/link'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { getVideoEmbed } from '@/lib/utils'
+import CreatorGuide from '@/components/post/CreatorGuide'
 
 interface Category {
   id: string
@@ -27,6 +28,10 @@ export default function CreatePostPage() {
   const [categoryId, setCategoryId] = useState('')
   const [isPublic, setIsPublic] = useState(false)
   const [isNSFW, setIsNSFW] = useState(false)
+  const [allowPdfDownload, setAllowPdfDownload] = useState(true)
+  const [allowComments, setAllowComments] = useState(true)
+  const [enablePagination, setEnablePagination] = useState(false)
+  const [showTableOfContents, setShowTableOfContents] = useState(true)
   const [categories, setCategories] = useState<Category[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [showPreview, setShowPreview] = useState(false)
@@ -73,6 +78,10 @@ export default function CreatePostPage() {
           categoryId: categoryId || null,
           isPublic,
           isNSFW,
+          allowPdfDownload,
+          allowComments,
+          enablePagination,
+          showTableOfContents,
         }),
       })
 
@@ -188,15 +197,40 @@ export default function CreatePostPage() {
                       <summary className="text-xs text-[#0c2b4d] cursor-pointer hover:text-[#36234e] font-medium">
                         📖 Ver guía de Markdown
                       </summary>
-                      <div className="mt-2 p-4 bg-white/80 rounded-xl border border-[#5f638f]/20 text-xs space-y-2">
-                        <div><strong>Texto:</strong> **negrita** *cursiva* ~~tachado~~</div>
-                        <div><strong>Títulos:</strong> # H1, ## H2, ### H3</div>
-                        <div><strong>Listas:</strong> - item o 1. item</div>
-                        <div><strong>Enlaces:</strong> [texto](url)</div>
-                        <div><strong>Imágenes:</strong> ![alt](https://url.com/img.jpg)</div>
-                        <div><strong>Código:</strong> `código` o ```lenguaje código```</div>
-                        <div><strong>Citas:</strong> &gt; texto citado</div>
-                        <div><strong>Línea:</strong> ---</div>
+                      <div className="mt-2 p-4 bg-white/80 rounded-xl border border-[#5f638f]/20 text-xs space-y-3">
+                        <div className="space-y-1">
+                          <strong className="text-[#0c2b4d]">Texto:</strong>
+                          <code className="block bg-[#0c2b4d]/10 p-2 rounded select-all">**negrita** *cursiva* ~~tachado~~</code>
+                        </div>
+                        <div className="space-y-1">
+                          <strong className="text-[#0c2b4d]">Títulos:</strong>
+                          <code className="block bg-[#0c2b4d]/10 p-2 rounded select-all"># H1{"\n"}## H2{"\n"}### H3</code>
+                        </div>
+                        <div className="space-y-1">
+                          <strong className="text-[#0c2b4d]">Listas:</strong>
+                          <code className="block bg-[#0c2b4d]/10 p-2 rounded select-all">- Item 1{"\n"}1. Item numerado</code>
+                        </div>
+                        <div className="space-y-1">
+                          <strong className="text-[#0c2b4d]">Enlaces:</strong>
+                          <code className="block bg-[#0c2b4d]/10 p-2 rounded select-all">[texto](https://url.com)</code>
+                        </div>
+                        <div className="space-y-1">
+                          <strong className="text-[#0c2b4d]">Imágenes:</strong>
+                          <code className="block bg-[#0c2b4d]/10 p-2 rounded select-all">![descripción](https://url.com/img.jpg)</code>
+                        </div>
+                        <div className="space-y-1">
+                          <strong className="text-[#0c2b4d]">Código:</strong>
+                          <code className="block bg-[#0c2b4d]/10 p-2 rounded select-all">`código inline`{"\n"}```javascript{"\n"}// bloque de código{"\n"}```</code>
+                        </div>
+                        <div className="space-y-1">
+                          <strong className="text-[#0c2b4d]">Citas:</strong>
+                          <code className="block bg-[#0c2b4d]/10 p-2 rounded select-all">&gt; Texto citado</code>
+                        </div>
+                        <div className="space-y-1">
+                          <strong className="text-[#0c2b4d]">Separador de página:</strong>
+                          <code className="block bg-[#0c2b4d]/10 p-2 rounded select-all">---PAGE---</code>
+                          <p className="text-[#5f638f] text-[10px] italic">Divide tu post en páginas (requiere activar paginación)</p>
+                        </div>
                       </div>
                     </details>
                   </div>
@@ -232,33 +266,113 @@ export default function CreatePostPage() {
                     <p className="text-xs text-[#5f638f] mt-1">Soporta: YouTube, Shorts, TikTok, Facebook Reels</p>
                     </div>
 
-                    {/* Público/Privado */}
-                    <div className="flex items-center gap-2">
-                      <input
-                        type="checkbox"
-                        id="isPublic"
-                        checked={isPublic}
-                        onChange={(e) => setIsPublic(e.target.checked)}
-                        className="w-4 h-4 text-[#0c2b4d] border-[#5f638f]/30 rounded focus:ring-[#0c2b4d]"
-                      />
-                      <label htmlFor="isPublic" className="text-sm font-medium text-[#000022]">
-                        Hacer público (visible para todos)
-                      </label>
+                    {/* Opciones Principales */}
+                    <div className="space-y-3 p-4 bg-gradient-to-r from-[#0c2b4d]/5 to-[#36234e]/5 rounded-xl border-2 border-[#5f638f]/20">
+                      <h3 className="text-sm font-bold text-[#0c2b4d] mb-3">⚙️ Configuración Principal</h3>
+                      
+                      {/* Público/Privado */}
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="checkbox"
+                          id="isPublic"
+                          checked={isPublic}
+                          onChange={(e) => setIsPublic(e.target.checked)}
+                          className="w-4 h-4 text-[#0c2b4d] border-[#5f638f]/30 rounded focus:ring-[#0c2b4d]"
+                        />
+                        <label htmlFor="isPublic" className="text-sm font-medium text-[#000022]">
+                          🌍 Hacer público (visible para todos)
+                        </label>
+                      </div>
+
+                      {/* Contenido NSFW */}
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="checkbox"
+                          id="isNSFW"
+                          checked={isNSFW}
+                          onChange={(e) => setIsNSFW(e.target.checked)}
+                          className="w-4 h-4 text-red-600 border-[#5f638f]/30 rounded focus:ring-red-500"
+                        />
+                        <label htmlFor="isNSFW" className="text-sm font-medium text-[#000022]">
+                          🔞 Marcar como contenido NSFW (18+)
+                        </label>
+                      </div>
                     </div>
 
-                    {/* Contenido NSFW */}
-                    <div className="flex items-center gap-2">
-                      <input
-                        type="checkbox"
-                        id="isNSFW"
-                        checked={isNSFW}
-                        onChange={(e) => setIsNSFW(e.target.checked)}
-                        className="w-4 h-4 text-red-600 border-[#5f638f]/30 rounded focus:ring-red-500"
-                      />
-                      <label htmlFor="isNSFW" className="text-sm font-medium text-[#000022]">
-                        🔞 Marcar como contenido NSFW (18+)
-                      </label>
-                    </div>
+                    {/* Opciones Avanzadas (Colapsable) */}
+                    <details className="group">
+                      <summary className="cursor-pointer list-none">
+                        <div className="flex items-center justify-between p-4 bg-gradient-to-r from-[#dedff1]/50 to-[#5f638f]/10 rounded-xl border-2 border-[#5f638f]/20 hover:border-[#5f638f]/40 transition-all duration-200 hover:shadow-lg">
+                          <span className="text-sm font-bold text-[#0c2b4d]">🔧 Opciones Avanzadas</span>
+                          <svg
+                            className="w-5 h-5 text-[#5f638f] transition-transform duration-200 group-open:rotate-180"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                          >
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                          </svg>
+                        </div>
+                      </summary>
+                      
+                      <div className="mt-3 p-4 bg-white/80 rounded-xl border-2 border-[#5f638f]/20 space-y-3 animate-in fade-in slide-in-from-top-2 duration-300">
+                        {/* Permitir descarga PDF */}
+                        <div className="flex items-center gap-2">
+                          <input
+                            type="checkbox"
+                            id="allowPdfDownload"
+                            checked={allowPdfDownload}
+                            onChange={(e) => setAllowPdfDownload(e.target.checked)}
+                            className="w-4 h-4 text-[#0c2b4d] border-[#5f638f]/30 rounded focus:ring-[#0c2b4d]"
+                          />
+                          <label htmlFor="allowPdfDownload" className="text-sm font-medium text-[#000022]">
+                            📄 Permitir descarga en PDF
+                          </label>
+                        </div>
+
+                        {/* Permitir comentarios */}
+                        <div className="flex items-center gap-2">
+                          <input
+                            type="checkbox"
+                            id="allowComments"
+                            checked={allowComments}
+                            onChange={(e) => setAllowComments(e.target.checked)}
+                            className="w-4 h-4 text-[#0c2b4d] border-[#5f638f]/30 rounded focus:ring-[#0c2b4d]"
+                          />
+                          <label htmlFor="allowComments" className="text-sm font-medium text-[#000022]">
+                            💬 Permitir comentarios
+                          </label>
+                        </div>
+
+                        {/* Dividir en páginas */}
+                        <div className="flex items-center gap-2">
+                          <input
+                            type="checkbox"
+                            id="enablePagination"
+                            checked={enablePagination}
+                            onChange={(e) => setEnablePagination(e.target.checked)}
+                            className="w-4 h-4 text-[#0c2b4d] border-[#5f638f]/30 rounded focus:ring-[#0c2b4d]"
+                          />
+                          <label htmlFor="enablePagination" className="text-sm font-medium text-[#000022]">
+                            📑 Dividir post en páginas
+                          </label>
+                        </div>
+
+                        {/* Mostrar tabla de contenidos */}
+                        <div className="flex items-center gap-2">
+                          <input
+                            type="checkbox"
+                            id="showTableOfContents"
+                            checked={showTableOfContents}
+                            onChange={(e) => setShowTableOfContents(e.target.checked)}
+                            className="w-4 h-4 text-[#0c2b4d] border-[#5f638f]/30 rounded focus:ring-[#0c2b4d]"
+                          />
+                          <label htmlFor="showTableOfContents" className="text-sm font-medium text-[#000022]">
+                            📋 Mostrar índice de contenidos
+                          </label>
+                        </div>
+                      </div>
+                    </details>
 
                     {/* Advertencia si está marcado como NSFW */}
                     {isNSFW && (
@@ -341,6 +455,11 @@ export default function CreatePostPage() {
               </CardBody>
             </Card>
           </div>
+        </div>
+
+        {/* Guía para Creadores */}
+        <div className="mt-8 animate-in fade-in slide-in-from-bottom duration-500 delay-500">
+          <CreatorGuide />
         </div>
       </div>
     </div>

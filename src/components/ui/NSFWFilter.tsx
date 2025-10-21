@@ -10,11 +10,12 @@ interface NSFWFilterProps {
   className?: string
   authorId?: string
   blockedUsers?: string[]
+  censoredUsers?: string[]
 }
 
-export default function NSFWFilter({ children, isNSFW, className = '', authorId, blockedUsers = [] }: NSFWFilterProps) {
-  const isAuthorBlocked = authorId && blockedUsers.includes(authorId)
-  const shouldFilter = isNSFW || isAuthorBlocked
+export default function NSFWFilter({ children, isNSFW, className = '', authorId, blockedUsers = [], censoredUsers = [] }: NSFWFilterProps) {
+  const isAuthorCensored = authorId && censoredUsers.includes(authorId)
+  const shouldFilter = isNSFW || isAuthorCensored
   const [isRevealed, setIsRevealed] = useState(false)
 
   const handleReveal = () => {
@@ -42,13 +43,13 @@ export default function NSFWFilter({ children, isNSFW, className = '', authorId,
             </div>
             
             <h3 className="text-xl font-bold text-white mb-2">
-              {isAuthorBlocked && isNSFW ? 'Usuario Censurado + NSFW' : isAuthorBlocked ? 'Usuario Censurado' : 'Contenido NSFW'}
+              {isAuthorCensored && isNSFW ? 'Usuario Censurado + NSFW' : isAuthorCensored ? 'Usuario Censurado' : 'Contenido NSFW'}
             </h3>
             
             <p className="text-gray-300 mb-4 text-sm">
-              {isAuthorBlocked && isNSFW
+              {isAuthorCensored && isNSFW
                 ? 'Has censurado a este usuario y además su contenido está marcado como NSFW.'
-                : isAuthorBlocked 
+                : isAuthorCensored 
                 ? 'Has censurado a este usuario. Su contenido aparece filtrado.'
                 : 'Este contenido está marcado como NSFW (Not Safe For Work).'}
             </p>

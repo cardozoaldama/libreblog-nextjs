@@ -27,13 +27,17 @@ model User {
   publicEmail         String?   @map("public_email") @db.VarChar(255)
   usernameLastChanged DateTime? @map("username_last_changed") @db.Timestamptz(6)
   nsfwProtection      Boolean   @default(true) @map("nsfw_protection")
+  censoredUsers       String[]  @default([]) @map("censored_users") @db.Uuid
   blockedUsers        String[]  @default([]) @map("blocked_users") @db.Uuid
   profileTheme        String    @default("aurora") @map("profile_theme") @db.VarChar(50)
-  profileDecoration   Int       @default(1) @map("profile_decoration")
-  following           Follow[]  @relation("UserFollowing")
-  followers           Follow[]  @relation("UserFollowers")
+  profileDecoration   Int            @default(1) @map("profile_decoration")
+  unreadNotifications Int            @default(0) @map("unread_notifications")
+  following           Follow[]       @relation("UserFollowing")
+  followers           Follow[]       @relation("UserFollowers")
   likes               Like[]
   posts               Post[]
+  comments            Comment[]
+  notifications       Notification[]
 
   @@index([username], map: "idx_users_username")
   @@map("users")
@@ -53,9 +57,14 @@ model Post {
   updatedAt  DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
   isPinned   Boolean   @default(false) @map("is_pinned")
   isNSFW     Boolean   @default(false) @map("is_nsfw")
+  allowPdfDownload Boolean @default(true) @map("allow_pdf_download")
+  enablePagination Boolean @default(false) @map("enable_pagination")
+  showTableOfContents Boolean @default(true) @map("show_table_of_contents")
+  allowComments Boolean @default(true) @map("allow_comments")
   author     User      @relation(fields: [authorId], references: [id], onDelete: Cascade)
   category   Category? @relation(fields: [categoryId], references: [id])
   likes      Like[]
+  comments   Comment[]
 
   @@index([authorId])
   @@index([categoryId])
@@ -103,4 +112,45 @@ model Follow {
   @@index([followerId], map: "idx_follows_follower_id")
   @@index([followingId], map: "idx_follows_following_id")
   @@map("follows")
+}
+
+model Comment {
+  id        String    @id @default(uuid()) @db.Uuid
+  content   String    @db.Text
+  postId    String    @map("post_id") @db.Uuid
+  userId    String    @map("user_id") @db.Uuid
+  parentId  String?   @map("parent_id") @db.Uuid
+  createdAt DateTime  @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime  @updatedAt @map("updated_at") @db.Timestamptz(6)
+  
+  post    Post      @relation(fields: [postId], references: [id], onDelete: Cascade)
+  user    User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  parent  Comment?  @relation("CommentReplies", fields: [parentId], references: [id], onDelete: Cascade)
+  replies Comment[] @relation("CommentReplies")
+  
+  @@index([postId])
+  @@index([userId])
+  @@index([parentId])
+  @@map("comments")
+}
+
+model Notification {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @map("user_id") @db.Uuid
+  type      String   @db.VarChar(20)
+  postId    String?  @map("post_id") @db.Uuid
+  commentId String?  @map("comment_id") @db.Uuid
+  actorIds  String[] @default([]) @map("actor_ids") @db.Uuid
+  count     Int      @default(1)
+  isRead    Boolean  @default(false) @map("is_read")
+  createdAt DateTime @default(now()) @map("created_at") @db.Timestamptz(6)
+  updatedAt DateTime @updatedAt @map("updated_at") @db.Timestamptz(6)
+  expiresAt DateTime @map("expires_at") @db.Timestamptz(6)
+  
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, type, postId, commentId])
+  @@index([userId, isRead])
+  @@index([expiresAt])
+  @@map("notifications")
 }

@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
+import { createPortal } from 'react-dom'
 import Button from '@/components/ui/Button'
 import { Trash2 } from 'lucide-react'
 
@@ -38,46 +39,47 @@ export default function DeletePostButton({ postId, postTitle }: DeletePostButton
     }
   }
 
-  if (showConfirm) {
-    return (
-      <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-        <div className="bg-white rounded-lg p-6 max-w-md w-full">
-          <h3 className="text-lg font-bold text-gray-900 mb-2">
-            ¿Eliminar post?
-          </h3>
-          <p className="text-gray-600 mb-4">
-            ¿Estás seguro de que quieres eliminar &quot;{postTitle}&quot;? Esta acción no se puede deshacer.
-          </p>
-          <div className="flex gap-3">
-            <Button
-              variant="danger"
-              onClick={handleDelete}
-              isLoading={isDeleting}
-              className="flex-1"
-            >
-              Sí, eliminar
-            </Button>
-            <Button
-              variant="outline"
-              onClick={() => setShowConfirm(false)}
-              className="flex-1"
-            >
-              Cancelar
-            </Button>
-          </div>
+  const modal = showConfirm ? (
+    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-[9999] p-4">
+      <div className="bg-white rounded-lg p-6 max-w-md w-full shadow-2xl">
+        <h3 className="text-lg font-bold text-gray-900 mb-2">
+          ¿Eliminar post?
+        </h3>
+        <p className="text-gray-600 mb-4">
+          ¿Estás seguro de que quieres eliminar &quot;{postTitle}&quot;? Esta acción no se puede deshacer.
+        </p>
+        <div className="flex gap-3">
+          <Button
+            variant="danger"
+            onClick={handleDelete}
+            isLoading={isDeleting}
+            className="flex-1"
+          >
+            Sí, eliminar
+          </Button>
+          <Button
+            variant="outline"
+            onClick={() => setShowConfirm(false)}
+            className="flex-1"
+          >
+            Cancelar
+          </Button>
         </div>
       </div>
-    )
-  }
+    </div>
+  ) : null
 
   return (
-    <Button
-      variant="ghost"
-      size="sm"
-      onClick={() => setShowConfirm(true)}
-      className="text-red-600 hover:bg-red-50"
-    >
-      <Trash2 className="w-4 h-4" />
-    </Button>
+    <>
+      <Button
+        variant="ghost"
+        size="sm"
+        onClick={() => setShowConfirm(true)}
+        className="text-red-600 hover:bg-red-50"
+      >
+        <Trash2 className="w-4 h-4" />
+      </Button>
+      {typeof document !== 'undefined' && modal && createPortal(modal, document.body)}
+    </>
   )
 }

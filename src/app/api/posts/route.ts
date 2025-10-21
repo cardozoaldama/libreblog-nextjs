@@ -23,8 +23,12 @@ export async function POST(request: NextRequest) {
       categoryId?: string | null
       isPublic?: boolean
       isNSFW?: boolean
+      allowPdfDownload?: boolean
+      allowComments?: boolean
+      enablePagination?: boolean
+      showTableOfContents?: boolean
     }
-    const { title, content, imageUrl, videoUrl, categoryId, isPublic, isNSFW } = body
+    const { title, content, imageUrl, videoUrl, categoryId, isPublic, isNSFW, allowPdfDownload, allowComments, enablePagination, showTableOfContents } = body
 
     // Generar slug único
     let slug = generateSlug(title)
@@ -43,6 +47,10 @@ export async function POST(request: NextRequest) {
         videoUrl,
         isPublic,
         isNSFW: isNSFW || false,
+        allowPdfDownload: allowPdfDownload ?? true,
+        allowComments: allowComments ?? true,
+        enablePagination: enablePagination ?? false,
+        showTableOfContents: showTableOfContents ?? true,
         authorId: user.id,
         categoryId: categoryId || null,
       },

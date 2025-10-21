@@ -44,6 +44,7 @@ export default function FollowingPage() {
   const [hasMore, setHasMore] = useState(false)
   const [currentUser, setCurrentUser] = useState<CurrentUser | null>(null)
   const [blockedUsers, setBlockedUsers] = useState<string[]>([])
+  const [censoredUsers, setCensoredUsers] = useState<string[]>([])
   const [isUserLoaded, setIsUserLoaded] = useState(false)
 
   // Cargar usuario actual
@@ -53,11 +54,12 @@ export default function FollowingPage() {
         const supabase = createClient()
         const { data: { user } } = await supabase.auth.getUser()
         if (user) {
-          // Cargar usuarios bloqueados primero
+          // Cargar usuarios bloqueados y censurados
           const blockedRes = await fetch('/api/users/blocked')
           if (blockedRes.ok) {
             const blockedData = await blockedRes.json()
             setBlockedUsers(blockedData.blockedUsers || [])
+            setCensoredUsers(blockedData.censoredUsers || [])
           }
           
           // Obtener preferencias NSFW del usuario
@@ -154,6 +156,8 @@ export default function FollowingPage() {
             const excerpt = extractExcerpt(post.content, 120)
                 const shouldFilter = !!(currentUser && post.isNSFW && currentUser.nsfwProtection)
                 const isBlocked = blockedUsers.includes(post.author.id)
+                
+                if (isBlocked) return null
 
             return (
             <div key={post.id} className="block h-full">
@@ -161,6 +165,7 @@ export default function FollowingPage() {
                     isNSFW={shouldFilter}
                     authorId={post.author.id}
                     blockedUsers={blockedUsers}
+                    censoredUsers={censoredUsers}
                   >
                     <Link href={`/post/${post.slug}`} className="block h-full">
                       <Card variant="hover" className="group animate-in fade-in slide-in-from-bottom duration-500 cursor-pointer h-full flex flex-col">

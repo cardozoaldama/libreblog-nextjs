@@ -33,7 +33,14 @@ export async function GET(
       return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
     }
 
-    return NextResponse.json(post)
+    // Agregar valores por defecto para campos nuevos
+    const postWithDefaults = {
+      ...post,
+      enablePagination: post.enablePagination ?? false,
+      showTableOfContents: post.showTableOfContents ?? true,
+    }
+
+    return NextResponse.json(postWithDefaults)
   } catch (error) {
     console.error('Error fetching post:', error)
     return NextResponse.json(

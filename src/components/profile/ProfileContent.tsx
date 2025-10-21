@@ -6,7 +6,7 @@ import Image from 'next/image'
 import { Card, CardBody } from '@/components/ui/Card'
 import Button from '@/components/ui/Button'
 import FollowButton from '@/components/ui/FollowButton'
-import BlockUserButton from '@/components/ui/BlockUserButton'
+import CensorBlockButton from '@/components/ui/CensorBlockButton'
 import NSFWFilter from '@/components/ui/NSFWFilter'
 import ThemeSelector from './ThemeSelector'
 import { FileText, Pin, Heart, Globe, Github, Palette, Mail, Facebook, Instagram, Linkedin } from 'lucide-react'
@@ -48,6 +48,7 @@ export default function ProfileContent({ user, followersCount, followingCount, p
   const [theme, setTheme] = useState<ThemeName>((user.profileTheme as ThemeName) || 'aurora')
   const [decoration, setDecoration] = useState<number>(user.profileDecoration || 1)
   const [blockedUsers, setBlockedUsers] = useState<string[]>([])
+  const [censoredUsers, setCensoredUsers] = useState<string[]>([])
   const [showThemeSelector, setShowThemeSelector] = useState(false)
 
   useEffect(() => {
@@ -58,6 +59,7 @@ export default function ProfileContent({ user, followersCount, followingCount, p
         if (res.ok) {
           const data = await res.json()
           setBlockedUsers(data.blockedUsers || [])
+          setCensoredUsers(data.censoredUsers || [])
         }
       } catch {
         // Ignorar errores
@@ -201,7 +203,7 @@ export default function ProfileContent({ user, followersCount, followingCount, p
                   ) : authUser ? (
                     <>
                       <FollowButton userId={user.id} initialIsFollowing={isFollowing} />
-                      <BlockUserButton userId={user.id} username={user.username || user.email.split('@')[0]} />
+                      <CensorBlockButton userId={user.id} username={user.username || user.email.split('@')[0]} />
                     </>
                   ) : null}
                 </div>
@@ -286,6 +288,8 @@ export default function ProfileContent({ user, followersCount, followingCount, p
               const excerpt = extractExcerpt(post.content, 100)
               const shouldFilter = !!(post.isNSFW && (authUser?.nsfwProtection ?? true))
               const isBlocked = blockedUsers.includes(post.authorId)
+              
+              if (isBlocked) return null
 
               return (
                 <div key={post.id} className="h-full">
@@ -293,6 +297,7 @@ export default function ProfileContent({ user, followersCount, followingCount, p
                     isNSFW={shouldFilter} 
                     authorId={post.authorId}
                     blockedUsers={blockedUsers}
+                    censoredUsers={censoredUsers}
                   >
                     <Card variant="hover" className={`group h-full shadow-2xl hover:shadow-2xl transition-all border-2 ${currentTheme.postCard} flex flex-col`}>
                       <div className="relative w-full h-48 overflow-hidden rounded-t-xl">

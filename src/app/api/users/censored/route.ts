@@ -2,30 +2,6 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
 import { prisma } from '@/lib/prisma'
 
-export async function GET(request: NextRequest) {
-  try {
-    const supabase = await createClient()
-    const { data: { user } } = await supabase.auth.getUser()
-
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    const userData = await prisma.user.findUnique({
-      where: { id: user.id },
-      select: { blockedUsers: true, censoredUsers: true }
-    })
-
-    return NextResponse.json({ 
-      blockedUsers: userData?.blockedUsers || [],
-      censoredUsers: userData?.censoredUsers || []
-    })
-  } catch (error) {
-    console.error('Error fetching blocked users:', error)
-    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
-  }
-}
-
 export async function POST(request: NextRequest) {
   try {
     const supabase = await createClient()
@@ -43,27 +19,23 @@ export async function POST(request: NextRequest) {
 
     const userData = await prisma.user.findUnique({
       where: { id: user.id },
-      select: { blockedUsers: true, censoredUsers: true }
+      select: { censoredUsers: true }
     })
 
-    const blockedUsers = userData?.blockedUsers || []
     const censoredUsers = userData?.censoredUsers || []
     
-    if (blockedUsers.includes(userId)) {
-      return NextResponse.json({ message: 'User already blocked' })
+    if (censoredUsers.includes(userId)) {
+      return NextResponse.json({ message: 'User already censored' })
     }
 
     await prisma.user.update({
       where: { id: user.id },
-      data: { 
-        blockedUsers: [...blockedUsers, userId],
-        censoredUsers: censoredUsers.filter(id => id !== userId)
-      }
+      data: { censoredUsers: [...censoredUsers, userId] }
     })
 
-    return NextResponse.json({ message: 'User blocked successfully', blocked: true })
+    return NextResponse.json({ message: 'User censored successfully', censored: true })
   } catch (error) {
-    console.error('Error blocking user:', error)
+    console.error('Error censoring user:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
@@ -85,20 +57,20 @@ export async function DELETE(request: NextRequest) {
 
     const userData = await prisma.user.findUnique({
       where: { id: user.id },
-      select: { blockedUsers: true }
+      select: { censoredUsers: true }
     })
 
-    const blockedUsers = userData?.blockedUsers || []
-    const updatedBlockedUsers = blockedUsers.filter(id => id !== userId)
+    const censoredUsers = userData?.censoredUsers || []
+    const updatedCensoredUsers = censoredUsers.filter(id => id !== userId)
 
     await prisma.user.update({
       where: { id: user.id },
-      data: { blockedUsers: updatedBlockedUsers }
+      data: { censoredUsers: updatedCensoredUsers }
     })
 
-    return NextResponse.json({ message: 'User unblocked successfully', blocked: false })
+    return NextResponse.json({ message: 'User uncensored successfully', censored: false })
   } catch (error) {
-    console.error('Error unblocking user:', error)
+    console.error('Error uncensoring user:', error)
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

@@ -26,8 +26,12 @@ export async function PUT(
       categoryId?: string | null
       isPublic?: boolean
       isNSFW?: boolean
+      allowPdfDownload?: boolean
+      allowComments?: boolean
+      enablePagination?: boolean
+      showTableOfContents?: boolean
     }
-    const { title, content, imageUrl, videoUrl, categoryId, isPublic, isNSFW } = body
+    const { title, content, imageUrl, videoUrl, categoryId, isPublic, isNSFW, allowPdfDownload, allowComments, enablePagination, showTableOfContents } = body
 
     // Verificar que el post pertenece al usuario
     const existingPost = await prisma.post.findUnique({
@@ -61,6 +65,10 @@ export async function PUT(
         videoUrl,
         isPublic,
         isNSFW: isNSFW || false,
+        allowPdfDownload: allowPdfDownload ?? true,
+        allowComments: allowComments ?? true,
+        enablePagination: enablePagination ?? false,
+        showTableOfContents: showTableOfContents ?? true,
         categoryId: categoryId || null,
       },
       include: {
