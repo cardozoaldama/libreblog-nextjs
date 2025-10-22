@@ -11,6 +11,7 @@ import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { use } from 'react'
 import CreatorGuide from '@/components/post/CreatorGuide'
+import SearchableTextarea from '@/components/editor/SearchableTextarea'
 
 interface Category {
   id: string
@@ -95,6 +96,8 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
   const [isLoading, setIsLoading] = useState(true)
   const [isSaving, setIsSaving] = useState(false)
   const [showPreview, setShowPreview] = useState(false)
+  const [showPreviewColumn, setShowPreviewColumn] = useState(true)
+  const [previewPage, setPreviewPage] = useState(0)
   const [error, setError] = useState('')
 
   // Cargar post y categorías
@@ -207,23 +210,37 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gray-50 py-4 sm:py-8">
+      <div className="max-w-6xl mx-auto px-3 sm:px-4 lg:px-8">
         {/* Header */}
-        <div className="mb-6 flex items-center justify-between">
-          <div className="flex items-center gap-4">
+        <div className="mb-4 sm:mb-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          <div className="flex items-center gap-2 sm:gap-4">
             <Link href="/dashboard">
               <Button variant="ghost" size="sm">
                 <ArrowLeft className="w-4 h-4 mr-2" />
                 Volver
               </Button>
             </Link>
-            <h1 className="text-3xl font-bold text-gray-900">Editar Post</h1>
+            <h1 className="text-xl sm:text-2xl lg:text-3xl font-bold text-gray-900">Editar Post</h1>
           </div>
-          <Button variant="ghost" onClick={() => setShowPreview(!showPreview)}>
-            <Eye className="w-4 h-4 mr-2" />
-            {showPreview ? 'Editor' : 'Vista Previa'}
-          </Button>
+          <div className="flex gap-2">
+            <Button
+              variant="ghost"
+              onClick={() => setShowPreview(!showPreview)}
+              className="lg:hidden"
+            >
+              <Eye className="w-4 h-4 mr-2" />
+              {showPreview ? 'Editor' : 'Vista Previa'}
+            </Button>
+            <Button
+              variant="ghost"
+              onClick={() => setShowPreviewColumn(!showPreviewColumn)}
+              className="hidden lg:flex"
+            >
+              <Eye className="w-4 h-4 mr-2" />
+              {showPreviewColumn ? 'Ocultar Preview' : 'Mostrar Preview'}
+            </Button>
+          </div>
         </div>
 
         {error && (
@@ -234,15 +251,15 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
 
 
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className={`grid grid-cols-1 gap-4 sm:gap-6 ${showPreviewColumn ? 'lg:grid-cols-2' : ''}`}>
           {/* Editor */}
           <div className={showPreview ? 'hidden lg:block' : ''}>
             <Card variant="elevated">
               <CardHeader>
-                <h2 className="text-xl font-bold text-gray-900">Editor</h2>
+                <h2 className="text-lg sm:text-xl font-bold text-gray-900">Editor</h2>
               </CardHeader>
               <CardBody>
-                <form onSubmit={handleSubmit} className="space-y-4">
+                <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
                   {/* Título */}
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -282,13 +299,11 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
                     <label className="block text-sm font-medium text-gray-700 mb-2">
                       Contenido (Markdown) *
                     </label>
-                    <textarea
+                    <SearchableTextarea
                       value={content}
-                      onChange={(e) => setContent(e.target.value)}
+                      onChange={setContent}
                       placeholder="Escribe tu contenido en Markdown...&#10;&#10;**Negrita**, *cursiva*, # Títulos&#10;&#10;- Lista&#10;- De items&#10;&#10;```javascript&#10;// Código&#10;```"
-                      required
-                      rows={15}
-                      className="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent font-mono text-sm selectable"
+                      rows={20}
                     />
                     <details className="mt-2">
                       <summary className="text-xs text-blue-600 cursor-pointer hover:text-blue-700 font-medium">
@@ -494,7 +509,7 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
                   )}
 
                   {/* Botones */}
-                  <div className="flex gap-3 pt-4">
+                  <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 pt-3 sm:pt-4">
                     <Button
                       type="submit"
                       variant="primary"
@@ -504,8 +519,8 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
                       <Save className="w-4 h-4 mr-2" />
                       {isSaving ? 'Guardando...' : 'Guardar Cambios'}
                     </Button>
-                    <Link href="/dashboard">
-                      <Button variant="outline">Cancelar</Button>
+                    <Link href="/dashboard" className="w-full sm:w-auto">
+                      <Button variant="outline" className="w-full">Cancelar</Button>
                     </Link>
                   </div>
                 </form>
@@ -514,6 +529,7 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
           </div>
 
           {/* Vista Previa */}
+          {showPreviewColumn && (
           <div className={!showPreview ? 'hidden lg:block' : ''}>
             <Card variant="elevated">
               <CardHeader>
@@ -532,9 +548,51 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
                       unoptimized
                     />
                   )}
-                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                    {content || '*Escribe algo para ver la vista previa...*'}
-                  </ReactMarkdown>
+                  {(() => {
+                    const pages = (content || '*Escribe algo para ver la vista previa...*').split('---PAGE---')
+                    
+                    if (enablePagination && pages.length > 1) {
+                      return (
+                        <>
+                          <ReactMarkdown remarkPlugins={[remarkGfm]}>{pages[previewPage]}</ReactMarkdown>
+                          <div className="mt-6 flex items-center justify-between border-t-2 border-gray-200 pt-4">
+                            <Button
+                              variant="outline"
+                              onClick={() => setPreviewPage(p => Math.max(0, p - 1))}
+                              disabled={previewPage === 0}
+                              size="sm"
+                            >
+                              ← Anterior
+                            </Button>
+                            <span className="text-sm text-gray-600 font-medium">
+                              Página {previewPage + 1} de {pages.length}
+                            </span>
+                            <Button
+                              variant="outline"
+                              onClick={() => setPreviewPage(p => Math.min(pages.length - 1, p + 1))}
+                              disabled={previewPage === pages.length - 1}
+                              size="sm"
+                            >
+                              Siguiente →
+                            </Button>
+                          </div>
+                        </>
+                      )
+                    }
+                    
+                    return pages.map((page, index) => (
+                      <div key={index}>
+                        {index > 0 && (
+                          <div className="my-4 sm:my-6 lg:my-8 flex items-center gap-2 sm:gap-3">
+                            <div className="flex-1 h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent" />
+                            <span className="text-xs sm:text-sm font-medium text-gray-600 bg-gray-100 px-2 sm:px-3 py-1 rounded-full whitespace-nowrap">Página {index + 1}</span>
+                            <div className="flex-1 h-px bg-gradient-to-r from-transparent via-gray-300 to-transparent" />
+                          </div>
+                        )}
+                        <ReactMarkdown remarkPlugins={[remarkGfm]}>{page}</ReactMarkdown>
+                      </div>
+                    ))
+                  })()}
                   {videoUrl && (() => {
                     const embed = getVideoEmbed(videoUrl)
                     return embed.embedUrl ? (
@@ -553,6 +611,7 @@ export default function EditPostPage({ params }: { params: Promise<{ id: string 
               </CardBody>
             </Card>
           </div>
+          )}
         </div>
 
         {/* Guía para Creadores */}

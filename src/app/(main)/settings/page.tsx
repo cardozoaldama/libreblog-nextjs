@@ -383,7 +383,7 @@ export default function SettingsPage() {
           </CardHeader>
           <CardBody>
             <div className="space-y-4">
-              <div className="flex gap-4">
+              <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
                 <Button
                   variant="outline"
                   onClick={async () => {
@@ -478,17 +478,17 @@ export default function SettingsPage() {
                             alt={follower.displayName || follower.email}
                             width={40}
                             height={40}
-                            className="rounded-full"
+                            className="rounded-full flex-shrink-0 w-10 h-10"
                             unoptimized
                           />
-                          <div className="flex-1">
-                            <p className="font-medium text-[#000022]">
+                          <div className="flex-1 min-w-0">
+                            <p className="font-medium text-[#000022] truncate text-sm sm:text-base">
                               {follower.displayName || follower.email.split('@')[0]}
                             </p>
-                            <p className="text-sm text-[#5f638f]">{follower.email}</p>
+                            <p className="text-xs sm:text-sm text-[#5f638f] truncate">{follower.email}</p>
                           </div>
-                          <Link href={`/profile/${follower.email.split('@')[0]}`}>
-                            <Button variant="outline" size="sm">
+                          <Link href={`/profile/${follower.email.split('@')[0]}`} className="flex-shrink-0">
+                            <Button variant="outline" size="sm" className="text-xs sm:text-sm px-2 sm:px-3 py-1 sm:py-2">
                               Ver perfil
                             </Button>
                           </Link>
@@ -524,17 +524,17 @@ export default function SettingsPage() {
                             alt={followedUser.displayName || followedUser.email}
                             width={40}
                             height={40}
-                            className="rounded-full"
+                            className="rounded-full flex-shrink-0 w-10 h-10"
                             unoptimized
                           />
-                          <div className="flex-1">
-                            <p className="font-medium text-[#000022]">
+                          <div className="flex-1 min-w-0">
+                            <p className="font-medium text-[#000022] truncate text-sm sm:text-base">
                               {followedUser.displayName || followedUser.email.split('@')[0]}
                             </p>
-                            <p className="text-sm text-[#5f638f]">{followedUser.email}</p>
+                            <p className="text-xs sm:text-sm text-[#5f638f] truncate">{followedUser.email}</p>
                           </div>
-                          <Link href={`/profile/${followedUser.email.split('@')[0]}`}>
-                            <Button variant="outline" size="sm">
+                          <Link href={`/profile/${followedUser.email.split('@')[0]}`} className="flex-shrink-0">
+                            <Button variant="outline" size="sm" className="text-xs sm:text-sm px-2 sm:px-3 py-1 sm:py-2">
                               Ver perfil
                             </Button>
                           </Link>

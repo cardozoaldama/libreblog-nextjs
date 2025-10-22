@@ -46,6 +46,10 @@ export default function FollowingPage() {
   const [blockedUsers, setBlockedUsers] = useState<string[]>([])
   const [censoredUsers, setCensoredUsers] = useState<string[]>([])
   const [isUserLoaded, setIsUserLoaded] = useState(false)
+  const [categories, setCategories] = useState<Array<{id: string; name: string; icon: string | null}>>([])
+  const [selectedCategory, setSelectedCategory] = useState('')
+  const [followingUsers, setFollowingUsers] = useState<Array<{id: string; displayName: string | null; email: string}>>([])
+  const [selectedUser, setSelectedUser] = useState('')
 
   useEffect(() => {
     async function loadCurrentUser() {
@@ -67,6 +71,20 @@ export default function FollowingPage() {
             email: user.email!,
             nsfwProtection: userData?.nsfwProtection ?? true
           })
+
+          // Cargar categorías
+          const catRes = await fetch('/api/categories')
+          if (catRes.ok) {
+            const catData = await catRes.json()
+            setCategories(catData || [])
+          }
+
+          // Cargar usuarios seguidos
+          const followingRes = await fetch(`/api/users/${user.id}/following`)
+          if (followingRes.ok) {
+            const followingData = await followingRes.json()
+            setFollowingUsers(followingData.following || [])
+          }
         }
       } catch (error) {
         console.error('Error loading current user:', error)
@@ -83,18 +101,35 @@ export default function FollowingPage() {
       const params = new URLSearchParams()
       params.append('page', currentPage.toString())
       if (searchQuery) params.append('search', searchQuery)
+      if (selectedCategory) params.append('category', selectedCategory)
+      if (selectedUser) params.append('author', selectedUser)
 
       const res = await fetch(`/api/posts/following?${params.toString()}`)
       const data = await res.json()
 
       setPosts(data.posts || [])
       setHasMore(data.hasMore || false)
+
+      // Recargar lista de usuarios seguidos para mantenerla actualizada
+      if (currentUser?.id) {
+        const followingRes = await fetch(`/api/users/${currentUser.id}/following`)
+        if (followingRes.ok) {
+          const followingData = await followingRes.json()
+          const newFollowingUsers = followingData.following || []
+          setFollowingUsers(newFollowingUsers)
+          
+          // Si el usuario seleccionado ya no está en la lista, limpiar selección
+          if (selectedUser && !newFollowingUsers.some((u: {id: string}) => u.id === selectedUser)) {
+            setSelectedUser('')
+          }
+        }
+      }
     } catch (error) {
       console.error('Error loading posts:', error)
     } finally {
       setIsLoading(false)
     }
-  }, [currentPage, searchQuery])
+  }, [currentPage, searchQuery, selectedCategory, selectedUser, currentUser?.id])
 
   useEffect(() => {
     loadPosts()
@@ -119,8 +154,8 @@ export default function FollowingPage() {
         </div>
 
         <Card variant="elevated" className="mb-8">
-          <CardBody className="p-6">
-            <form onSubmit={handleSearch}>
+          <CardBody className="p-4 sm:p-6">
+            <form onSubmit={handleSearch} className="space-y-4">
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
                 <input
@@ -130,6 +165,40 @@ export default function FollowingPage() {
                   placeholder="Buscar en posts de seguidos..."
                   className="w-full pl-10 pr-4 py-3 border-2 border-[#5f638f]/30 rounded-xl bg-white/90 backdrop-blur-sm focus:ring-2 focus:ring-[#0c2b4d] focus:border-transparent transition-all duration-300 hover:border-[#5f638f]/50"
                 />
+              </div>
+              
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                <select
+                  value={selectedCategory}
+                  onChange={(e) => {
+                    setSelectedCategory(e.target.value)
+                    setCurrentPage(1)
+                  }}
+                  className="px-4 py-2.5 border-2 border-[#5f638f]/30 rounded-xl bg-white/90 focus:ring-2 focus:ring-[#0c2b4d] focus:border-transparent transition-all text-sm"
+                >
+                  <option value="">Todas las categorías</option>
+                  {categories.map(cat => (
+                    <option key={cat.id} value={cat.id}>
+                      {cat.icon} {cat.name}
+                    </option>
+                  ))}
+                </select>
+
+                <select
+                  value={selectedUser}
+                  onChange={(e) => {
+                    setSelectedUser(e.target.value)
+                    setCurrentPage(1)
+                  }}
+                  className="px-4 py-2.5 border-2 border-[#5f638f]/30 rounded-xl bg-white/90 focus:ring-2 focus:ring-[#0c2b4d] focus:border-transparent transition-all text-sm"
+                >
+                  <option value="">Todos los usuarios</option>
+                  {followingUsers.map(user => (
+                    <option key={user.id} value={user.id}>
+                      {user.displayName || user.email.split('@')[0]}
+                    </option>
+                  ))}
+                </select>
               </div>
             </form>
           </CardBody>

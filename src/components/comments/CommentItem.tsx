@@ -3,6 +3,7 @@
 import { useState } from 'react'
 import { Reply, Edit2, Trash2, MoreVertical, AlertTriangle } from 'lucide-react'
 import Image from 'next/image'
+import Link from 'next/link'
 import { getGravatarUrl } from '@/lib/utils'
 import CommentForm from './CommentForm'
 import Button from '@/components/ui/Button'
@@ -14,6 +15,7 @@ interface Comment {
   user: {
     id: string
     displayName: string
+    username: string | null
     avatarUrl: string | null
     email: string
   }
@@ -76,21 +78,23 @@ export default function CommentItem({ comment, postId, postAuthorId, currentUser
   return (
     <div className={`${isReply ? 'ml-6 sm:ml-12' : ''}`}>
       <div className="flex gap-2 sm:gap-3 p-3 sm:p-4 rounded-xl bg-white/50 border border-[#5f638f]/10 hover:border-[#5f638f]/20 transition-colors">
-        <div className="flex-shrink-0">
+        <Link href={`/profile/${comment.user.username || comment.user.email}`} className="flex-shrink-0">
           <Image
             src={comment.user.avatarUrl || getGravatarUrl(comment.user.email)}
             alt={comment.user.displayName}
             width={40}
             height={40}
-            className="rounded-full ring-2 ring-[#5f638f]/20 w-8 h-8 sm:w-10 sm:h-10 object-cover"
+            className="rounded-full ring-2 ring-[#5f638f]/20 w-8 h-8 sm:w-10 sm:h-10 object-cover hover:ring-[#0c2b4d] transition-all cursor-pointer"
             unoptimized
           />
-        </div>
+        </Link>
 
         <div className="flex-1 min-w-0">
           <div className="flex items-start justify-between gap-2">
             <div className="min-w-0">
-              <p className="font-semibold text-[#0c2b4d] text-sm sm:text-base truncate">{comment.user.displayName}</p>
+              <Link href={`/profile/${comment.user.username || comment.user.email}`} className="font-semibold text-[#0c2b4d] text-sm sm:text-base truncate hover:underline cursor-pointer block">
+                {comment.user.displayName}
+              </Link>
               <p className="text-xs text-[#5f638f]">
                 {new Date(comment.createdAt).toLocaleDateString('es-ES', {
                   day: 'numeric',

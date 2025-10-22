@@ -140,44 +140,84 @@ export default function PostReader({ content, enablePagination = false, showTabl
 
       {/* Paginación */}
       {enablePagination && pages.length > 1 && (
-        <div className="flex items-center justify-center gap-4 pt-8 border-t border-[#5f638f]/20">
-          <Button
-            onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
-            disabled={currentPage === 1}
-            variant="outline"
-            className="flex items-center gap-2"
-          >
-            <ChevronLeft className="w-4 h-4" />
-            Anterior
-          </Button>
-
+        <div className="flex flex-col sm:flex-row items-center justify-center gap-4 pt-8 border-t border-[#5f638f]/20">
           <div className="flex items-center gap-2">
-            {pages.map((_, idx) => (
-              <button
-                key={idx}
-                onClick={() => handlePageChange(idx + 1)}
-                className={`
-                  w-8 h-8 rounded-full transition-all
-                  ${currentPage === idx + 1
-                    ? 'bg-gradient-to-r from-[#5f638f] to-[#36234e] text-white font-semibold'
-                    : 'bg-[#0c2b4d] text-[#dedff1]/60 hover:bg-[#5f638f]/30'
-                  }
-                `}
-              >
-                {idx + 1}
-              </button>
-            ))}
-          </div>
+            <Button
+              onClick={() => handlePageChange(Math.max(1, currentPage - 1))}
+              disabled={currentPage === 1}
+              variant="outline"
+              size="sm"
+              className="flex items-center gap-1"
+            >
+              <ChevronLeft className="w-4 h-4" />
+              <span className="hidden sm:inline">Anterior</span>
+            </Button>
 
-          <Button
-            onClick={() => handlePageChange(Math.min(pages.length, currentPage + 1))}
-            disabled={currentPage === pages.length}
-            variant="outline"
-            className="flex items-center gap-2"
-          >
-            Siguiente
-            <ChevronRight className="w-4 h-4" />
-          </Button>
+            <div className="flex items-center gap-2">
+              {currentPage > 3 && (
+                <>
+                  <button
+                    onClick={() => handlePageChange(1)}
+                    className="w-8 h-8 rounded-full bg-[#0c2b4d] text-[#dedff1]/60 hover:bg-[#5f638f]/30 transition-all text-sm"
+                  >
+                    1
+                  </button>
+                  <span className="text-[#dedff1]/60">...</span>
+                </>
+              )}
+              
+              {Array.from({ length: pages.length }, (_, idx) => idx + 1)
+                .filter(page => 
+                  page === currentPage ||
+                  page === currentPage - 1 ||
+                  page === currentPage + 1 ||
+                  (currentPage <= 2 && page <= 3) ||
+                  (currentPage >= pages.length - 1 && page >= pages.length - 2)
+                )
+                .map(page => (
+                  <button
+                    key={page}
+                    onClick={() => handlePageChange(page)}
+                    className={`
+                      w-8 h-8 rounded-full transition-all text-sm
+                      ${currentPage === page
+                        ? 'bg-gradient-to-r from-[#5f638f] to-[#36234e] text-white font-semibold'
+                        : 'bg-[#0c2b4d] text-[#dedff1]/60 hover:bg-[#5f638f]/30'
+                      }
+                    `}
+                  >
+                    {page}
+                  </button>
+                ))}
+              
+              {currentPage < pages.length - 2 && (
+                <>
+                  <span className="text-[#dedff1]/60">...</span>
+                  <button
+                    onClick={() => handlePageChange(pages.length)}
+                    className="w-8 h-8 rounded-full bg-[#0c2b4d] text-[#dedff1]/60 hover:bg-[#5f638f]/30 transition-all text-sm"
+                  >
+                    {pages.length}
+                  </button>
+                </>
+              )}
+            </div>
+
+            <Button
+              onClick={() => handlePageChange(Math.min(pages.length, currentPage + 1))}
+              disabled={currentPage === pages.length}
+              variant="outline"
+              size="sm"
+              className="flex items-center gap-1"
+            >
+              <span className="hidden sm:inline">Siguiente</span>
+              <ChevronRight className="w-4 h-4" />
+            </Button>
+          </div>
+          
+          <div className="text-sm text-[#dedff1]/60">
+            Página {currentPage} de {pages.length}
+          </div>
         </div>
       )}
     </div>

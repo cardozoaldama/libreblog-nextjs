@@ -11,6 +11,7 @@ import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { getVideoEmbed } from '@/lib/utils'
 import CreatorGuide from '@/components/post/CreatorGuide'
+import SearchableTextarea from '@/components/editor/SearchableTextarea'
 
 interface Category {
   id: string
@@ -35,6 +36,8 @@ export default function CreatePostPage() {
   const [categories, setCategories] = useState<Category[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [showPreview, setShowPreview] = useState(false)
+  const [showPreviewColumn, setShowPreviewColumn] = useState(true)
+  const [previewPage, setPreviewPage] = useState(0)
   const [error, setError] = useState('')
 
   // Cargar categorías
@@ -101,11 +104,11 @@ export default function CreatePostPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-[#dedff1] via-[#dedff1] to-[#5f638f]/20 py-8">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="min-h-screen bg-gradient-to-br from-[#dedff1] via-[#dedff1] to-[#5f638f]/20 py-4 sm:py-8">
+      <div className="max-w-6xl mx-auto px-3 sm:px-4 lg:px-8">
         {/* Header */}
-        <div className="mb-8 animate-in fade-in slide-in-from-top duration-500">
-          <div className="flex items-center justify-between mb-4">
+        <div className="mb-4 sm:mb-8 animate-in fade-in slide-in-from-top duration-500">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-4">
             <div className="flex items-center gap-4">
               <Link href="/dashboard">
                 <Button variant="ghost" size="sm" className="hover:scale-105 transition-transform duration-200">
@@ -114,20 +117,30 @@ export default function CreatePostPage() {
                 </Button>
               </Link>
             </div>
-            <Button
-              variant="outline"
-              onClick={() => setShowPreview(!showPreview)}
-              className="lg:hidden hover:scale-105 transition-transform duration-200"
-            >
-              <Eye className="w-4 h-4 mr-2" />
-              {showPreview ? 'Editor' : 'Vista Previa'}
-            </Button>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                onClick={() => setShowPreview(!showPreview)}
+                className="lg:hidden hover:scale-105 transition-transform duration-200"
+              >
+                <Eye className="w-4 h-4 mr-2" />
+                {showPreview ? 'Editor' : 'Vista Previa'}
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => setShowPreviewColumn(!showPreviewColumn)}
+                className="hidden lg:flex hover:scale-105 transition-transform duration-200"
+              >
+                <Eye className="w-4 h-4 mr-2" />
+                {showPreviewColumn ? 'Ocultar Preview' : 'Mostrar Preview'}
+              </Button>
+            </div>
           </div>
-          <div className="text-center">
-            <h1 className="text-4xl font-bold bg-gradient-to-r from-[#0c2b4d] via-[#36234e] to-[#5f638f] bg-clip-text text-transparent mb-2">
+          <div className="text-center w-full">
+            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold bg-gradient-to-r from-[#0c2b4d] via-[#36234e] to-[#5f638f] bg-clip-text text-transparent mb-2">
               Crear Nuevo Post
             </h1>
-            <p className="text-[#000022]/70 text-lg">Comparte tus ideas con el mundo</p>
+            <p className="text-[#000022]/70 text-sm sm:text-base lg:text-lg">Comparte tus ideas con el mundo</p>
           </div>
         </div>
 
@@ -137,15 +150,15 @@ export default function CreatePostPage() {
           </div>
         )}
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <div className={`grid grid-cols-1 gap-4 sm:gap-6 ${showPreviewColumn ? 'lg:grid-cols-2' : ''}`}>
           {/* Editor */}
           <div className={`${showPreview ? 'hidden lg:block' : ''} animate-in fade-in slide-in-from-left duration-500 delay-200`}>
             <Card variant="hover">
               <CardHeader>
-                <h2 className="text-xl font-bold bg-gradient-to-r from-[#0c2b4d] to-[#5f638f] bg-clip-text text-transparent">✍️ Editor</h2>
+                <h2 className="text-lg sm:text-xl font-bold bg-gradient-to-r from-[#0c2b4d] to-[#5f638f] bg-clip-text text-transparent">✍️ Editor</h2>
               </CardHeader>
               <CardBody>
-                <form onSubmit={handleSubmit} className="space-y-4">
+                <form onSubmit={handleSubmit} className="space-y-3 sm:space-y-4">
                   {/* Título */}
                   <div>
                     <label className="block text-sm font-medium text-[#000022] mb-2">
@@ -185,13 +198,11 @@ export default function CreatePostPage() {
                     <label className="block text-sm font-medium text-[#000022] mb-2">
                       Contenido (Markdown) *
                     </label>
-                    <textarea
+                    <SearchableTextarea
                       value={content}
-                      onChange={(e) => setContent(e.target.value)}
+                      onChange={setContent}
                       placeholder="Escribe tu contenido en Markdown...&#10;&#10;**Negrita**, *cursiva*, # Títulos&#10;&#10;- Lista&#10;- De items&#10;&#10;```javascript&#10;// Código&#10;```"
-                      required
-                      rows={15}
-                      className="w-full px-4 py-3 border-2 border-[#5f638f]/30 rounded-xl bg-white/80 focus:ring-2 focus:ring-[#0c2b4d] focus:border-transparent font-mono text-sm transition-all duration-300 hover:border-[#5f638f]/50 selectable"
+                      rows={20}
                     />
                     <details className="mt-2">
                       <summary className="text-xs text-[#0c2b4d] cursor-pointer hover:text-[#36234e] font-medium">
@@ -398,7 +409,7 @@ export default function CreatePostPage() {
                     )}
 
                   {/* Botones */}
-                  <div className="flex gap-3 pt-4">
+                  <div className="flex flex-col sm:flex-row gap-2 sm:gap-3 pt-3 sm:pt-4">
                     <Button
                       type="submit"
                       variant="primary"
@@ -408,8 +419,8 @@ export default function CreatePostPage() {
                       <Save className="w-4 h-4 mr-2" />
                       {isLoading ? 'Guardando...' : 'Publicar'}
                     </Button>
-                    <Link href="/dashboard">
-                      <Button variant="outline" className="hover:scale-105 transition-transform duration-200">Cancelar</Button>
+                    <Link href="/dashboard" className="w-full sm:w-auto">
+                      <Button variant="outline" className="w-full hover:scale-105 transition-transform duration-200">Cancelar</Button>
                     </Link>
                   </div>
                 </form>
@@ -418,6 +429,7 @@ export default function CreatePostPage() {
           </div>
 
           {/* Vista Previa */}
+          {showPreviewColumn && (
           <div className={`${!showPreview ? 'hidden lg:block' : ''} animate-in fade-in slide-in-from-right duration-500 delay-300`}>
             <Card variant="hover">
               <CardHeader>
@@ -435,9 +447,51 @@ export default function CreatePostPage() {
                       height={450}
                     />
                   )}
-                  <ReactMarkdown remarkPlugins={[remarkGfm]}>
-                    {content || '*Escribe algo para ver la vista previa...*'}
-                  </ReactMarkdown>
+                  {(() => {
+                    const pages = (content || '*Escribe algo para ver la vista previa...*').split('---PAGE---')
+                    
+                    if (enablePagination && pages.length > 1) {
+                      return (
+                        <>
+                          <ReactMarkdown remarkPlugins={[remarkGfm]}>{pages[previewPage]}</ReactMarkdown>
+                          <div className="mt-6 flex items-center justify-between border-t-2 border-[#5f638f]/20 pt-4">
+                            <Button
+                              variant="outline"
+                              onClick={() => setPreviewPage(p => Math.max(0, p - 1))}
+                              disabled={previewPage === 0}
+                              size="sm"
+                            >
+                              ← Anterior
+                            </Button>
+                            <span className="text-sm text-[#5f638f] font-medium">
+                              Página {previewPage + 1} de {pages.length}
+                            </span>
+                            <Button
+                              variant="outline"
+                              onClick={() => setPreviewPage(p => Math.min(pages.length - 1, p + 1))}
+                              disabled={previewPage === pages.length - 1}
+                              size="sm"
+                            >
+                              Siguiente →
+                            </Button>
+                          </div>
+                        </>
+                      )
+                    }
+                    
+                    return pages.map((page, index) => (
+                      <div key={index}>
+                        {index > 0 && (
+                          <div className="my-4 sm:my-6 lg:my-8 flex items-center gap-2 sm:gap-3">
+                            <div className="flex-1 h-px bg-gradient-to-r from-transparent via-[#5f638f]/30 to-transparent" />
+                            <span className="text-xs sm:text-sm font-medium text-[#5f638f] bg-[#dedff1]/50 px-2 sm:px-3 py-1 rounded-full whitespace-nowrap">Página {index + 1}</span>
+                            <div className="flex-1 h-px bg-gradient-to-r from-transparent via-[#5f638f]/30 to-transparent" />
+                          </div>
+                        )}
+                        <ReactMarkdown remarkPlugins={[remarkGfm]}>{page}</ReactMarkdown>
+                      </div>
+                    ))
+                  })()}
                   {videoUrl && (() => {
                     const embed = getVideoEmbed(videoUrl)
                     return embed.embedUrl ? (
@@ -455,6 +509,7 @@ export default function CreatePostPage() {
               </CardBody>
             </Card>
           </div>
+          )}
         </div>
 
         {/* Guía para Creadores */}

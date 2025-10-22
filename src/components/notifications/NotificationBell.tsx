@@ -129,14 +129,22 @@ export default function NotificationBell() {
             className="fixed inset-0 z-40"
             onClick={() => setShowDropdown(false)}
           />
-          <div className="absolute right-0 mt-2 w-[calc(100vw-2rem)] sm:w-80 max-w-md bg-white rounded-xl shadow-2xl border border-[#5f638f]/20 z-50 overflow-hidden">
-            <div className="p-3 sm:p-4 border-b border-[#5f638f]/10">
-              <h3 className="font-bold text-[#0c2b4d] text-sm sm:text-base">Notificaciones</h3>
+          <div className="fixed sm:absolute left-0 right-0 sm:right-0 sm:left-auto top-14 sm:top-auto sm:mt-2 w-full sm:w-96 bg-white rounded-none sm:rounded-xl shadow-2xl border-t sm:border border-[#5f638f]/20 z-50 overflow-hidden">
+            <div className="p-4 border-b border-[#5f638f]/10 flex items-center justify-between">
+              <h3 className="font-bold text-[#0c2b4d]">Notificaciones</h3>
+              <button
+                onClick={() => setShowDropdown(false)}
+                className="sm:hidden p-1 rounded-full hover:bg-[#5f638f]/10 transition-colors"
+              >
+                <svg className="w-5 h-5 text-[#5f638f]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
             </div>
 
-            <div className="max-h-[60vh] sm:max-h-96 overflow-y-auto">
+            <div className="max-h-[70vh] sm:max-h-96 overflow-y-auto">
               {notifications.length === 0 ? (
-                <div className="p-6 sm:p-8 text-center text-[#5f638f] text-sm">
+                <div className="p-8 text-center text-[#5f638f] text-sm">
                   No tienes notificaciones
                 </div>
               ) : (
@@ -148,14 +156,14 @@ export default function NotificationBell() {
                         if (!notif.isRead) markAsRead(notif.id)
                         setShowDropdown(false)
                       }}
-                      className={`block p-3 sm:p-4 hover:bg-[#5f638f]/5 transition-colors border-b border-[#5f638f]/10 ${
+                      className={`block p-4 hover:bg-[#5f638f]/5 active:bg-[#5f638f]/10 transition-colors border-b border-[#5f638f]/10 ${
                         !notif.isRead ? 'bg-[#dedff1]/30' : ''
                       }`}
                     >
-                      <p className="text-xs sm:text-sm text-[#000022] break-words pr-6">
+                      <p className="text-sm text-[#000022] break-words pr-8">
                         {getNotificationText(notif)}
                       </p>
-                      <p className="text-[10px] sm:text-xs text-[#5f638f] mt-1">
+                      <p className="text-xs text-[#5f638f] mt-1">
                         {new Date(notif.createdAt).toLocaleDateString('es-ES', {
                           day: 'numeric',
                           month: 'short',
@@ -167,10 +175,11 @@ export default function NotificationBell() {
                     <button
                       onClick={async (e) => {
                         e.preventDefault()
+                        e.stopPropagation()
                         await fetch(`/api/notifications/${notif.id}`, { method: 'DELETE' })
                         loadNotifications()
                       }}
-                      className="absolute right-2 top-1/2 -translate-y-1/2 p-1 rounded-full hover:bg-red-100 opacity-0 group-hover:opacity-100 transition-opacity"
+                      className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded-full hover:bg-red-100 active:bg-red-200 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity touch-manipulation"
                     >
                       <svg className="w-4 h-4 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -185,7 +194,7 @@ export default function NotificationBell() {
               <Link
                 href="/notifications"
                 onClick={() => setShowDropdown(false)}
-                className="block p-3 text-center text-sm font-medium text-[#0c2b4d] hover:bg-[#5f638f]/5 transition-colors"
+                className="block p-4 text-center text-sm font-medium text-[#0c2b4d] hover:bg-[#5f638f]/5 active:bg-[#5f638f]/10 transition-colors border-t border-[#5f638f]/10"
               >
                 Ver todas las notificaciones
               </Link>

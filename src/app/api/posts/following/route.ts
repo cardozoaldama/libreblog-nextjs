@@ -14,6 +14,8 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url)
     const page = parseInt(searchParams.get('page') || '1')
     const search = searchParams.get('search') || ''
+    const category = searchParams.get('category') || ''
+    const author = searchParams.get('author') || ''
     const limit = 20
     const offset = (page - 1) * limit
 
@@ -35,6 +37,8 @@ export async function GET(request: Request) {
       where: {
       isPublic: true,
       authorId: { in: followingIds },
+      ...(category && { categoryId: category }),
+      ...(author && { authorId: author }),
       ...(search && {
       OR: [
       { title: { contains: search, mode: 'insensitive' } },

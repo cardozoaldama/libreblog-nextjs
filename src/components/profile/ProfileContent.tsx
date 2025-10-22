@@ -171,18 +171,18 @@ export default function ProfileContent({ user, followersCount, followingCount, p
                   </div>
                 )}
 
-                <div className="grid grid-cols-3 gap-4 mb-6 mt-6">
-                  <div className={`text-center p-4 rounded-xl ${currentTheme.statBox}`}>
-                    <div className={`text-3xl font-black ${currentTheme.stats[0]}`}>{user.posts.length}</div>
-                    <div className={`text-sm font-bold mt-2 ${currentTheme.statLabel}`}>Posts</div>
+                <div className="grid grid-cols-3 gap-2 sm:gap-4 mb-6 mt-6">
+                  <div className={`text-center p-2 sm:p-4 rounded-xl ${currentTheme.statBox}`}>
+                    <div className={`text-2xl sm:text-3xl font-black ${currentTheme.stats[0]}`}>{user.posts.length}</div>
+                    <div className={`text-xs sm:text-sm font-bold mt-1 sm:mt-2 ${currentTheme.statLabel}`}>Posts</div>
                   </div>
-                  <div className={`text-center p-4 rounded-xl ${currentTheme.statBox}`}>
-                    <div className={`text-3xl font-black ${currentTheme.stats[1]}`}>{followersCount}</div>
-                    <div className={`text-sm font-bold mt-2 ${currentTheme.statLabel}`}>Seguidores</div>
+                  <div className={`text-center p-2 sm:p-4 rounded-xl ${currentTheme.statBox}`}>
+                    <div className={`text-2xl sm:text-3xl font-black ${currentTheme.stats[1]}`}>{followersCount}</div>
+                    <div className={`text-xs sm:text-sm font-bold mt-1 sm:mt-2 ${currentTheme.statLabel} whitespace-nowrap`}>Seguidores</div>
                   </div>
-                  <div className={`text-center p-4 rounded-xl ${currentTheme.statBox}`}>
-                    <div className={`text-3xl font-black ${currentTheme.stats[2]}`}>{followingCount}</div>
-                    <div className={`text-sm font-bold mt-2 ${currentTheme.statLabel}`}>Siguiendo</div>
+                  <div className={`text-center p-2 sm:p-4 rounded-xl ${currentTheme.statBox}`}>
+                    <div className={`text-2xl sm:text-3xl font-black ${currentTheme.stats[2]}`}>{followingCount}</div>
+                    <div className={`text-xs sm:text-sm font-bold mt-1 sm:mt-2 ${currentTheme.statLabel} whitespace-nowrap`}>Siguiendo</div>
                   </div>
                 </div>
 
