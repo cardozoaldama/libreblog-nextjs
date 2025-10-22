@@ -82,69 +82,69 @@ export default async function DashboardPage() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8 text-center animate-in fade-in slide-in-from-top duration-500">
-          <h1 className="text-5xl font-bold bg-gradient-to-r from-[#0c2b4d] via-[#36234e] to-[#5f638f] bg-clip-text text-transparent mb-4">
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold bg-gradient-to-r from-[#0c2b4d] via-[#36234e] to-[#5f638f] bg-clip-text text-transparent mb-4">
             ¡Hola, {user.displayName || user.email.split('@')[0]}! 👋
           </h1>
-          <p className="text-xl text-[#000022]/70">Gestiona tus publicaciones desde aquí</p>
+          <p className="text-base sm:text-lg lg:text-xl text-[#000022]/70">Gestiona tus publicaciones desde aquí</p>
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8">
         <Card variant="hover" className="animate-in fade-in slide-in-from-left duration-500 delay-200">
-        <CardBody className="p-6">
+        <CardBody className="p-4 sm:p-6">
         <div className="flex items-center justify-between">
-        <div>
-        <p className="text-sm font-medium text-[#5f638f] uppercase tracking-wide">Total Posts</p>
-        <p className="text-4xl font-bold text-[#000022] mt-2">{totalPosts}</p>
-          <p className="text-xs text-[#5f638f]/70 mt-1">Publicaciones creadas</p>
+        <div className="min-w-0 flex-1">
+        <p className="text-xs sm:text-sm font-medium text-[#5f638f] uppercase tracking-wide truncate">Total Posts</p>
+        <p className="text-3xl sm:text-4xl font-bold text-[#000022] mt-2">{totalPosts}</p>
+          <p className="text-xs text-[#5f638f]/70 mt-1 truncate">Publicaciones creadas</p>
         </div>
-        <div className="w-14 h-14 bg-gradient-to-br from-[#0c2b4d] to-[#36234e] rounded-2xl flex items-center justify-center shadow-lg shadow-[#0c2b4d]/30 group-hover:scale-110 transition-transform duration-300">
-          <FileText className="w-7 h-7 text-[#dedff1]" />
+        <div className="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-[#0c2b4d] to-[#36234e] rounded-2xl flex items-center justify-center shadow-lg shadow-[#0c2b4d]/30 group-hover:scale-110 transition-transform duration-300 flex-shrink-0">
+          <FileText className="w-6 h-6 sm:w-7 sm:h-7 text-[#dedff1]" />
           </div>
           </div>
           </CardBody>
           </Card>
 
         <Card variant="hover" className="animate-in fade-in slide-in-from-bottom duration-500 delay-300">
-        <CardBody className="p-6">
+        <CardBody className="p-4 sm:p-6">
         <div className="flex items-center justify-between">
-        <div>
-        <p className="text-sm font-medium text-[#5f638f] uppercase tracking-wide">Publicados</p>
-          <p className="text-4xl font-bold text-green-600 mt-2">{publicPosts}</p>
-          <p className="text-xs text-[#5f638f]/70 mt-1">Visibles para todos</p>
+        <div className="min-w-0 flex-1">
+        <p className="text-xs sm:text-sm font-medium text-[#5f638f] uppercase tracking-wide truncate">Publicados</p>
+          <p className="text-3xl sm:text-4xl font-bold text-green-600 mt-2">{publicPosts}</p>
+          <p className="text-xs text-[#5f638f]/70 mt-1 truncate">Visibles para todos</p>
         </div>
-        <div className="w-14 h-14 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl flex items-center justify-center shadow-lg shadow-green-500/30 group-hover:scale-110 transition-transform duration-300">
-            <Eye className="w-7 h-7 text-[#dedff1]" />
+        <div className="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-green-500 to-green-600 rounded-2xl flex items-center justify-center shadow-lg shadow-green-500/30 group-hover:scale-110 transition-transform duration-300 flex-shrink-0">
+            <Eye className="w-6 h-6 sm:w-7 sm:h-7 text-[#dedff1]" />
             </div>
             </div>
             </CardBody>
         </Card>
 
         <Card variant="hover" className="animate-in fade-in slide-in-from-right duration-500 delay-400">
-        <CardBody className="p-6">
+        <CardBody className="p-4 sm:p-6">
         <div className="flex items-center justify-between">
-        <div>
-          <p className="text-sm font-medium text-[#5f638f] uppercase tracking-wide">Total Likes</p>
-          <p className="text-4xl font-bold text-pink-600 mt-2">{totalLikes}</p>
-        <p className="text-xs text-[#5f638f]/70 mt-1">❤️ Promedio: {averageLikes}/post</p>
+        <div className="min-w-0 flex-1">
+          <p className="text-xs sm:text-sm font-medium text-[#5f638f] uppercase tracking-wide truncate">Total Likes</p>
+          <p className="text-3xl sm:text-4xl font-bold text-pink-600 mt-2">{totalLikes}</p>
+        <p className="text-xs text-[#5f638f]/70 mt-1 truncate">❤️ Promedio: {averageLikes}/post</p>
         </div>
-          <div className="w-14 h-14 bg-gradient-to-br from-pink-500 to-pink-600 rounded-2xl flex items-center justify-center shadow-lg shadow-pink-500/30 group-hover:scale-110 transition-transform duration-300">
-              <Heart className="w-7 h-7 text-[#dedff1]" />
+          <div className="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-pink-500 to-pink-600 rounded-2xl flex items-center justify-center shadow-lg shadow-pink-500/30 group-hover:scale-110 transition-transform duration-300 flex-shrink-0">
+              <Heart className="w-6 h-6 sm:w-7 sm:h-7 text-[#dedff1]" />
               </div>
               </div>
             </CardBody>
           </Card>
 
           <Card variant="hover" className="animate-in fade-in slide-in-from-left duration-500 delay-500">
-            <CardBody className="p-6">
+            <CardBody className="p-4 sm:p-6">
               <div className="flex items-center justify-between">
-                <div>
-                  <p className="text-sm font-medium text-[#5f638f] uppercase tracking-wide">Contenido NSFW</p>
-                  <p className="text-4xl font-bold text-orange-600 mt-2">{nsfwPosts}</p>
-                  <p className="text-xs text-[#5f638f]/70 mt-1">Posts moderados</p>
+                <div className="min-w-0 flex-1">
+                  <p className="text-xs sm:text-sm font-medium text-[#5f638f] uppercase tracking-wide truncate">Contenido NSFW</p>
+                  <p className="text-3xl sm:text-4xl font-bold text-orange-600 mt-2">{nsfwPosts}</p>
+                  <p className="text-xs text-[#5f638f]/70 mt-1 truncate">Posts moderados</p>
                 </div>
-                <div className="w-14 h-14 bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl flex items-center justify-center shadow-lg shadow-orange-500/30 group-hover:scale-110 transition-transform duration-300">
-                  <BarChart3 className="w-7 h-7 text-[#dedff1]" />
+                <div className="w-12 h-12 sm:w-14 sm:h-14 bg-gradient-to-br from-orange-500 to-orange-600 rounded-2xl flex items-center justify-center shadow-lg shadow-orange-500/30 group-hover:scale-110 transition-transform duration-300 flex-shrink-0">
+                  <BarChart3 className="w-6 h-6 sm:w-7 sm:h-7 text-[#dedff1]" />
                 </div>
               </div>
             </CardBody>
@@ -209,12 +209,12 @@ export default async function DashboardPage() {
 
         {/* Posts Section */}
         <div className="animate-in fade-in slide-in-from-bottom duration-500 delay-800">
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
         <div>
-        <h2 className="text-2xl font-bold bg-gradient-to-r from-[#0c2b4d] to-[#5f638f] bg-clip-text text-transparent">
+        <h2 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-[#0c2b4d] to-[#5f638f] bg-clip-text text-transparent">
         Mis Publicaciones
         </h2>
-        <p className="text-[#5f638f] mt-1">
+        <p className="text-sm sm:text-base text-[#5f638f] mt-1">
         {user.posts.length === 0
         ? "Aún no tienes publicaciones"
           : `${user.posts.length} publicación${user.posts.length !== 1 ? 'es' : ''} en total`
@@ -222,8 +222,8 @@ export default async function DashboardPage() {
         </p>
         </div>
         {user.posts.length > 0 && (
-        <Link href="/post/create">
-        <Button variant="outline" className="hover:scale-105 transition-transform duration-200">
+        <Link href="/post/create" className="w-full sm:w-auto">
+        <Button variant="outline" className="hover:scale-105 transition-transform duration-200 w-full sm:w-auto">
         <Plus className="w-4 h-4 mr-2" />
           Nuevo Post
           </Button>
@@ -256,22 +256,22 @@ export default async function DashboardPage() {
               {/* Quick Stats Bar */}
               <Card variant="elevated" className="bg-gradient-to-r from-[#dedff1] to-[#5f638f]/10 border-[#5f638f]/20">
                 <CardBody className="p-4">
-                  <div className="flex items-center justify-between text-sm">
-                    <div className="flex items-center gap-4">
-                      <span className="flex items-center gap-1">
-                        <Eye className="w-4 h-4 text-green-600" />
+                  <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-sm">
+                    <div className="flex flex-wrap items-center gap-3 sm:gap-4">
+                      <span className="flex items-center gap-1 whitespace-nowrap">
+                        <Eye className="w-4 h-4 text-green-600 flex-shrink-0" />
                         <span className="font-medium text-green-700">{publicPosts} publicados</span>
                       </span>
-                      <span className="flex items-center gap-1">
-                        <Edit className="w-4 h-4 text-yellow-600" />
+                      <span className="flex items-center gap-1 whitespace-nowrap">
+                        <Edit className="w-4 h-4 text-yellow-600 flex-shrink-0" />
                         <span className="font-medium text-yellow-700">{draftPosts} borradores</span>
                       </span>
-                      <span className="flex items-center gap-1">
-                        <Heart className="w-4 h-4 text-pink-600" />
+                      <span className="flex items-center gap-1 whitespace-nowrap">
+                        <Heart className="w-4 h-4 text-pink-600 flex-shrink-0" />
                         <span className="font-medium text-pink-700">{totalLikes} likes totales</span>
                       </span>
                     </div>
-                    <Link href="/settings" className="text-[#0c2b4d] hover:text-[#36234e] font-medium text-xs underline">
+                    <Link href="/settings" className="text-[#0c2b4d] hover:text-[#36234e] font-medium text-xs underline whitespace-nowrap">
                       Gestionar preferencias →
                     </Link>
                   </div>
