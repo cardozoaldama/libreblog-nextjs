@@ -33,6 +33,8 @@ export default function NotificationBell() {
     return () => clearInterval(interval)
   }, [])
 
+
+
   const loadNotifications = async () => {
     try {
       const res = await fetch('/api/notifications?limit=5')

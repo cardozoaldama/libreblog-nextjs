@@ -3,6 +3,7 @@ import { Inter } from 'next/font/google'
 import './globals.css'
 import Navbar from '@/components/layout/Navbar'
 import Footer from '@/components/layout/Footer'
+import NotificationPopup from '@/components/notifications/NotificationPopup'
 import { createClient } from '@/lib/supabase/server'
 import { prisma } from '@/lib/prisma'
 
@@ -90,6 +91,7 @@ export default async function RootLayout({
           <main className="flex-grow bg-gray-50">{children}</main>
           <Footer />
         </div>
+        {user && <NotificationPopup />}
       </body>
     </html>
   )

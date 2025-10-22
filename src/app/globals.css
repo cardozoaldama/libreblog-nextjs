@@ -423,3 +423,7 @@ textarea,
     transform: translateX(0);
   }
 }
+
+.animate-slide-in-right {
+  animation: slideInFromRight 0.3s ease-out;
+}
