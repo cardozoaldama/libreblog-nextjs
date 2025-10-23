@@ -147,3 +147,35 @@ export async function GET(request: Request) {
     return NextResponse.json({ error: 'Error al obtener comentarios' }, { status: 500 })
   }
 }
+
+export async function DELETE(request: Request) {
+  try {
+    const { searchParams } = new URL(request.url)
+    const postId = searchParams.get('postId')
+    if (!postId) {
+      return NextResponse.json({ error: 'postId requerido' }, { status: 400 })
+    }
+    const supabase = await createClient()
+    const { data: { user } } = await supabase.auth.getUser()
+    if (!user) {
+      return NextResponse.json({ error: 'No autenticado' }, { status: 401 })
+    }
+    // Encontrar el post y validar autoría
+    const post = await prisma.post.findUnique({
+      where: { id: postId },
+      select: { authorId: true }
+    })
+    if (!post) {
+      return NextResponse.json({ error: 'Post no encontrado' }, { status: 404 })
+    }
+    if (post.authorId !== user.id) {
+      return NextResponse.json({ error: 'No autorizado' }, { status: 403 })
+    }
+    // Borrar todos los comentarios y replies
+    await prisma.comment.deleteMany({ where: { postId } })
+    return NextResponse.json({ success: true })
+  } catch (error) {
+    console.error('Error deleting all comments:', error)
+    return NextResponse.json({ error: 'Error al borrar comentarios' }, { status: 500 })
+  }
+}

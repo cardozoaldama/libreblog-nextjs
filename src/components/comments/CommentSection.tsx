@@ -29,6 +29,8 @@ interface CommentSectionProps {
 export default function CommentSection({ postId, postAuthorId, allowComments, currentUserId }: CommentSectionProps) {
   const [comments, setComments] = useState<Comment[]>([])
   const [isLoading, setIsLoading] = useState(true)
+  const [isDeletingAll, setIsDeletingAll] = useState(false)
+  const [showConfirmDeleteAll, setShowConfirmDeleteAll] = useState(false)
 
   useEffect(() => {
     loadComments()
@@ -77,7 +79,52 @@ export default function CommentSection({ postId, postAuthorId, allowComments, cu
         <h3 className="text-lg sm:text-xl font-bold text-[#0c2b4d]">
           Comentarios ({comments.length})
         </h3>
+        {currentUserId === postAuthorId && comments.length > 0 && (
+          <button
+            onClick={() => setShowConfirmDeleteAll(true)}
+            className="ml-auto px-3 py-1 bg-gradient-to-r from-red-600 to-red-700 text-white rounded-full text-xs font-semibold shadow hover:from-red-700 hover:to-red-800 transition-colors disabled:opacity-60 disabled:pointer-events-none"
+            disabled={isDeletingAll}
+            title="Eliminar todos los comentarios de este post"
+          >
+            Eliminar todos
+          </button>
+        )}
       </div>
+      {showConfirmDeleteAll && (
+        <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4" onClick={() => setShowConfirmDeleteAll(false)}>
+          <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 animate-in zoom-in duration-200" onClick={e => e.stopPropagation()}>
+            <h3 className="text-lg font-bold text-red-700 mb-2">¿Eliminar todos los comentarios?</h3>
+            <p className="text-sm text-[#5f638f] mb-6">Esta acción no se puede deshacer y borrará todos los comentarios del post, incluyendo respuestas.</p>
+            <div className="flex gap-3 mt-6">
+              <button
+                className="flex-1 px-4 py-2 rounded bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold"
+                onClick={() => setShowConfirmDeleteAll(false)}
+                disabled={isDeletingAll}
+              >
+                Cancelar
+              </button>
+              <button
+                className="flex-1 px-4 py-2 rounded bg-gradient-to-r from-red-600 to-red-700 text-white font-semibold hover:from-red-700 hover:to-red-800 disabled:opacity-60"
+                onClick={async () => {
+                  setIsDeletingAll(true)
+                  try {
+                    const res = await fetch(`/api/comments?postId=${postId}`, { method: 'DELETE' })
+                    if (res.ok) {
+                      await loadComments()
+                    }
+                  } finally {
+                    setIsDeletingAll(false)
+                    setShowConfirmDeleteAll(false)
+                  }
+                }}
+                disabled={isDeletingAll}
+              >
+                {isDeletingAll ? 'Eliminando...' : 'Eliminar todos'}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {currentUserId && (
         <CommentForm
