@@ -1,6 +1,8 @@
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/IsmaNov12/libreblog-nextjs)
+
 # LibreBlog
 
-LibreBlog es una plataforma moderna de blogging desarrollada con Next.js 15, donde los usuarios pueden crear, compartir y descubrir contenido de manera libre y segura. Incluye un editor Markdown avanzado, sistema de comentarios anidados, notificaciones en tiempo real, moderación NSFW manual, perfiles personalizables con temas y decoraciones, y un sistema de seguridad completo con autenticación via Supabase, verificación de contraseñas comprometidas y Row Level Security. Diseñada para ser responsive, accesible y escalable, con deployment optimizado en Vercel (v2.0.0).
+LibreBlog es una plataforma moderna de blogging desarrollada con Next.js 15, donde los usuarios pueden crear, compartir y descubrir contenido de manera libre y segura. Incluye un editor Markdown avanzado, sistema de comentarios anidados, notificaciones en tiempo real, moderación NSFW manual, perfiles personalizables con temas y decoraciones, y un sistema de seguridad completo con autenticación via Supabase, verificación de contraseñas comprometidas y Row Level Security. Diseñada para ser responsive, accesible y escalable, con deployment optimizado en Vercel (v2.1.0).
 
 ## Características
 
@@ -303,7 +305,7 @@ Si tienes dudas, abre un issue primero. ¡Gracias por contribuir!
 
 ## Changelog
 
-### v2.0.0
+### v2.1.0
 - Rediseño completo con nueva paleta de colores.
 - Logo cambiado a pluma antigua.
 - Sistema de temas de perfil con 6 opciones.
@@ -321,8 +323,8 @@ MIT
 
 ## Equipo
 
-- Guillermo Martinez - Full Stack Developer
-- Alejandro Alonso - Full Stack Developer
+- Guillermo Martinez -  Developer
+- Alejandro Alonso -  Developer
 
 Cualquier duda, sugerencia o aporte es bienvenido vía issues o Pull Request en este repositorio.
 
