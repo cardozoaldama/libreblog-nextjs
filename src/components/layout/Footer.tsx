@@ -76,12 +76,10 @@ export default function Footer() {
               <li><Link href="/terms" className="text-[#dedff1]/80 hover:text-white transition-colors">Términos y Condiciones</Link></li>
               <li><Link href="/privacy" className="text-[#dedff1]/80 hover:text-white transition-colors">Política de Privacidad</Link></li>
               <li><Link href="/about" className="text-[#dedff1]/80 hover:text-white transition-colors">Acerca de nosotros</Link></li>
-              <li><span className="text-[#dedff1]/80">Versión 2.0.0</span></li>
+              <li><span className="text-[#dedff1]/80">Versión 2.1.0</span></li>
             </ul>
           </div>
         </div>
-
-
 
         {/* Bottom Bar */}
         <div className="border-t border-[#5f638f]/30 pt-8 flex flex-col md:flex-row justify-between items-center">
